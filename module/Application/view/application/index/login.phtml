@@ -1,0 +1,36 @@
+<?php
+
+$title = 'User Login';
+$this->headTitle($title);
+?>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+<?php
+/*
+$form = $this->form;
+$form->setAttribute('action', 
+	$this->url('application', 
+		array('controller' => 'index', 
+		      'action' => 'login')));
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formRow($form->get('username'));
+echo $this->formRow($form->get('password'));
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();
+*/
+?>
+<form id='login' action="application/index/test" method='post' accept-charset='UTF-8'>
+    <input type="text" placeholder="User name"/>
+    <input type="text" placeholder="Password"/>
+    <div class="remember">
+	<div class="left">
+	    <input id="remember_me" type="checkbox">
+	    <label for="remember_me">Remember me</label>
+	</div>
+	<div class="right">
+	    <a href="">Forgot password?</a>
+	</div>
+    </div>
+    <input type="submit" class="btn" value="Sign in"/>
+</form>
