@@ -7,6 +7,8 @@ use User\Model\User;
 
 class UserController extends AbstractActionController
 {
+    protected $userTable;
+
     public function indexAction()
     {
     }
@@ -15,19 +17,20 @@ class UserController extends AbstractActionController
     {
         $users = $this->getUserTable()->fetchAll();
 
-        foreach($users as $user)
+        $postUser = $_POST['username'];
+        $postPass = $_POST['password'];
+
+        //check if the username is exist:
+        if(!$this->getUserTable()->checkUser($postUser))
         {
-            echo $user->username."</br>";
-            echo $user->password."</br>";
+            die( "The user was not exist.");
         }
-        $userrow = $this->getUserTable()->getUser("admin");
-        echo $userrow->username."</br>";
-        echo $userrow->password."</br>";
-/*
-        return new ViewModel(array(
-            'users' => $this->getUserTable()->fetchAll(),
-        ));
-*/
+        //check if the username and the password are corresponded:
+        if($this->getUserTable()->getUser($postUser)->password != $postPass)
+        {
+            die("Incorrect Password");
+        }
+
     }
 
     public function checkmediauserAction()
