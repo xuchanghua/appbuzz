@@ -5,6 +5,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Http\Header\Cookie;
 use Zend\Http\PhpEnvironment\Response;
+use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 
 class UserController extends AbstractActionController
@@ -17,14 +18,39 @@ class UserController extends AbstractActionController
 
     public function checkenterpriseuserAction()
     {
-        $users = $this->getUserTable()->fetchAll();
-
         $postUser = $_POST['username'];
         $postPass = $_POST['password'];
-
         //Authorize the user:
         $this->_authorizeUser('1', $postUser, $postPass);
+        //Set Session for the authorized user:
+        $this->session = new SessionContainer('userinfo');
+        $this->session->username = $postUser;
+        $this->session->password = $postPass;
+        //Set Cookies for the authorized user:
+        setcookie(
+            "username",
+            $postUser,
+            time() + ( 7 * 24 * 3600),
+            '/',
+            'local.appbuzz'
+            );
+        setcookie(
+            "password",
+            $postUser,
+            time() + ( 7 * 24 * 3600),
+            '/',
+            'local.appbuzz'
+            );
+        //redirect to the enterprise index page
+        $this->redirect()->toRoute('enterprise');
+    }
 
+    public function checkmediauserAction()
+    {
+        $postUser = $_POST['username'];
+        $postPass = $_POST['password'];
+        //Authorize the user:
+        $this->_authorizeUser('2', $postUser, $postPass);
         //Set Cookies for the authorized user:
         setcookie(
             "username",
@@ -40,11 +66,8 @@ class UserController extends AbstractActionController
             '/',
             'local.appbuzz'
             );
-
-    }
-
-    public function checkmediauserAction()
-    {
+        //redirect to the media index page
+        $this->redirect()->toRoute('media');
     }
 
     public function checkadminuserAction()
