@@ -12,15 +12,8 @@ class EnterpriseController extends AbstractActionController
 
     public function indexAction()
     {
-        //Authorize the user information from the session
-        $this->session = new SessionContainer('userinfo');
-        $username = $this->session->username;
-        $password = $this->session->password;
-        if($this->_authorizeUser(1, $username, $password))
-        {
-            echo "Welcome, ".$username;
-        }
-        
+        //Authenticate the user information from the session
+        $this->_authenticateSession();
     }
 
     public function netmonitorAction()
@@ -78,5 +71,16 @@ class EnterpriseController extends AbstractActionController
         }
 
         return true;
+    }
+
+    protected function _authenticateSession()
+    {        
+        $this->session = new SessionContainer('userinfo');
+        $username = $this->session->username;
+        $password = $this->session->password;
+        if($this->_authorizeUser(1, $username, $password))
+        {
+            echo "Welcome, ".$username;
+        }
     }
 }

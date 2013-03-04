@@ -26,7 +26,7 @@
 			<div id="user" class="user">
 				USER
 				<div id="enterpriseuser" class="enterpriseuser">
-					<a href="/enterprise/index">企业用户</a>
+					<!--<a href="/enterprise/index">企业用户</a>-->
 					<form id='login' action="user/checkenterpriseuser" method='post' accept-charset='UTF-8'>
     					<input name="username" type="text" placeholder="用户名"/>
     					<input name="password" type="password" placeholder="密码"/>
@@ -40,10 +40,11 @@
         					</div>
     					</div>
     					<input type="submit" class="btn" value="登录"/>
+    					<a href="user/signup">注册</a>
 					</form>
 				</div>
 				<div id="mediauser" class="mediauser">
-					<a href="/media/index">媒体用户</a>
+					<!--<a href="/media/index">媒体用户</a>-->
 					<form id='login' action="user/checkmediauser" method='post' accept-charset='UTF-8'>
     					<input name="username" type="text" placeholder="用户名"/>
     					<input name="password" type="password" placeholder="密码"/>
@@ -57,6 +58,7 @@
         					</div>
     					</div>
     					<input type="submit" class="btn" value="登录"/>
+    					<a href="user/mediasignup">注册</a>
 					</form>
 				</div>
 			</div>

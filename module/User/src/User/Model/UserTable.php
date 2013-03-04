@@ -30,6 +30,26 @@ class UserTable
 		return $row;
 	}
 
+	public function saveUser(User $user)
+	{
+		$data = array(
+			'username'     => $user->username,
+			'password'     => $user->password, 
+			'email'        => $user->email,
+			'fk_user_type' => $user->fk_user_type,
+		);
+		$id = (int)$user->id;
+		if($id == 0){
+			$this->tableGateway->insert($data);
+		} else {
+			if($this->getUser($id)){
+				$this->tableGateway->update($data, array('id' => $id));
+			} else {
+				throw new \Exception('Form id does not exist');
+			}
+		}
+	}
+
 	//check if the username passed in was exist in the `user` table
 	public function checkUser($username)
 	{

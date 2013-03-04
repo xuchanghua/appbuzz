@@ -7,6 +7,7 @@ use Zend\Http\Header\Cookie;
 use Zend\Http\PhpEnvironment\Response;
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
+use User\Form\UserForm;
 
 class UserController extends AbstractActionController
 {
@@ -51,18 +52,22 @@ class UserController extends AbstractActionController
         $postPass = $_POST['password'];
         //Authorize the user:
         $this->_authorizeUser('2', $postUser, $postPass);
+        //Set Session for the authorized user:
+        $this->session = new SessionContainer('userinfo');
+        $this->session->username = $postUser;
+        $this->session->password = $postPass;
         //Set Cookies for the authorized user:
         setcookie(
             "username",
             $postUser,
-            time()+3600,
+            time() + ( 7 * 24 * 3600),
             '/',
             'local.appbuzz'
             );
         setcookie(
             "password",
             $postUser,
-            time()+3600,
+            time() + ( 7 * 24 * 3600),
             '/',
             'local.appbuzz'
             );
@@ -72,6 +77,42 @@ class UserController extends AbstractActionController
 
     public function checkadminuserAction()
     {
+    }
+
+    public function signupAction()
+    {
+        $form = new UserForm();
+        $form->get('submit')->setValue('Sign Up!!!');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $user = new User();
+            $form->setInputFilter($user->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $user->exchangeArray($form->getData());
+                $this->getUserTable()->saveUser($user);
+                //Set Session for the authorized user:
+                $this->session = new SessionContainer('userinfo');
+                $this->session->username = $user->username;
+                $this->session->password = $user->password;
+                switch($user->fk_user_type)
+                {
+                    case 1:
+                        return $this->redirect()->toRoute('enterprise');
+                        break;
+                    case 2:
+                        return $this->redirect()->toRoute('media');
+                        break;
+                    case 3:
+                        return $this->redirect()->toRoute('admin');
+                        break;
+                    default:
+                        die("no such user type!");
+                }
+                //return $this->redirect()->toRoute('enterprise');
+            }
+        }
+        return array('form' => $form);
     }
 
     public function getUserTable()
