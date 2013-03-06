@@ -32,8 +32,44 @@
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li class="active"><a href="<?php echo $this->url('home') ?>"><?php echo $this->translate('Home') ?></a></li>
-                        </ul>
+                        </ul>                        
                     </div><!--/.nav-collapse -->
+                    <div id="user-nav" class="navbar navbar-inverse">
+                        <ul class="nav btn-group">
+                            <li class="btn btn-inverse" >
+                                <a title="" href="#">
+                                    <i class="icon icon-user"></i> 
+                                    <span class="text">用户资料</span>
+                                </a>
+                            </li>
+                            <li class="btn btn-inverse dropdown" id="menu-messages">
+                                <a href="#" data-toggle="dropdown" data-target="#menu-messages" class="dropdown-toggle">
+                                    <i class="icon icon-envelope"></i> 
+                                    <span class="text">站内信</span> 
+                                    <span class="label label-important">9999</span> 
+                                    <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="sAdd" title="" href="#">新邮件</a></li>
+                                    <li><a class="sInbox" title="" href="#">收件箱</a></li>
+                                    <li><a class="sOutbox" title="" href="#">发件箱</a></li>
+                                    <li><a class="sTrash" title="" href="#">垃圾箱</a></li>
+                                </ul>
+                            </li>
+                            <li class="btn btn-inverse">
+                                <a title="" href="#">
+                                    <i class="icon icon-cog"></i> 
+                                    <span class="text">设置</span>
+                                </a>
+                            </li>
+                            <li class="btn btn-inverse">
+                                <a title="" href="user/logout">
+                                    <i class="icon icon-share-alt"></i> 
+                                    <span class="text">退出登录</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

@@ -115,6 +115,14 @@ class UserController extends AbstractActionController
         return array('form' => $form);
     }
 
+    public function logoutAction()
+    {
+        $this->session = new SessionContainer('userinfo');
+        unset($this->session->username);
+        unset($this->session->password);    
+        return $this->redirect()->toRoute('home');
+    }
+
     public function getUserTable()
     {
         if(!$this->userTable){
