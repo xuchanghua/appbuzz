@@ -12,14 +12,23 @@ namespace Application\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Application\Form\LoginForm;
-
+use Zend\Session\Container as SessionContainer;
+use User\Model\User;
 
 
 class IndexController extends AbstractActionController
 {
+    protected $userTable;
+
     public function indexAction()
     {
-        return new ViewModel();
+        //redirect to the enterprise/media/admin index page if session is authorized.
+        $this->_authenticateSession();
+
+        $user = $this->_getSessionUser();        
+        return new ViewModel(array(
+            'session_user' => $user,
+        ));        
     }
 
     public function testAction()
@@ -69,5 +78,58 @@ class IndexController extends AbstractActionController
         $this->view->assign('title', 'Login Form');
         $this->view->assign('username', 'User Name');    
         $this->view->assign('password', 'Password');     
+    }
+
+    public function getUserTable()
+    {
+        if(!$this->userTable){
+            $sm = $this->getServiceLocator();
+            $this->userTable = $sm->get('User\Model\UserTable');
+        }
+        return $this->userTable;
+    }
+
+    protected function _authorizeUser($type, $user, $pass)
+    {        
+        $authentication  =  (isset($user)) && 
+                            (isset($pass)) && 
+                            ($this->getUserTable()->checkUser($user)) &&
+                            ($this->getUserTable()->getUser($user)->fk_user_type==$type) &&
+                            ($this->getUserTable()->getUser($user)->password==$pass);
+        if($authentication)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    protected function _authenticateSession()
+    {        
+        $this->session = new SessionContainer('userinfo');
+        $username = $this->session->username;
+        $password = $this->session->password;
+        if($this->_authorizeUser(1, $username, $password))
+        {
+            return $this->redirect()->toRoute("enterprise");
+        }
+        if($this->_authorizeUser(2, $username, $password))
+        {
+            return $this->redirect()->toRoute("media");
+        }
+        if($this->_authorizeUser(3, $username, $password))
+        {
+            return $this->redirect()->toRoute("admin");
+        }
+    }
+
+    protected function _getSessionUser()
+    {
+        $this->session = new SessionContainer('userinfo');
+        $user["name"] = $this->session->username;
+        $user["pass"] = $this->session->password;
+        return $user;
     }
 }

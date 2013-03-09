@@ -1,0 +1,169 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="message" class="container">
+	<div id="head" class="row">
+		<div class="span2 left">
+			<h4>站内信</h4>
+		</div>
+		<div class="span8 right">
+			<button class="btn btn-primary">发送</button>
+			<button class="btn btn-primary">立即保存</button>
+			<button class="btn btn-primary">舍弃</button>
+		</div>
+	</div>
+	<div id="body" class="row">
+		<div id="left" class="span2 left">
+			<button class="btn btn-primary" action="">写邮件</button>
+		</br>
+		</br>
+			<a href="/message/inbox">收件箱</a>
+		</br>
+		</br>
+			<a href="/message/sent">已发邮件</a>
+		</br>
+		</br>
+			<a href="/message/draft">草稿</a>
+		</div>
+		<div id="right" class="span8 right">
+			<table>
+				<tr>
+					<td>收件人</td>
+					<td class="tdinput">
+						<input id="to" type="text" placeholder="收件人"/>
+					</td>
+				</tr>					
+				<tr id="dcc" class="minput hiddeninput">
+					<td>抄送</td>
+					<td class="tdinput">
+						<input id="cc" type="text" placeholder="抄送"/>
+					</td>
+				</tr>
+				<tr id="dbcc" class="minput hiddeninput">
+					<td>密送</td>
+					<td class="tdinput">
+						<input id="bcc" type="text" placeholder="密送"/>
+					</td>
+				</tr>
+				<tr class="minput">
+					<td></td>
+					<td>
+						<a id="showcc" onclick="showCc()">添加抄送地址</a>
+						<a id="showbcc" onclick="showBcc()">添加密送地址</a>
+					</td>
+				</tr>
+				<tr class="minput">
+					<td>主题</td>
+					<td class="tdinput">
+						<input id="subject" type="text" placeholder="主题"/>
+					</td>
+				</tr>
+			</table>
+			<div id="mtextarea">
+				<textarea id="body" rows="17" cols="300" placeholder="正文"></textarea>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+input, textarea
+{
+	width:100%;
+}
+.minput
+{
+	/*display: table-row;*/
+}
+.hiddeninput
+{
+	/*visibility: collapse;*/
+	display: none;
+}
+table
+{
+	width: 100%;
+}
+.tdinput
+{
+	width: 90%;
+}
+input[type="text"]
+{
+	margin-bottom: 0px;
+	border: 1px #ffffff;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+	width: 100%;
+}
+.container
+{
+	background-image: "/";
+}
+div#head
+{
+	border-bottom:1px solid #000000;
+	margin-bottom: 4px;
+}
+div#body
+{
+	margin-top: 8px;
+}
+</style>
+
+
+
+
+
+<!--
+<p><b>Start typing a name in the input field below:</b></p>
+<form> 
+First name: <input type="text" onkeyup="showHint(this.value)">
+</form>
+<p>Suggestions: <span id="txtHint"></span></p>
+-->
+<script type="text/javascript">
+function redirect(str_path)
+{
+
+}
+function showCc()
+{
+	//document.getElementById("dcc").style.visibility="visible";
+	document.getElementById("dcc").style.display="table-row";
+	document.getElementById("showcc").style.visibility="hidden";
+	document.getElementById("showcc").style.display="none";
+}
+function showBcc()
+{
+	//document.getElementById("dbcc").style.visibility="visible";
+	document.getElementById("dbcc").style.display="table-row";
+	document.getElementById("showbcc").style.visibility="hidden";
+	document.getElementById("showbcc").style.display="none";
+}
+function showHint(str)
+{
+if (str.length==0)
+  { 
+  document.getElementById("txtHint").innerHTML="";
+  return;
+  }
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+    }
+  }
+xmlhttp.open("GET","message/gethint?q="+str,true);
+xmlhttp.send();
+}
+</script>

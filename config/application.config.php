@@ -3,9 +3,10 @@ return array(
     'modules' => array(
         'Application',
         'Album',
-	'Enterprise',
-	'Media',
-	'User',
+	    'Enterprise',
+	    'Media',
+	    'User',
+        'Message',
     ),
     'module_listener_options' => array(
         'config_glob_paths'    => array(
