@@ -18,10 +18,16 @@ class MessageTable
         return $resultSet;
     }
 
+    public function getMessageFromSender($from)
+    {
+        $rowset = $this->tableGateway->select(array('from' => $from));
+        return $rowset;
+    }
+
     public function getMessage($id)
     {
         $id  = (int) $id;
-        $rowset = $this->tableGateway->select(array('id' => $id));
+        $rowset = $this->tableGateway->select(array('id_message' => $id));
         $row = $rowset->current();
         if (!$row) {
             throw new \Exception("Could not find row $id");
@@ -32,16 +38,23 @@ class MessageTable
     public function saveMessage(Message $message)
     {
         $data = array(
-            'artist' => $message->artist,
-            'title'  => $message->title,
+            'from'              => $message->from,
+            'to'                => $message->to,
+            'cc'                => $message->cc,
+            'bcc'               => $message->bcc,
+            'subject'           => $message->subject,
+            'body'              => $message->body,
+            'created_at'        => $message->created_at,
+            'updated_at'        => $message->updated_at,
+            'fk_message_status' => $message->fk_message_status,
         );
 
-        $id = (int)$message->id;
+        $id = (int)$message->id_message;
         if ($id == 0) {
             $this->tableGateway->insert($data);
         } else {
             if ($this->getMessage($id)) {
-                $this->tableGateway->update($data, array('id' => $id));
+                $this->tableGateway->update($data, array('id_message' => $id));
             } else {
                 throw new \Exception('Form id does not exist');
             }
@@ -50,6 +63,6 @@ class MessageTable
 
     public function deleteMessage($id)
     {
-        $this->tableGateway->delete(array('id' => $id));
+        $this->tableGateway->delete(array('id_message' => $id));
     }
 }

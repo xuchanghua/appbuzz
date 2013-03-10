@@ -11,27 +11,57 @@ class MessageForm extends Form
         parent::__construct('message');
         $this->setAttribute('method', 'post');
         $this->add(array(
-            'name' => 'id',
+            'name' => 'id_message',
             'attributes' => array(
                 'type'  => 'hidden',
             ),
         ));
         $this->add(array(
-            'name' => 'artist',
+            'name' => 'from',
             'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Artist',
+                'type'  => 'hidden',
             ),
         ));
         $this->add(array(
-            'name' => 'title',
+            'name' => 'to',
             'attributes' => array(
                 'type'  => 'text',
+                'placeholder' => '收件人',
             ),
-            'options' => array(
-                'label' => 'Title',
+        ));
+        $this->add(array(
+            'name' => 'cc',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '抄送',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'bcc',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '密送',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'subject',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '主题',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'body',
+            'attributes' => array(
+                'type'  => 'textarea',
+                'placeholder' => '正文',
+                'rows'        => 17,       
+            ),
+        ));
+        $this->add(array(
+            'name' => 'fk_message_status',
+            'attributes' => array(
+                'type'  => 'hidden',
             ),
         ));
         $this->add(array(
@@ -40,6 +70,7 @@ class MessageForm extends Form
                 'type'  => 'submit',
                 'value' => 'Go',
                 'id' => 'submitbutton',
+                'class' => 'btn btn-primary',
             ),
         ));
     }

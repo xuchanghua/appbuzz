@@ -9,7 +9,7 @@ use Zend\InputFilter\InputFilterInterface;        // <-- Add this import
 class Message implements InputFilterAwareInterface
 {
     public $id_message;
-    public $fk_user_from;
+    public $from;
     public $subject;
     public $body;
     public $created_at;
@@ -21,7 +21,10 @@ class Message implements InputFilterAwareInterface
     public function exchangeArray($data)
     {
         $this->id_message        = (isset($data['id_message']))        ? $data['id_message']        : null;
-        $this->fk_user_from      = (isset($data['fk_user_from']))      ? $data['fk_user_from']      : null;
+        $this->from              = (isset($data['from']))              ? $data['from']              : null;
+        $this->to                = (isset($data['to']))                ? $data['to']                : null;
+        $this->cc                = (isset($data['cc']))                ? $data['cc']                : null;
+        $this->bcc               = (isset($data['bcc']))               ? $data['bcc']               : null;
         $this->subject           = (isset($data['subject']))           ? $data['subject']           : null;
         $this->body              = (isset($data['body']))              ? $data['body']              : null;
         $this->created_at        = (isset($data['created_at']))        ? $data['created_at']        : null;
@@ -42,7 +45,7 @@ class Message implements InputFilterAwareInterface
             $factory     = new InputFactory();
 
             $inputFilter->add($factory->createInput(array(
-                'name'     => 'id',
+                'name'     => 'id_message',
                 'required' => true,
                 'filters'  => array(
                     array('name' => 'Int'),
@@ -50,7 +53,7 @@ class Message implements InputFilterAwareInterface
             )));
 
             $inputFilter->add($factory->createInput(array(
-                'name'     => 'artist',
+                'name'     => 'subject',
                 'required' => true,
                 'filters'  => array(
                     array('name' => 'StripTags'),
@@ -61,27 +64,8 @@ class Message implements InputFilterAwareInterface
                         'name'    => 'StringLength',
                         'options' => array(
                             'encoding' => 'UTF-8',
-                            'min'      => 1,
-                            'max'      => 100,
-                        ),
-                    ),
-                ),
-            )));
-
-            $inputFilter->add($factory->createInput(array(
-                'name'     => 'title',
-                'required' => true,
-                'filters'  => array(
-                    array('name' => 'StripTags'),
-                    array('name' => 'StringTrim'),
-                ),
-                'validators' => array(
-                    array(
-                        'name'    => 'StringLength',
-                        'options' => array(
-                            'encoding' => 'UTF-8',
-                            'min'      => 1,
-                            'max'      => 100,
+                            'min'      => 0,
+                            'max'      => 255,
                         ),
                     ),
                 ),

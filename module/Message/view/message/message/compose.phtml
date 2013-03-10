@@ -1,6 +1,13 @@
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/style.css">
 
+<?php
+$form = $this->form;
+$form->setAttribute('action', $this->url('message', array('action' => 'compose')));
+$form->prepare();
+echo $this->form()->openTag($form);
+echo $this->formHidden($form->get('id_message'));
+?>
 
 <div id="message" class="container">
 	<div id="head" class="row">
@@ -8,17 +15,21 @@
 			<h4>站内信</h4>
 		</div>
 		<div class="span8 right">
-			<button class="btn btn-primary">发送</button>
+			<?php 
+			$this->fk_user_form = 1;
+			echo $this->formSubmit($form->get('submit')); 
+			?>
+			<!--<button class="btn btn-primary">发送</button>-->
 			<button class="btn btn-primary">立即保存</button>
 			<button class="btn btn-primary">舍弃</button>
 		</div>
 	</div>
 	<div id="body" class="row">
 		<div id="left" class="span2 left">
-			<button class="btn btn-primary" action="">写邮件</button>
+			<button class="btn btn-primary" action=""><a href="/message/compose" style="color:white;">写邮件</a></button>
 		</br>
 		</br>
-			<a href="/message/inbox">收件箱</a>
+			<a href="/message">收件箱</a>
 		</br>
 		</br>
 			<a href="/message/sent">已发邮件</a>
@@ -31,19 +42,22 @@
 				<tr>
 					<td>收件人</td>
 					<td class="tdinput">
-						<input id="to" type="text" placeholder="收件人"/>
+						<?php echo $this->formRow($form->get('to'));?>
+						<!--<input id="to" type="text" placeholder="收件人"/>-->
 					</td>
 				</tr>					
 				<tr id="dcc" class="minput hiddeninput">
 					<td>抄送</td>
 					<td class="tdinput">
-						<input id="cc" type="text" placeholder="抄送"/>
+						<?php echo $this->formRow($form->get('cc'));?>
+						<!--<input id="cc" type="text" placeholder="抄送"/>-->
 					</td>
 				</tr>
 				<tr id="dbcc" class="minput hiddeninput">
 					<td>密送</td>
 					<td class="tdinput">
-						<input id="bcc" type="text" placeholder="密送"/>
+						<?php echo $this->formRow($form->get('bcc'));?>
+						<!--<input id="bcc" type="text" placeholder="密送"/>-->
 					</td>
 				</tr>
 				<tr class="minput">
@@ -56,12 +70,14 @@
 				<tr class="minput">
 					<td>主题</td>
 					<td class="tdinput">
-						<input id="subject" type="text" placeholder="主题"/>
+						<?php echo $this->formRow($form->get('subject'));?>
+						<!--<input id="subject" type="text" placeholder="主题"/>-->
 					</td>
 				</tr>
 			</table>
 			<div id="mtextarea">
-				<textarea id="body" rows="17" cols="300" placeholder="正文"></textarea>
+				<?php echo $this->formRow($form->get('body'));?>
+				<!--<textarea id="body" rows="17" cols="300" placeholder="正文"></textarea>-->
 			</div>
 		</div>
 	</div>

@@ -5,21 +5,59 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Message\Model\Message;          // <-- Add this import
 use Message\Form\MessageForm;       // <-- Add this import
+use Zend\Session\Container as SessionContainer;
+use User\Model\User;
 
 class MessageController extends AbstractActionController
 {
+    protected $userTable;
     protected $messageTable;
 
     public function indexAction()
-    {     
-	     return new ViewModel(array(
-	         'messages' => $this->getMessageTable()->fetchAll(),
-	     ));
+    {    
+        $this->_authenticateSession();
+
+        //get username from session:
+        $this->session = new SessionContainer('userinfo');
+        $session_user = $this->session->username;
+        return new ViewModel(array(
+            'messages' => $this->getMessageTable()->getMessageFromSender($session_user),
+        ));
+        /*
+	    return new ViewModel(array(
+	        'messages' => $this->getMessageTable()->fetchAll(),
+	    ));
+        */
     }
 
     public function composeAction()
     {
+        $this->_authenticateSession();
 
+        //get username from session:
+        $this->session = new SessionContainer('userinfo');
+        $session_user = $this->session->username;
+
+        //handle the form
+        $form = new MessageForm();
+        $form->get('submit')->setValue('发送');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $message = new Message();
+            $form->setInputFilter($message->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $message->exchangeArray($form->getData());
+                $message->from = $session_user;
+                $message->fk_message_status = 2; //sent message;
+                $message->created_at = time();
+                $message->updated_at = time();
+                $this->getMessageTable()->saveMessage($message);
+                //redirect to the inbox page
+                $this->redirect()->toRoute('message/inbox');
+            }
+        }
+        return array('form' => $form);
     }
 
     public function inboxAction()
@@ -35,6 +73,59 @@ class MessageController extends AbstractActionController
     public function draftAction()
     {
       
+    }
+
+    public function getMessageTable()
+    {
+        if (!$this->messageTable) {
+        $sm = $this->getServiceLocator();
+        $this->messageTable = $sm->get('Message\Model\MessageTable');
+        }
+        return $this->messageTable;
+    }
+
+    public function getUserTable()
+    {
+        if(!$this->userTable){
+            $sm = $this->getServiceLocator();
+            $this->userTable = $sm->get('User\Model\UserTable');
+        }
+        return $this->userTable;
+    }
+
+    protected function _authorizeUser($user, $pass)
+    {        
+         //check if the username or password is empty
+        if((!$user)||(!$pass))
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("Username or Password cannot be empty!");
+        }
+        //check if the username is exist
+        if(!$this->getUserTable()->checkUser($user))
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("The user was not exist.");
+        }
+        //check if the username and the password are corresponded:
+        if($this->getUserTable()->getUser($user)->password != $pass)
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("Incorrect Password");
+        }
+
+        return true;
+    }
+
+    protected function _authenticateSession()
+    {        
+        $this->session = new SessionContainer('userinfo');
+        $username = $this->session->username;
+        $password = $this->session->password;
+        if($this->_authorizeUser($username, $password))
+        {
+            echo "Welcome, ".$username;
+        }
     }
 
     public function gethintAction()
@@ -109,42 +200,4 @@ else
 echo $response;
     }
 
-    public function addAction()
-    {
-        $form = new MessageForm();
-        $form->get('submit')->setValue('Add');
-
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $message = new Message();
-            $form->setInputFilter($message->getInputFilter());
-            $form->setData($request->getPost());
-
-            if ($form->isValid()) {
-                $message->exchangeArray($form->getData());
-                $this->getMessageTable()->saveMessage($message);
-
-                // Redirect to list of messages
-                return $this->redirect()->toRoute('message');
-            }
-        }
-        return array('form' => $form);
-    }
-
-    public function editAction()
-    {
-    }
-
-    public function deleteAction()
-    {
-    }
-
-    public function getMessageTable()
-    {
-        if (!$this->messageTable) {
-	    $sm = $this->getServiceLocator();
-	    $this->messageTable = $sm->get('Message\Model\MessageTable');
-        }
-        return $this->messageTable;
-    }
 }

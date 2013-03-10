@@ -1,0 +1,90 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+<div id="message" class="container">
+	<div id="head" class="row">
+		<div class="span2 left">
+			<h4>站内信</h4>
+		</div>
+		<div class="span8 right">
+			<button class="btn btn-primary">刷新</button>
+			<button class="btn btn-primary">删除</button>
+		</div>
+	</div>
+	<div id="body" class="row">
+		<div id="left" class="span2 left">
+			<button class="btn btn-primary" action=""><a href="/message/compose" style="color:white;">写邮件</a></button>
+		</br>
+		</br>
+			<a href="/message">收件箱</a>
+		</br>
+		</br>
+			<a href="/message/sent">已发邮件</a>
+		</br>
+		</br>
+			<a href="/message/draft">草稿</a>
+		</div>
+		<div id="right" class="span8 right">
+			<table>				
+				<?php foreach($messages as $message) : ?>
+				<tr>
+					<td><?php echo $this->escapeHtml($message->from).','.$this->escapeHtml($message->to);?></td>
+					<td><?php echo $this->escapeHtml($message->subject);?></td>
+				</tr>
+
+
+
+
+				<?php endforeach; ?>
+			</table>
+		</div>
+	</div>
+</div>
+
+<style>
+input, textarea
+{
+	width:100%;
+}
+.minput
+{
+	/*display: table-row;*/
+}
+.hiddeninput
+{
+	/*visibility: collapse;*/
+	display: none;
+}
+table
+{
+	width: 100%;
+}
+.tdinput
+{
+	width: 90%;
+}
+input[type="text"]
+{
+	margin-bottom: 0px;
+	border: 1px #ffffff;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+	width: 100%;
+}
+.container
+{
+	background-image: "/";
+}
+div#head
+{
+	border-bottom:1px solid #000000;
+	margin-bottom: 4px;
+}
+div#body
+{
+	margin-top: 8px;
+}
+</style>
+
+
+
+
