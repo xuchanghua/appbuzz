@@ -60,9 +60,12 @@ class MessageController extends AbstractActionController
         return array('form' => $form);
     }
 
-    public function inboxAction()
+    public function readAction()
     {
-
+        $id = (int)$this->params()->fromRoute('id',0);
+        return new ViewModel(array(
+            'message' => $this->getMessageTable()->getMessage($id),
+        ));
     }
 
     public function sentAction()
