@@ -2,6 +2,7 @@
 namespace Message\Model;
 
 use Zend\Db\TableGateway\TableGateway;
+use Zend\Db\Sql\Select;
 
 class MessageTable
 {
@@ -18,9 +19,26 @@ class MessageTable
         return $resultSet;
     }
 
-    public function getMessageFromSender($from)
+    //SELECT * FROM user WHERE from = $from;
+    public function getMessageFromUser($from)
     {
-        $rowset = $this->tableGateway->select(array('from' => $from));
+        //$rowset = $this->tableGateway->select(array('from' => $from));
+        $rowset = $this->tableGateway->select(function(Select $select) use ($from) {
+            $select->where->equalTo('from', $from);
+            $select->order('id_message DESC');
+        });
+        return $rowset;
+    }
+
+    //SELECT * FROM user WHERE to = $to;
+    public function getMessageToUser($to)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use ($to) {
+            $select->where->equalTo('to', $to)
+                   ->or->equalTo('cc', $to)
+                   ->or->equalTo('bcc', $to);
+            $select->order('id_message DESC');
+        });
         return $rowset;
     }
 

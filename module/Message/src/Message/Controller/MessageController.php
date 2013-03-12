@@ -21,7 +21,7 @@ class MessageController extends AbstractActionController
         $this->session = new SessionContainer('userinfo');
         $session_user = $this->session->username;
         return new ViewModel(array(
-            'messages' => $this->getMessageTable()->getMessageFromSender($session_user),
+            'messages' => $this->getMessageTable()->getMessageToUser($session_user),
         ));
         /*
 	    return new ViewModel(array(
@@ -62,6 +62,8 @@ class MessageController extends AbstractActionController
 
     public function readAction()
     {
+        $this->_authenticateSession();
+
         $id = (int)$this->params()->fromRoute('id',0);
         return new ViewModel(array(
             'message' => $this->getMessageTable()->getMessage($id),
@@ -70,7 +72,14 @@ class MessageController extends AbstractActionController
 
     public function sentAction()
     {
+        $this->_authenticateSession();
 
+        //get username from session:
+        $this->session = new SessionContainer('userinfo');
+        $session_user = $this->session->username;
+        return new ViewModel(array(
+            'messages' => $this->getMessageTable()->getMessageFromUser($session_user),
+        ));
     }
 
     public function draftAction()

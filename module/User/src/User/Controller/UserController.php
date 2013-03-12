@@ -76,7 +76,32 @@ class UserController extends AbstractActionController
     }
 
     public function checkadminuserAction()
-    {
+    {        
+        $postUser = $_POST['username'];
+        $postPass = $_POST['password'];
+        //Authorize the user:
+        $this->_authorizeUser('3', $postUser, $postPass);
+        //Set Session for the authorized user:
+        $this->session = new SessionContainer('userinfo');
+        $this->session->username = $postUser;
+        $this->session->password = $postPass;
+        //Set Cookies for the authorized user:
+        setcookie(
+            "username",
+            $postUser,
+            time() + ( 7 * 24 * 3600),
+            '/',
+            'local.appbuzz'
+            );
+        setcookie(
+            "password",
+            $postUser,
+            time() + ( 7 * 24 * 3600),
+            '/',
+            'local.appbuzz'
+            );
+        //redirect to the enterprise index page
+        $this->redirect()->toRoute('admin');
     }
 
     public function signupAction()
