@@ -1,14 +1,18 @@
 <?php
 return array(
     'modules' => array(
-        'Application',
         'Admin',
         'Album',
+        'Application',
 	    'Enterprise',
+        'Evaluate',
+        'Interview',
 	    'Media',
-	    'User',
         'Message',
         'Newspub',
+        'Topic',
+        'User',
+        'Writer',
     ),
     'module_listener_options' => array(
         'config_glob_paths'    => array(
