@@ -13,7 +13,10 @@ class EnterpriseController extends AbstractActionController
     public function indexAction()
     {
         //Authenticate the user information from the session
-        $this->_authenticateSession();
+        $cur_user = $this->_authenticateSession();
+        return new ViewModel(array(
+            'user' => $cur_user,
+            ));
     }
 
     public function netmonitorAction()
@@ -81,6 +84,7 @@ class EnterpriseController extends AbstractActionController
         if($this->_authorizeUser(1, $username, $password))
         {
             echo "Welcome, ".$username;
+            return $username;
         }
     }
 }

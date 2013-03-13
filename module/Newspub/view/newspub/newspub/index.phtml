@@ -1,0 +1,186 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <h1>新闻发布</h1>  
+    <div id="header" class="container" style="width:1170px;"> 
+        CONTAINER
+        <div class="row">
+            ROW
+            <div id="logo" class="span2 logo">
+                APPBUZZ LOGO
+            </div>
+            <div id="banner" class="span8 banner">
+                BANNER
+            </div>
+        </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span3 left">
+            <div id="user" class="user">
+                用户: <?php echo $user;?>
+                <a href="/user/logout">退出</a>
+            </br>
+                <a href="">企业资料</a>
+            </br>
+                <a href="">我的账户</a>
+            </br>
+                <a href="">我的订单</a>
+            </br>
+                <a href="">APP新闻助手</a>           
+            </div>
+            <div id="netmonitor" class="netmonitor">
+                <a href="netmonitor">网络监测</a>
+            </div>
+            <div id="newspublish" class="newspublish">
+                <a href="/newspub">新闻发布</a>
+            </div>
+            <div id="appevaluating" class="appevaluating">
+                <a href="appevaluating">产品评测</a>
+            </div>
+            <div id="newsedit" class="newsedit">
+                <a href="newsedit">新闻撰写</a>
+            </div>
+            <div id="topic" class="topic">
+                <a href="topic">媒体选题</a>
+            </div>
+            <div id="interview" class="interview">
+                <a href="interview">媒体采访</a>
+            </div>
+        </div>
+
+        <div id="mid" class="span6 mid">            
+            <div>
+                <button id="pubedit" class="btn btn-primary">我要发布</button>  
+                <button id="pubmgmt" class="btn btn-primary">订单管理</button>
+            </div>
+            </br>
+            <div id="pubmgmt">
+                <h4>我的新闻发布订单</h4>
+                <table class="pubmgmttable">
+                    <tr>
+                        <th>订单号</th>
+                        <th>业务内容</th>
+                        <th>发布方式</th>
+                        <th>订单状态</th>
+                    </tr>
+                    <?php foreach($newspub as $np): ?>
+                    <tr>
+                        <td><?php echo $this->escapeHtml($np->id_newspub);?></td>
+                        <td><a href="<?php echo $this->url('newspub',array('action'=>'detail','id'=>$np->id_newspub));?>"><?php echo $this->escapeHtml($np->title);?></a></td>
+                        <td><?php echo $this->escapeHtml($np->fk_pub_mode);?></td>
+                        <td><?php echo $this->escapeHtml($np->fk_newspub_status);?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+            <div id="pubedit">
+                <h4>新建订单：</h4>
+                <table>
+                <?php 
+                $form = $this->form;
+                $form->setAttribute('action',$this->url(
+                    'newspub', 
+                    array(
+                        'action' => 'index',
+                    )
+                ));
+                $form->prepare();
+                echo $this->form()->openTag($form);
+                echo $this->formHidden($form->get('id_newspub'));
+                ?>
+                <tr>
+                    <td>标题</td>
+                    <td>
+                        <?php echo $this->formRow($form->get('title')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>正文</td>
+                    <td>
+                        <?php echo $this->formRow($form->get('body')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>下载链接</td>
+                    <td>
+                        <?php echo $this->formRow($form->get('download_link')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>软件市场链接</td>
+                    <td>
+                        <?php echo $this->formRow($form->get('appstore_links')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>下载二维码</td>
+                    <td>
+                        <?php echo $this->formRow($form->get('barcode')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>发布方式及费用</td>
+                    <td>
+                        <?php echo $this->formRow($form->get('fk_pub_mode')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <?php echo $this->formSubmit($form->get('submit')); ?>
+                        <?php echo $this->form()->closeTag(); ?>
+                    </td>
+                </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="right" class="span3 right">
+            SPAN3 RIGHT
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+$("div#pubedit").hide();
+$("button#pubmgmt").hide();
+
+$(document).ready(function(){
+
+  $("button#pubedit").click(function(){
+    $(this).hide();
+    $("div#pubmgmt").hide();
+    $("div#pubedit").show();
+    $("button#pubmgmt").show();
+  });
+
+  $("button#pubmgmt").click(function(){
+    $(this).hide();
+    $("div#pubedit").hide();
+    $("div#pubmgmt").show();
+    $("button#pubedit").show();
+  });
+});
+</script>
+
+<style>
+div.user,.mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+</style>

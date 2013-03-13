@@ -18,19 +18,25 @@
     </div>
 </BR>
     <div id="main" class="container" style="width:1170px;">
-        CONTAINER
     <div id="row" class="row">
-        ROW
         <div id="left" class="span4 left">
-            SPAN4 LEFT
             <div id="user" class="user">
-                企业用户资料                
+                用户: <?php echo $user;?>
+                <a href="/user/logout">退出</a>
+            </br>
+                <a href="">企业资料</a>
+            </br>
+                <a href="">我的账户</a>
+            </br>
+                <a href="">我的订单</a>
+            </br>
+                <a href="">APP新闻助手</a>           
             </div>
             <div id="netmonitor" class="netmonitor">
                 <a href="netmonitor">网络监测</a>
             </div>
             <div id="newspublish" class="newspublish">
-                <a href="newspublish">新闻发布</a>
+                <a href="/newspub">新闻发布</a>
             </div>
             <div id="appevaluating" class="appevaluating">
                 <a href="appevaluating">产品评测</a>
@@ -69,3 +75,14 @@
     </div>
     </div>
 </div>
+
+<style>
+div.user
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+</style>
