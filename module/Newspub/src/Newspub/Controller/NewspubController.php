@@ -16,7 +16,7 @@ class NewspubController extends AbstractActionController
     public function indexAction()
     {     
         //Authenticate the user information from the session
-        $cur_user = $this->_authenticateSession();
+        $cur_user = $this->_authenticateSession(1);
 
         //handle the form
         $form = new NewspubForm();
@@ -46,7 +46,7 @@ class NewspubController extends AbstractActionController
 
     public function detailAction()
     {
-        $cur_user = $this->_authenticateSession();
+        $cur_user = $this->_authenticateSession(1);
 
         $id = (int)$this->params()->fromRoute('id',0);        
         if (!$id) {
@@ -61,9 +61,10 @@ class NewspubController extends AbstractActionController
             'id' => $id,
         ));
     }
+
     public function editAction()
     {
-        $cur_user = $this->_authenticateSession();
+        $cur_user = $this->_authenticateSession(1);
 
         $id = (int)$this->params()->fromRoute('id',0);        
         if (!$id) {
@@ -72,7 +73,8 @@ class NewspubController extends AbstractActionController
             ));
         }
         $newspub = $this->getNewspubTable()->getNewspub($id);
-
+        $np_created_by = $newspub->created_by;
+        $np_created_at = $newspub->created_at;
         $form = new NewspubForm();
         $form->bind($newspub);
         $form->get('submit')->setAttribute('value','保存');
@@ -81,8 +83,13 @@ class NewspubController extends AbstractActionController
         if ($request->isPost()){
             $form->setInputFilter($newspub->getInputFilter());
             $form->setData($request->getPost());
-
-            if($form->isValid()){             
+            var_dump($newspub->created_by);
+            if($form->isValid()){
+                $form->getData()->created_by = $np_created_by;
+                $form->getData()->created_at = $np_created_at;
+                $form->getData()->updated_by = $cur_user;
+                $form->getData()->updated_at = time();
+                $form->getData()->fk_newspub_status = 1;
                 $this->getNewspubTable()->saveNewspub($form->getData());   
 
                 return $this->redirect()->toRoute('newspub',array(
@@ -100,6 +107,17 @@ class NewspubController extends AbstractActionController
         ));
     }
 
+    public function adminAction()
+    {
+        //authenticate the admin user:
+        $cur_user = $this->_authenticateSession(3);
+
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'newspubs' => $this->getNewspubTable()->fetchAll(),
+        ));
+    }
 
     public function getNewspubTable()
     {
@@ -143,12 +161,12 @@ class NewspubController extends AbstractActionController
         return true;
     }
 
-    protected function _authenticateSession()
+    protected function _authenticateSession($fk_user_type)
     {        
         $this->session = new SessionContainer('userinfo');
         $username = $this->session->username;
         $password = $this->session->password;
-        if($this->_authorizeUser(1, $username, $password))
+        if($this->_authorizeUser($fk_user_type, $username, $password))
         {
             echo "Welcome, ".$username;
             return $username;

@@ -16,7 +16,11 @@ class AdminController extends AbstractActionController
     public function indexAction()
     {
         //Authenticate the user information from the session
-        $this->_authenticateSession();
+        $cur_user = $this->_authenticateSession();
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));
     }
 
     public function loginAction()
@@ -68,6 +72,7 @@ class AdminController extends AbstractActionController
         if($this->_authorizeUser(3, $username, $password))
         {
             echo "Welcome, ".$username;
+            return $username;
         }
     }
 }
