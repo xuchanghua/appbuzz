@@ -18,6 +18,28 @@ class NewspubController extends AbstractActionController
         //Authenticate the user information from the session
         $cur_user = $this->_authenticateSession(1);
 
+        $request = $this->getRequest();
+        $keyword = trim($request->getQuery(''));
+        $page = intval($request->getQuery('page',1));
+        $paginator = $this->getNewspubTable()->getPaginator($keyword, $page, 5, 1);
+        $view = new ViewModel(array(
+            'user' => $cur_user,
+            'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
+            )
+        );
+        $view->setVariable('paginator', $paginator);
+        return $view;
+        /*
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
+            ));    */    
+    }
+
+    public function addAction()
+    {
+        $cur_user = $this->_authenticateSession(1);
+
         //handle the form
         $form = new NewspubForm();
         $form->get('submit')->setValue('保存');
@@ -34,6 +56,11 @@ class NewspubController extends AbstractActionController
                 $newspub->updated_at = time();
                 $newspub->fk_newspub_status = 1;
                 $this->getNewspubTable()->saveNewspub($newspub);
+                
+                return $this->redirect()->toRoute('newspub',array(
+                    'action'=>'detail',
+                    'id'    => $newspub->id_newspub,
+                ));
             }
         }
 
@@ -41,7 +68,7 @@ class NewspubController extends AbstractActionController
             'user' => $cur_user,
             'form' => $form,
             'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
-            ));        
+        ));        
     }
 
     public function detailAction()

@@ -30,5 +30,8 @@ return array(
         'template_path_stack' => array(
             'newspub' => __DIR__ . '/../view',
         ),
+        'template_map' => array(//配置分页控件模板路径
+            'pagination/search' => __DIR__ . '/../view/pagination/search.phtml',
+        ),
     ),
 );

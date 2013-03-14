@@ -12,9 +12,21 @@ class AlbumController extends AbstractActionController
 
     public function indexAction()
     {     
+        /*
 	return new ViewModel(array(
 	    'albums' => $this->getAlbumTable()->fetchAll(),
-	));
+	));*/
+        $request = $this->getRequest();
+        $keyword = trim($request->getQuery(''));
+        $page = intval($request->getQuery('page',1));
+        $paginator = $this->getAlbumTable()->getPaginator($keyword, $page, 5, 1);
+        $view = new ViewModel(
+            array(
+                'albums' => $this->getAlbumTable()->fetchAll(),
+            )
+        );
+        $view->setVariable('paginator', $paginator);
+        return $view;
     }
 
     public function addAction()

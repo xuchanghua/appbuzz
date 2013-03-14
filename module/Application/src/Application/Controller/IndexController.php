@@ -113,15 +113,24 @@ class IndexController extends AbstractActionController
         $password = $this->session->password;
         if($this->_authorizeUser(1, $username, $password))
         {
-            return $this->redirect()->toRoute("enterprise");
+            return $this->redirect()->toRoute("enterprise", 
+                array(
+                    'action' => 'index',
+                ));
         }
         if($this->_authorizeUser(2, $username, $password))
         {
-            return $this->redirect()->toRoute("media");
+            return $this->redirect()->toRoute("media", 
+                array(
+                    'action' => 'index',
+                ));
         }
         if($this->_authorizeUser(3, $username, $password))
         {
-            return $this->redirect()->toRoute("admin");
+            return $this->redirect()->toRoute("admin", 
+                array(
+                    'action' => 'index',
+                ));
         }
     }
 
