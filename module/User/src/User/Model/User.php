@@ -14,6 +14,8 @@ class User implements InputFilterAwareInterface
 	public $password_salt;
 	public $real_name;
 	public $fk_user_type;
+	public $email;
+	public $fk_enterprise;
 	protected $inputFilter;
 
 	public function exchangeArray($data)
@@ -25,6 +27,7 @@ class User implements InputFilterAwareInterface
 		$this->real_name     = (isset($data['real_name']))     ? $data['real_name']     : null;
 		$this->fk_user_type  = (isset($data['fk_user_type']))  ? $data['fk_user_type']  : null;
 		$this->email         = (isset($data['email']))         ? $data['email']         : null;
+		$this->fk_enterprise = (isset($data['fk_enterprise'])) ? $data['fk_enterprise'] : null;
 	}
 
 	public function setInputFilter(InputFilterInterface $inputFilter)

@@ -35,6 +35,17 @@ div.container a.brand {
     margin-left: 0;
     padding: 8px 20px 12px 40px;
 }
+
+div.linkbtns
+{
+    display: inline;
+    float: left;
+    border-radius: 0px 0px 0px 0px;
+}
+.linkbtn
+{
+    border-radius: 0px 0px 0px 0px;    
+}
 /*
 div.topicpublish, .appinterview, .editor, .appnewshelper, .netmonitor, .newspublish, .appevaluating, .newsedit, .topic, .interview, .enterpriseinfo, .myaccount, .myorder, .indexpage, .container, .row, .span2, .span4, .span8, .slides, .user, .enterpriseuser, .mediauser, .medialogos, .abstract, .news, .mediarank, .latestapp
 {

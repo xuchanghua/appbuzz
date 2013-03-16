@@ -50,12 +50,12 @@ class AdminController extends AbstractActionController
          //check if the username or password is empty
         if((!$user)||(!$pass)
             ||(!$this->getUserTable()->checkUser($user))
-            ||($this->getUserTable()->getUser($user)->fk_user_type != $type))
+            ||($this->getUserTable()->getUserByName($user)->fk_user_type != $type))
         {
             $this->redirect()->toRoute('admin',array('action'=>'login'));
         }        
         //check if the username and the password are corresponded:
-        if($this->getUserTable()->getUser($user)->password != $pass)
+        if($this->getUserTable()->getUserByName($user)->password != $pass)
         {
             echo "<a href='/'>Back</a></br>";
             die("Incorrect Password");

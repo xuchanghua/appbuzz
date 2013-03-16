@@ -7,6 +7,8 @@ use Newspub\Model\Newspub;
 use Newspub\Form\NewspubForm;       
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
+use Zend\File\Transfer\Adapter\Http as FileHttp;
+use DateTime;
 
 class NewspubController extends AbstractActionController
 {
@@ -45,15 +47,24 @@ class NewspubController extends AbstractActionController
         $form->get('submit')->setValue('保存');
         $request = $this->getRequest();
         if($request->isPost()){
+            //upload start
+            $adapter = new FileHttp();
+            $adapter->setDestination('public');
+            if (!$adapter->receive()) 
+            {
+                echo implode("\n", $adapter->getMessages());
+                //die($adapter->getMessages());
+            }
+            //upload end
             $newspub = new Newspub();
             $form->setInputFilter($newspub->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
                 $newspub->exchangeArray($form->getData());
                 $newspub->created_by = $cur_user;
-                $newspub->created_at = time();
+                $newspub->created_at = $this->_getDateTime();
                 $newspub->updated_by = $cur_user;
-                $newspub->updated_at = time();
+                $newspub->updated_at = $this->_getDateTime();
                 $newspub->fk_newspub_status = 1;
                 $this->getNewspubTable()->saveNewspub($newspub);
                 
@@ -108,14 +119,23 @@ class NewspubController extends AbstractActionController
 
         $request = $this->getRequest();
         if ($request->isPost()){
+            //upload start
+            $adapter = new FileHttp();
+            $adapter->setDestination('public');
+            if (!$adapter->receive()) 
+            {
+                echo implode("\n", $adapter->getMessages());
+                //die($adapter->getMessages());
+            }
+            //upload end
             $form->setInputFilter($newspub->getInputFilter());
             $form->setData($request->getPost());
-            var_dump($newspub->created_by);
+            //die(var_dump($request->getPost()));
             if($form->isValid()){
                 $form->getData()->created_by = $np_created_by;
                 $form->getData()->created_at = $np_created_at;
                 $form->getData()->updated_by = $cur_user;
-                $form->getData()->updated_at = time();
+                $form->getData()->updated_at = $this->_getDateTime();
                 $form->getData()->fk_newspub_status = 1;
                 $this->getNewspubTable()->saveNewspub($form->getData());   
 
@@ -146,6 +166,19 @@ class NewspubController extends AbstractActionController
         ));
     }
 
+    public function uploadAction()
+    {
+        if ($this->getRequest()->isPost()) 
+        {
+            $adapter = new FileHttp();
+            $adapter->setDestination('public');
+            if (!$adapter->receive()) 
+            {
+                echo implode("\n", $adapter->getMessages());
+            }
+        }
+    }
+
     public function getNewspubTable()
     {
         if (!$this->newspubTable) {
@@ -173,13 +206,13 @@ class NewspubController extends AbstractActionController
             die("Username or Password cannot be empty!");
         }
         //check if the username is exist, and if it's a enterprise user
-        if((!$this->getUserTable()->checkUser($user))||($this->getUserTable()->getUser($user)->fk_user_type != $type))
+        if((!$this->getUserTable()->checkUser($user))||($this->getUserTable()->getUserByName($user)->fk_user_type != $type))
         {
             echo "<a href='/'>Back</a></br>";
             die("The user was not exist.");
         }
         //check if the username and the password are corresponded:
-        if($this->getUserTable()->getUser($user)->password != $pass)
+        if($this->getUserTable()->getUserByName($user)->password != $pass)
         {
             echo "<a href='/'>Back</a></br>";
             die("Incorrect Password");
@@ -198,5 +231,20 @@ class NewspubController extends AbstractActionController
             echo "Welcome, ".$username;
             return $username;
         }
+    }
+
+    /**
+     * Get the current time with the format which could be accepted by MySQL datetime.
+     * @return YYYY-MM-DD HH:MM:SS
+     */
+    protected function _getDateTime()
+    {        
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $strdatetime = $datetime->format(DATE_ATOM);
+        $date = substr($strdatetime,0,10);
+        $time = substr($strdatetime,11,8);
+        $result = $date.' '.$time;
+        return $result;
     }
 }

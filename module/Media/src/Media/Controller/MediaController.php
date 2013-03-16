@@ -50,13 +50,14 @@ class MediaController extends AbstractActionController
             die("Username or Password cannot be empty!");
         }
         //check if the username is exist, and if it's a enterprise user
-        if((!$this->getUserTable()->checkUser($user))||($this->getUserTable()->getUser($user)->fk_user_type != $type))
+        if((!$this->getUserTable()->checkUser($user))
+            ||($this->getUserTable()->getUserByName($user)->fk_user_type != $type))
         {
             echo "<a href='/'>Back</a></br>";
             die("The user was not exist.");
         }
         //check if the username and the password are corresponded:
-        if($this->getUserTable()->getUser($user)->password != $pass)
+        if($this->getUserTable()->getUserByName($user)->password != $pass)
         {
             echo "<a href='/'>Back</a></br>";
             die("Incorrect Password");

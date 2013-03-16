@@ -94,8 +94,8 @@ class IndexController extends AbstractActionController
         $authentication  =  (isset($user)) && 
                             (isset($pass)) && 
                             ($this->getUserTable()->checkUser($user)) &&
-                            ($this->getUserTable()->getUser($user)->fk_user_type==$type) &&
-                            ($this->getUserTable()->getUser($user)->password==$pass);
+                            ($this->getUserTable()->getUserByName($user)->fk_user_type==$type) &&
+                            ($this->getUserTable()->getUserByName($user)->password==$pass);
         if($authentication)
         {
             return true;

@@ -1,0 +1,28 @@
+<form name="uploadform" action="/newspub/upload" enctype="multipart/form-data" method="POST">
+    <input type="hidden" name="MAX_FILE_SIZE" value="100000000" />
+    文件：<input name="uploadedfile" type="file" />
+    <br />
+    <!--<input type="submit" value="Upload File" />-->
+    <input type="button" onClick=uploadSubmit() value="Upload File!"/>
+</form>
+
+<?php
+//$localtime = localtime(time(),true);
+date_default_timezone_set("Asia/Shanghai");
+//var_dump(getdate());
+//$datetime = date(DATE_ATOM,time())
+$datetime = new DateTime;
+$strdatetime = $datetime->format(DATE_ATOM);
+$date = substr($strdatetime,0,10);
+$time = substr($strdatetime,11,8);
+var_dump($date);
+echo "<br>";
+var_dump($time);
+?>
+
+<script>
+function uploadSubmit()
+{
+	uploadform.submit();
+}
+</script>

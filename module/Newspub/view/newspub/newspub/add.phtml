@@ -55,12 +55,13 @@
         <div id="mid" class="span6 mid">            
             <div>
                 <form action="/newspub/index">
-                    <input type="submit" class="btn btn-primary" value="订单管理">
+                    <input type="submit" class="btn btn-primary linkbtn" value="订单管理">
                 </form>
             </div>
-            </br>            
             <div id="pubedit">
-                <h4>新建订单：</h4>
+                <div>
+                    <h4>新建订单：</h4>
+                </div>
                 <table>
                 <?php 
                 $form = $this->form;
@@ -75,38 +76,38 @@
                 echo $this->formHidden($form->get('id_newspub'));
                 ?>
                 <tr>
-                    <td>标题</td>
-                    <td>
+                    <td class="tdlabel">标题</td>
+                    <td class="tdinput">
                         <?php echo $this->formRow($form->get('title')); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td>正文</td>
-                    <td>
+                    <td class="tdlabel">正文</td>
+                    <td class="tdtextarea">
                         <?php echo $this->formRow($form->get('body')); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td>下载链接</td>
-                    <td>
+                    <td class="tdlabel">下载链接</td>
+                    <td class="tdinput">
                         <?php echo $this->formRow($form->get('download_link')); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td>软件市场链接</td>
-                    <td>
+                    <td class="tdlabel">软件市场链接</td>
+                    <td class="tdinput">
                         <?php echo $this->formRow($form->get('appstore_links')); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td>下载二维码</td>
-                    <td>
+                    <td class="tdlabel">下载二维码</td>
+                    <td class="tdinput">
                         <?php echo $this->formRow($form->get('barcode')); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td>发布方式及费用</td>
-                    <td>
+                    <td class="tdlabel">发布方式及费用</td>
+                    <td class="tdinput">
                         <?php echo $this->formRow($form->get('fk_pub_mode')); ?>
                     </td>
                 </tr>
@@ -142,5 +143,26 @@ div.user,.mid
 .logout
 {
     text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 80%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
 }
 </style>

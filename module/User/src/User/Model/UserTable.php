@@ -19,8 +19,19 @@ class UserTable
 		return $resultSet;
 	}
 
+	//get the record of the `user` with the passed-in id
+	public function getUser($id)
+	{
+		$rowset = $this->tableGateway->select(array('id' => $id));
+		$row = $rowset->current();
+		if(!$row){
+			throw new \Exception("Could not find this $id");
+		}
+		return $row;
+	}
+
 	//get the record of the `user` with the passed-in username
-	public function getUser($username)
+	public function getUserByName($username)
 	{
 		$rowset = $this->tableGateway->select(array('username' => $username));
 		$row = $rowset->current();
@@ -33,10 +44,11 @@ class UserTable
 	public function saveUser(User $user)
 	{
 		$data = array(
-			'username'     => $user->username,
-			'password'     => $user->password, 
-			'email'        => $user->email,
-			'fk_user_type' => $user->fk_user_type,
+			'username'      => $user->username,
+			'password'      => $user->password, 
+			'email'         => $user->email,
+			'fk_user_type'  => $user->fk_user_type,
+			'fk_enterprise' => $user->fk_enterprise,
 		);
 		$id = (int)$user->id;
 		if($id == 0){

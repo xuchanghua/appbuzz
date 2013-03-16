@@ -120,7 +120,7 @@ class MessageController extends AbstractActionController
             die("The user was not exist.");
         }
         //check if the username and the password are corresponded:
-        if($this->getUserTable()->getUser($user)->password != $pass)
+        if($this->getUserTable()->getUserByName($user)->password != $pass)
         {
             echo "<a href='/'>Back</a></br>";
             die("Incorrect Password");

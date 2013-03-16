@@ -1,90 +1,112 @@
 <?php
-namespace Newspub\Form;
+namespace Enterprise\Form;
 
 use Zend\Form\Form;
 
-class NewspubForm extends Form
+class EnterpriseForm extends Form
 {
     public function __construct($name = null)
     {
         // we want to ignore the name passed
-        parent::__construct('newspub');
+        parent::__construct('enterprise');
         $this->setAttribute('method', 'post');
         $this->setAttribute('enctype', 'multipart/form-data');
         $this->add(array(
-            'name' => 'id_newspub',
+            'name' => 'id_enterprise',
             'attributes' => array(
                 'type'  => 'hidden',
             ),
         ));
         $this->add(array(
-            'name' => 'title',
+            'name' => 'name',
             'attributes' => array(
                 'type'  => 'text',
-                'placeholder' => '标题',
+                'placeholder' => '公司名称',
             ),
             'options' => array(
                 'label' => '',
             ),
         ));
         $this->add(array(
-            'name' => 'body',
-            'attributes' => array(
-                'type'  => 'textarea',
-                'placeholder' => '正文',
-                'rows'        => 5,
-            ),
-            'options' => array(
-                'label' => '',
-            ),
-        ));
-        $this->add(array(
-            'name' => 'download_link',
+            'name' => 'location',
             'attributes' => array(
                 'type'  => 'text',
-                'placeholder' => '下载链接',
+                'placeholder' => '所在地',
             ),
             'options' => array(
                 'label' => '',
             ),
         ));
         $this->add(array(
-            'name' => 'appstore_links',
+            'name' => 'address',
             'attributes' => array(
                 'type'  => 'text',
-                'placeholder' => '软件市场链接',
+                'placeholder' => '办公地址',
             ),
             'options' => array(
                 'label' => '',
             ),
         ));
         $this->add(array(
-            'name' => 'MAX_FILE_SIZE',
+            'name' => 'invoice_title',
             'attributes' => array(
-                'type' => 'hidden',
-                'value' => '100000000'
-            ),
-        ));
-        $this->add(array(
-            'name' => 'barcode',
-            'attributes' => array(
-                'type'  => 'file',
-                'placeholder' => '下载二维码',
+                'type'  => 'text',
+                'placeholder' => '发票抬头',
             ),
             'options' => array(
                 'label' => '',
             ),
         ));
         $this->add(array(
-            'name' => 'fk_pub_mode',
-            'type'  => 'Zend\Form\Element\Select',
+            'name' => 'invoice_type',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '发票类型',
+            ),
             'options' => array(
-                'value_options' => array(
-                    '1' => '单篇发布',
-                    '2' => '打包发布',
-                    ),
-                ),
-            ));
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'contacter_name',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '姓名',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'contacter_post',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '职位',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'contacter_phone',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '电话',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'contacter_email',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '邮箱',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
         $this->add(array(
             'name' => 'submit',
             'attributes' => array(
