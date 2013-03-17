@@ -32,6 +32,7 @@ class NewspubTable
             $select->where->equalTo('created_by', $created_by);
             $select->order('id_newspub DESC');
         });
+        //die(var_dump($rowset));
         return $rowset;
     }
 
@@ -85,7 +86,7 @@ class NewspubTable
      * @param int $page 当前页码，从1开始
      * @param int $itemsPerPage 每页结果条数
      * @return \Zend\Paginator\Paginator
-     */
+     *//*
     public function getPaginator(
             $keyword = NULL, 
             $page = 1, 
@@ -103,6 +104,54 @@ class NewspubTable
         //$select->columns(array('id', 'title', 'artist'))->where($closure);
         $select->columns(array('id_newspub', 'title', 'body', 'download_link', 'appstore_links', 'barcode', 'fk_pub_mode','fk_newspub_status'))
                 ->where($closure);
+        if ($order == self::ORDER_LATEST) {
+            $select->order('id_newspub DESC');//按时间倒排序
+        } else {
+            $select->order('title ASC');//按标题排序
+        }
+        //将返回的结果设置为Newspub的实例
+        $resultSetPrototype = new ResultSet();
+        $resultSetPrototype->setArrayObjectPrototype(new Newspub());
+        //创建分页用的适配器，第2个参数为数据库adapter，使用全局默认的即可        
+        $adapter = new DbSelect($select, $this->tableGateway->getAdapter(), $resultSetPrototype);
+        //新建分页
+        $paginator = new Paginator($adapter);
+        //设置当前页数
+        $paginator->setCurrentPageNumber($page);
+        //设置一页要返回的结果条数
+        $paginator->setItemCountPerPage($itemsPerPage);
+        return $paginator;
+    }
+    */
+    /**
+     * 分页获取数据
+     * @param string $keyword 图片title的关键词
+     * @param int $page 当前页码，从1开始
+     * @param int $itemsPerPage 每页结果条数
+     * @return \Zend\Paginator\Paginator
+     */
+    public function getPaginator(
+            $keyword = NULL, 
+            $page = 1, 
+            $itemsPerPage = 10, 
+            $order = self::ORDER_DEFAULT,
+            $created_by)
+    {
+        //新建select对象
+        $select = new Select('newspub');
+        //构建查询条件
+        $closure = function (Where $where) use($keyword) {
+                    if ($keyword != '') {
+                        $where->like('title', '%' . $keyword . '%');//查询符合特定关键词的结果
+                    }
+                };
+        //$select->columns(array('id', 'title', 'artist'))->where($closure);
+        $select->columns(array('id_newspub', 'title', 'body', 'download_link', 'appstore_links', 'barcode', 'fk_pub_mode','fk_newspub_status'))
+                ->where($closure);
+        if($created_by)
+        {
+            $select->where->equalTo('created_by', $created_by);
+        }
         if ($order == self::ORDER_LATEST) {
             $select->order('id_newspub DESC');//按时间倒排序
         } else {

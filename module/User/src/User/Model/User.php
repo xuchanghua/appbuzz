@@ -52,6 +52,7 @@ class User implements InputFilterAwareInterface
 			$inputFilter->add($factory->createInput(array(
 				'name'     => 'username',
 				'required' => true,
+				'unique'   => true,
 				'filters'  => array(
 					array('name' => 'StripTags'),
 					array('name' => 'StringTrim'),

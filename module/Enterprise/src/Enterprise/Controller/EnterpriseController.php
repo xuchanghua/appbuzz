@@ -12,6 +12,7 @@ class EnterpriseController extends AbstractActionController
 {
     protected $userTable;
     protected $enterpriseTable;
+    protected $productTable;
 
     public function indexAction()
     {
@@ -46,6 +47,46 @@ class EnterpriseController extends AbstractActionController
             'user' => $cur_user,
             'email' => $email,
             'fk_enterprise' => $fk_enterprise,
+            'enterprise' => (isset($fk_enterprise))? $this->getEnterpriseTable()->getEnterprise($fk_enterprise) : null,
+            'form' => $form,
+            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            ));
+    }
+
+    public function editAction()
+    {
+        $cur_user = $this->_authenticateSession(1);
+
+        $id = (int)$this->params()->fromRoute('id',0);
+        if (!$id) {
+            return $this->redirect()->toRoute('enterprise', array(
+                'action' => 'index',
+            ));
+        }
+        $enterprise = $this->getEnterpriseTable()->getEnterprise($id);
+        $form = new EnterpriseForm();
+        $form->bind($enterprise);
+        $form->get('submit')->setAttribute('value','保存');
+
+        $request = $this->getRequest();
+        if ($request->isPost()){
+            $form->setInputFilter($enterprise->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $this->getEnterpriseTable()->saveEnterprise($form->getData());
+
+                return $this->redirect()->toRoute('enterprise',array(
+                    'action' => 'index',
+                ));
+            }
+        }
+
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'email' => $this->_getUserEmail($cur_user),
+            'fk_enterprise' => $this->_getUserFkEnterprise($cur_user),
+            'enterprise' => (isset($fk_enterprise))? $this->getEnterpriseTable()->getEnterprise($fk_enterprise) : null,
             'form' => $form,
             ));
     }
@@ -89,6 +130,15 @@ class EnterpriseController extends AbstractActionController
             $this->userTable = $sm->get('User\Model\UserTable');
         }
         return $this->userTable;
+    }
+
+    public function getProductTable()
+    {
+        if (!$this->productTable) {
+        $sm = $this->getServiceLocator();
+        $this->productTable = $sm->get('Product\Model\ProductTable');
+        }
+        return $this->productTable;
     }
 
     public function getEnterpriseTable()

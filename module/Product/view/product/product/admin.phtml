@@ -1,4 +1,4 @@
-<h1>Admin Index</h1>
+<h1>Newspub Admin Page</h1>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/style.css">
 
@@ -34,14 +34,24 @@
             </div>
         </div>
         <div id="mid" class="span6 mid">
-            <div id="slides" class="slides">
-                焦点推荐图
-            </div>
-            <div id="abstract" class="abstract">
-                摘要
-            </div>
-            <div id="news" class="news">
-                新闻与评测
+            <div id="allproducts">
+                <h4>所有产品</h4>
+                <table class="pubmgmttable">
+                    <tr>
+                        <th>id</th>
+                        <th>产品名称</th>
+                        <th>产品类型</th>
+                        <th>创建人</th>
+                    </tr>
+                    <?php foreach($products as $product): ?>
+                    <tr>
+                        <td><?php echo $this->escapeHtml($product->id_product);?></td>
+                        <td><a href="<?php echo $this->url('product',array('action'=>'detail','id'=>$product->id_product));?>"><?php echo $this->escapeHtml($product->name);?></a></td>
+                        <td><?php echo $this->escapeHtml($product->type);?></td>
+                        <td><?php echo $this->escapeHtml($product->created_by);?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
             </div>
         </div>
         <div id="right" class="span3 right">

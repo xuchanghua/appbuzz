@@ -97,91 +97,8 @@
                             <tr><td>&nbsp;</td></tr>
                         </table>
                     </div>
-                    <?php 
-                    //show the enterprise information if exist.
-                    //if not, render the form to create it for the user.
-                    $enterpriseinfo = 'none';
-                    $addenterpriseinfo = '';
-                    if($fk_enterprise)
-                    {
-                        $enterpriseinfo = '';
-                        $addenterpriseinfo = 'none';
-                    }
-                    ?>
-                    <div id="enterpriseinfo" style="display:<?php echo $enterpriseinfo;?>;">
-                        <table id="tbenterpriseinfo">
-                            <tr>
-                                <td>公司信息——</td>
-                                <td colspan=2>
-                                    &nbsp;&nbsp;<a href="<?php echo $this->url('enterprise',
-                                array('action' => 'edit', 'id' => $enterprise->id_enterprise)) ;?>">编辑</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>公司名称：</td>
-                                <td colspan=2>
-                                    <?php echo $enterprise->name;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>所在地：</td>
-                                <td colspan=2>
-                                    <?php echo $enterprise->location;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>办公地址：</td>
-                                <td colspan=2>
-                                    <?php echo $enterprise->address;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>发票信息：</td>
-                                <td>发票抬头：</td>
-                                <td>
-                                    <?php echo $enterprise->invoice_title;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>发票类型：</td>
-                                <td>
-                                    <?php echo $enterprise->invoice_type;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>联系人：</td>
-                                <td>姓名：</td>
-                                <td>
-                                    <?php echo $enterprise->contacter_name;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>职位：</td>
-                                <td>
-                                    <?php echo $enterprise->contacter_post;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>电话：</td>
-                                <td>
-                                    <?php echo $enterprise->contacter_phone;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>邮箱：</td>
-                                <td>
-                                    <?php echo $enterprise->contacter_email;?>
-                                </td>
-                            </tr>
-                            <tr><td>&nbsp;</td></tr>
-                        </table>
-                    </div>
                     <div id="addenterpriseinfo" style="display:<?php echo $addenterpriseinfo;?>;">
-                        未创建企业信息，请在下表中填写：
+                        请在下表中编辑企业信息：
                         <table>
                         <?php
                         $form = $this->form;
@@ -265,42 +182,38 @@
                             <tr><td>&nbsp;</td></tr>
                         </table>
                     </div>
-                    <div id="appinfo" class="widget-box">
-                        <div class="widget-title">
-                            <h4>产品信息——</h4>
-                        </div>
-                        <div class="widget-content nopadding">
-                        <table id="tbappinfo" class="table table-bordered table-striped">
-                            <th>
-                                <td>名称</td>
-                                <td>类型</td>
-                                <td>Appstore链接</td>
-                                <td>安卓市场链接</td>
-                                <td>web链接</td>
-                            </th>
-                            <?php foreach($products as $product) :  ;?>
+                    <div id="appinfo">
+                        <table id="tbappinfo">
                             <tr>
-                                <td></td>
                                 <td>
-                                    <a href="/product/detail/<?php echo $product->id_product;?>"><?php echo $product->name; ?></a>
+                                    产品信息——
                                 </td>
-                                <td>
-                                    <?php echo $product->type; ?>
-                                </td>
-                                <td>
-                                    <?php echo $product->appstore_link; ?>
-                                </td>
-                                <td>
-                                    <?php echo $product->androidmkt_link; ?>
-                                </td>
-                                <td>
-                                    <?php echo $product->web_link; ?>
-                                </td>
+                                <td colspan=2></td>
                             </tr>
-                            <?php endforeach; ?>
+                            <tr>
+                                <td>
+                                    名称：
+                                </td>
+                                <td colspan=2></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    类型：
+                                </td>
+                                <td colspan=2></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    下载链接：
+                                </td>
+                                <td colspan=2></td>
+                            </tr>
+
+
                         </table>
-                        <a href="/product/add">添加其他产品</a>
-                        </div>
+                    </div>
+                    <div>
+
                     </div>
                 </div>
             </div>

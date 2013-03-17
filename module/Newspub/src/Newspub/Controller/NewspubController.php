@@ -23,7 +23,7 @@ class NewspubController extends AbstractActionController
         $request = $this->getRequest();
         $keyword = trim($request->getQuery(''));
         $page = intval($request->getQuery('page',1));
-        $paginator = $this->getNewspubTable()->getPaginator($keyword, $page, 5, 1);
+        $paginator = $this->getNewspubTable()->getPaginator($keyword, $page, 5, 1, $cur_user);
         $view = new ViewModel(array(
             'user' => $cur_user,
             'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),

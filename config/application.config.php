@@ -10,6 +10,7 @@ return array(
 	    'Media',
         'Message',
         'Newspub',
+        'Product',
         'Topic',
         'User',
         'Writer',
