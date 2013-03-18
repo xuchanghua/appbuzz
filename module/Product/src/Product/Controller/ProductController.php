@@ -16,8 +16,21 @@ class ProductController extends AbstractActionController
     protected $userTable;
 
     public function indexAction()
-    {     
-
+    {             
+        //Authenticate the user information from the session
+        $cur_user = $this->_authenticateSession(1);
+        $products = $this->getProductTable()->fetchProductByUser($cur_user);
+/*
+        foreach ($products as $product) {
+            //$product->test_new_var = '############';
+            var_dump($product);
+            echo "<br>";
+        };
+*/
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'products' =>$products,
+            ));
     }
 
     public function adminAction()

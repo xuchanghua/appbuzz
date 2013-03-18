@@ -50,6 +50,7 @@ class ProductTable
     {
         $data = array(
             'name'            => $product->name,
+            'description'     => $product->description,
             'type'            => $product->type,
             'appstore_link'   => $product->appstore_link,
             'androidmkt_link' => $product->androidmkt_link,

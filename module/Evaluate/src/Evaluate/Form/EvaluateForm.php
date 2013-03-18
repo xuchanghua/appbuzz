@@ -10,28 +10,76 @@ class EvaluateForm extends Form
         // we want to ignore the name passed
         parent::__construct('evaluate');
         $this->setAttribute('method', 'post');
+        $this->setAttribute('enctype', 'multipart/form-data');
+
         $this->add(array(
-            'name' => 'id',
+            'name' => 'id_evaluate',
             'attributes' => array(
                 'type'  => 'hidden',
             ),
         ));
         $this->add(array(
-            'name' => 'artist',
+            'name' => 'fk_product',
             'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Artist',
+                'type'  => 'hidden',
             ),
         ));
         $this->add(array(
-            'name' => 'title',
+            'name' => 'highlight',
             'attributes' => array(
-                'type'  => 'text',
+                'type'  => 'textarea',
+                'placeholder' => '产品卖点',
+                'rows'        => 5,
             ),
             'options' => array(
-                'label' => 'Title',
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'web_link',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => 'web下载链接',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'appstore_link',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => 'Appstore下载链接',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'androidmkt_link',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '安卓市场下载链接',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'MAX_FILE_SIZE',
+            'attributes' => array(
+                'type' => 'hidden',
+                'value' => '100000000'
+            ),
+        ));
+        $this->add(array(
+            'name' => 'barcode',
+            'attributes' => array(
+                'type'  => 'file',
+                'placeholder' => '下载二维码',
+            ),
+            'options' => array(
+                'label' => '',
             ),
         ));
         $this->add(array(
@@ -40,6 +88,7 @@ class EvaluateForm extends Form
                 'type'  => 'submit',
                 'value' => 'Go',
                 'id' => 'submitbutton',
+                'class' => 'btn btn-primary',
             ),
         ));
     }

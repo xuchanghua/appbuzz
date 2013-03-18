@@ -14,6 +14,7 @@ class NewspubController extends AbstractActionController
 {
     protected $userTable;
     protected $newspubTable;
+    protected $productTable;
 
     public function indexAction()
     {     
@@ -92,11 +93,14 @@ class NewspubController extends AbstractActionController
                 'action' => 'index'
             ));
         }
+        $np = $this->getNewspubTable()->getNewspub($id);
+
 
         return new ViewModel(array(
-            'np' => $this->getNewspubTable()->getNewspub($id),
+            'np' => $np,
             'user' => $cur_user,
             'id' => $id,
+            'product' => $this->getProductTable()->getProduct($np->fk_product),
         ));
     }
 
@@ -111,6 +115,7 @@ class NewspubController extends AbstractActionController
             ));
         }
         $newspub = $this->getNewspubTable()->getNewspub($id);
+        $product = $this->getProductTable()->getProduct($newspub->fk_product);
         $np_created_by = $newspub->created_by;
         $np_created_at = $newspub->created_at;
         $form = new NewspubForm();
@@ -147,10 +152,11 @@ class NewspubController extends AbstractActionController
         }
 
         return new ViewModel(array(
-            'np'   => $this->getNewspubTable()->getNewspub($id),
-            'user' => $cur_user,
-            'form' => $form,
-            'id'   => $id,
+            'np'      => $this->getNewspubTable()->getNewspub($id),
+            'user'    => $cur_user,
+            'form'    => $form,
+            'id'      => $id,
+            'product' => $product,
         ));
     }
 
@@ -164,6 +170,65 @@ class NewspubController extends AbstractActionController
             'user' => $cur_user,
             'newspubs' => $this->getNewspubTable()->fetchAll(),
         ));
+    }
+
+    public function neworderAction()
+    {
+        $cur_user = $this->_authenticateSession(1);
+
+        if(!$id_product = (int)$this->params()->fromQuery('id_product',0))
+        {
+            $id_product = $this->getRequest()->getPost()->fk_product;
+        }
+        //echo "id_product = ".$id_product;
+        $product = $this->getProductTable()->getProduct($id_product);
+        $newspub = new Newspub();
+        $newspub->fk_product = $product->id_product;
+        $newspub->download_link = $product->web_link;
+        $newspub->appstore_links = $product->appstore_link;
+        $newspub->androidmkt_link = $product->androidmkt_link;        
+        //die(var_dump($newspub));
+
+        $form = new NewspubForm();
+        $form->bind($newspub);
+        $form->get('submit')->setAttribute('value','保存');
+
+        $request = $this->getRequest();
+        if ($request->isPost()){
+            //upload start
+            $adapter = new FileHttp();
+            $adapter->setDestination('public');
+            if (!$adapter->receive()) 
+            {
+                echo implode("\n", $adapter->getMessages());
+                //die($adapter->getMessages());
+            }
+            //upload end
+            $form->setInputFilter($newspub->getInputFilter());
+            $form->setData($request->getPost());
+            //die(var_dump($request->getPost()));
+            if($form->isValid()){
+                $form->getData()->created_by = $cur_user;
+                $form->getData()->created_at = $this->_getDateTime();
+                $form->getData()->updated_by = $cur_user;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->fk_newspub_status = 1;
+                $form->getData()->fk_product = $id_product;
+                $this->getNewspubTable()->saveNewspub($form->getData());   
+
+                return $this->redirect()->toRoute('newspub',array(
+                    'action'=>'detail',
+                    'id'    => $id,
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'product' => $product,
+            'user' => $cur_user,
+            'form' => $form,
+        ));
+
     }
 
     public function uploadAction()
@@ -195,6 +260,15 @@ class NewspubController extends AbstractActionController
             $this->userTable = $sm->get('User\Model\UserTable');
         }
         return $this->userTable;
+    }
+
+    public function getProductTable()
+    {
+        if (!$this->productTable) {
+        $sm = $this->getServiceLocator();
+        $this->productTable = $sm->get('Product\Model\ProductTable');
+        }
+        return $this->productTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

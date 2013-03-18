@@ -1,0 +1,163 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <h1>我的产品</h1>  
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <!--
+        <div id="left" class="span2 left">
+            <div id="user" class="user">
+                用户: <?php echo $user;?>
+                <a href="/user/logout">退出</a>
+            </br>
+                <a href="">企业资料</a>
+            </br>
+                <a href="">我的账户</a>
+            </br>
+                <a href="">我的订单</a>
+            </br>
+                <a href="">APP新闻助手</a>           
+            </div>
+            <div id="netmonitor" class="netmonitor">
+                <a href="netmonitor">网络监测</a>
+            </div>
+            <div id="newspublish" class="newspublish">
+                <a href="/newspub/index">新闻发布</a>
+            </div>
+            <div id="appevaluating" class="appevaluating">
+                <a href="appevaluating">产品评测</a>
+            </div>
+            <div id="newsedit" class="newsedit">
+                <a href="newsedit">新闻撰写</a>
+            </div>
+            <div id="topic" class="topic">
+                <a href="topic">媒体选题</a>
+            </div>
+            <div id="interview" class="interview">
+                <a href="interview">媒体采访</a>
+            </div>
+        </div>
+        -->
+        <div id="mid" class="span12">
+            <div>
+                <div class="linkbtns">
+                    <form action="/enterprise/enterpriseinfo">
+                        <input type="submit" class="btn btn-primary linkbtn" value="企业资料">
+                    </form>
+                </div>
+                <div class="linkbtns">
+                    <form action="/enterprise/myaccount">
+                        <input type="submit" class="btn btn-primary linkbtn" value="我的账户">
+                    </form>
+                </div>
+                <div class="linkbtns">
+                    <form action="/product/index">
+                        <input type="submit" class="btn btn-primary linkbtn" value="我的产品">
+                    </form>
+                </div>
+                <div>
+                    <form action="/enterprise/myorder">
+                        <input type="submit" class="btn btn-primary linkbtn" value="我的订单">
+                    </form>
+                </div>
+                <div>
+                    <div id="appinfo" class="widget-box">
+                        <div class="widget-title">
+                            <h4>产品信息——</h4>
+                        </div>
+                        <div class="widget-content nopadding">
+                        <table id="tbappinfo" class="table table-bordered table-striped">
+                            <th>
+                                <td>名称</td>
+                                <td>描述</td>
+                                <td>类型</td>                                
+                            <!--<td>Appstore链接</td>
+                                <td>安卓市场链接</td>-->
+                                <td>web链接</td>
+                                <td>新闻发布</td>
+                                <td>产品评测</td>
+                                <td>新闻撰写</td>
+                                <td>媒体选题</td>
+                            </th>
+                            <?php foreach($products as $product) :  ;?>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <a href="/product/detail/<?php echo $product->id_product;?>"><?php echo $product->name; ?></a>
+                                </td>
+                                <td>
+                                    <?php echo $product->description; ?>
+                                </td>
+                                <td>
+                                    <?php echo $product->type; ?>
+                                </td>
+                            <!--<td>
+                                    <?php echo $product->appstore_link; ?>
+                                </td>
+                                <td>
+                                    <?php echo $product->androidmkt_link; ?>
+                                </td>-->
+                                <td>
+                                    <?php echo $product->web_link; ?>
+                                </td>
+                                <td>
+                                    <a href="/newspub/neworder?id_product=<?php echo $product->id_product;?>">我要发布</a>
+                                </td>
+                                <td>
+                                    <a href="/evaluate/neworder?id_product=<?php echo $product->id_product;?>">我要评测</a>
+                                </td>
+                                <td>
+                                    <a href="/writer/neworder">我要撰稿</a>
+                                </td>
+                                <td>
+                                    <a href="/topic/neworder">我要联系</a>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </table>
+                        <a href="/product/add">添加其他产品</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--
+        <div id="right" class="span4 right">
+            SPAN4 RIGHT
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+        -->
+    </div>
+    </div>
+</div>
+
+<style>
+div.user, .mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+</style>

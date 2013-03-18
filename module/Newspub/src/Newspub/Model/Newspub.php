@@ -15,6 +15,8 @@ class Newspub implements InputFilterAwareInterface
     public $appstore_links;
     public $barcode;
     public $fk_pub_mode;
+    public $fk_product;
+    public $androidmkt_link;
 
     protected $inputFilter;                       // <-- Add this variable
 
@@ -32,6 +34,8 @@ class Newspub implements InputFilterAwareInterface
         $this->updated_at        = (isset($data['updated_at']))        ? $data['updated_at']        : null;
         $this->updated_by        = (isset($data['updated_by']))        ? $data['updated_by']        : null;
         $this->fk_newspub_status = (isset($data['fk_newspub_status'])) ? $data['fk_newspub_status'] : null;
+        $this->androidmkt_link   = (isset($data['androidmkt_link']))   ? $data['androidmkt_link']   : null;
+        $this->fk_product        = (isset($data['fk_product']))        ? $data['fk_product']        : null;
     }
 
     public function getArrayCopy()

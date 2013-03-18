@@ -54,6 +54,7 @@ class NewspubTable
             'body'              => $newspub->body,
             'download_link'     => $newspub->download_link,
             'appstore_links'    => $newspub->appstore_links,
+            'androidmkt_link'   => $newspub->androidmkt_link,
             'barcode'           => $newspub->barcode,
             'fk_pub_mode'       => $newspub->fk_pub_mode,
             'created_by'        => $newspub->created_by,
@@ -61,6 +62,7 @@ class NewspubTable
             'updated_at'        => $newspub->updated_at,
             'updated_by'        => $newspub->updated_by,
             'fk_newspub_status' => $newspub->fk_newspub_status,
+            'fk_product'        => $newspub->fk_product,
         );
 
         $id = (int)$newspub->id_newspub;

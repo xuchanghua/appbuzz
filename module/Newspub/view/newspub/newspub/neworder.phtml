@@ -52,47 +52,64 @@
             </div>
         </div>
 
-        <div id="mid" class="span6 mid">   
-            <div id="addproduct">
+        <div id="mid" class="span6 mid">            
+            <div>
+                <form action="/newspub/index">
+                    <input type="submit" class="btn btn-primary linkbtn" value="订单管理">
+                </form>
+            </div>
+            <div id="pubedit">
                 <div>
-                    <h4>编辑产品：</h4>
+                    <h4>新建订单：</h4>
                 </div>
                 <table>
                 <?php 
                 $form = $this->form;
                 $form->setAttribute('action',$this->url(
-                    'product', 
+                    'newspub', 
                     array(
-                        'action' => 'edit',
-                        'id'     => $id,
+                        'action' => 'neworder',
                     )
                 ));
                 $form->prepare();
                 echo $this->form()->openTag($form);
-                echo $this->formHidden($form->get('id_product'));
+                echo $this->formHidden($form->get('id_newspub'));
+                echo $this->formHidden($form->get('fk_product'));
                 ?>
                 <tr>
-                    <td class="tdlabel">名称</td>
+                    <td class="tdlabel">标题</td>
                     <td class="tdinput">
-                        <?php echo $this->formRow($form->get('name')); ?>
+                        <?php echo $this->formRow($form->get('title')); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td class="tdlabel">描述</td>
-                    <td class="tdinput">
-                        <?php echo $this->formRow($form->get('description')); ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tdlabel">类型</td>
+                    <td class="tdlabel">正文</td>
                     <td class="tdtextarea">
-                        <?php echo $this->formRow($form->get('type')); ?>
+                        <?php echo $this->formRow($form->get('body')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdlabel">产品名称：</td>
+                    <td>
+                        <?php echo $product->name; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdlabel">产品描述：</td>
+                    <td>
+                        <?php echo $product->description; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdlabel">web下载链接</td>
+                    <td class="tdinput">
+                        <?php echo $this->formRow($form->get('download_link')); ?>
                     </td>
                 </tr>
                 <tr>
                     <td class="tdlabel">Appstore下载链接</td>
                     <td class="tdinput">
-                        <?php echo $this->formRow($form->get('appstore_link')); ?>
+                        <?php echo $this->formRow($form->get('appstore_links')); ?>
                     </td>
                 </tr>
                 <tr>
@@ -100,11 +117,17 @@
                     <td class="tdinput">
                         <?php echo $this->formRow($form->get('androidmkt_link')); ?>
                     </td>
+                </tr>                
+                <tr>
+                    <td class="tdlabel">下载二维码</td>
+                    <td class="tdinput">
+                        <?php echo $this->formRow($form->get('barcode')); ?>
+                    </td>
                 </tr>
                 <tr>
-                    <td class="tdlabel">web下载链接</td>
+                    <td class="tdlabel">发布方式及费用</td>
                     <td class="tdinput">
-                        <?php echo $this->formRow($form->get('web_link')); ?>
+                        <?php echo $this->formRow($form->get('fk_pub_mode')); ?>
                     </td>
                 </tr>
                 <tr>
@@ -147,7 +170,7 @@ table
 .tdinput
 
 {
-    width: 70%;
+    width: 80%;
 }
 .tdlabel
 {

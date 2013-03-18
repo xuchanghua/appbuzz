@@ -13,6 +13,8 @@ class EnterpriseController extends AbstractActionController
     protected $userTable;
     protected $enterpriseTable;
     protected $productTable;
+    protected $newspubTable;
+    protected $evaluateTable;
 
     public function indexAction()
     {
@@ -101,6 +103,14 @@ class EnterpriseController extends AbstractActionController
 
     public function myorderAction()
     {
+        $cur_user = $this->_authenticateSession(1);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
+            'product' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'evaluate' => $this->getEvaluateTable()->fetchEvaluateByUser($cur_user),
+        ));
     }
 
     public function netmonitorAction()
@@ -148,6 +158,24 @@ class EnterpriseController extends AbstractActionController
             $this->enterpriseTable = $sm->get('Enterprise\Model\EnterpriseTable');
         }
         return $this->enterpriseTable;
+    }
+
+    public function getNewspubTable()
+    {
+        if (!$this->newspubTable) {
+        $sm = $this->getServiceLocator();
+        $this->newspubTable = $sm->get('Newspub\Model\NewspubTable');
+        }
+        return $this->newspubTable;
+    }
+
+    public function getEvaluateTable()
+    {
+        if (!$this->evaluateTable) {
+        $sm = $this->getServiceLocator();
+        $this->evaluateTable = $sm->get('Evaluate\Model\EvaluateTable');
+        }
+        return $this->evaluateTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

@@ -11,10 +11,17 @@ class NewspubForm extends Form
         parent::__construct('newspub');
         $this->setAttribute('method', 'post');
         $this->setAttribute('enctype', 'multipart/form-data');
+
         $this->add(array(
             'name' => 'id_newspub',
             'attributes' => array(
                 'type'  => 'hidden',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'fk_product',
+            'attributes' => array(
+                'type' => 'hidden',
             ),
         ));
         $this->add(array(
@@ -42,7 +49,7 @@ class NewspubForm extends Form
             'name' => 'download_link',
             'attributes' => array(
                 'type'  => 'text',
-                'placeholder' => '下载链接',
+                'placeholder' => 'web下载链接',
             ),
             'options' => array(
                 'label' => '',
@@ -52,12 +59,22 @@ class NewspubForm extends Form
             'name' => 'appstore_links',
             'attributes' => array(
                 'type'  => 'text',
-                'placeholder' => '软件市场链接',
+                'placeholder' => 'Appstore下载链接',
             ),
             'options' => array(
                 'label' => '',
             ),
         ));
+        $this->add(array(
+            'name' => 'androidmkt_link',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '安卓市场下载链接',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));        
         $this->add(array(
             'name' => 'MAX_FILE_SIZE',
             'attributes' => array(

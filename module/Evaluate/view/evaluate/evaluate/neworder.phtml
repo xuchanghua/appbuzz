@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>新闻发布</h1>  
+    <h1>产品评测</h1>  
     <div id="header" class="container" style="width:1170px;"> 
         CONTAINER
         <div class="row">
@@ -52,41 +52,57 @@
             </div>
         </div>
 
-        <div id="mid" class="span6 mid">   
-            <div id="addproduct">
+        <div id="mid" class="span6 mid">
+            <div class="linkbtns">
+                <form action="/">
+                    <input type="submit" class="btn btn-primary linkbtn" value="产品评测">
+                </form>
+            </div>
+            <div>
+                <form action="/">
+                    <input type="submit" class="btn btn-primary linkbtn" value="我要评测">
+                </form>
+            </div>
+            <div id="evaedit">
                 <div>
-                    <h4>编辑产品：</h4>
+                    <h4>新建订单：</h4>
                 </div>
                 <table>
                 <?php 
                 $form = $this->form;
                 $form->setAttribute('action',$this->url(
-                    'product', 
+                    'evaluate', 
                     array(
-                        'action' => 'edit',
-                        'id'     => $id,
+                        'action' => 'neworder',
                     )
                 ));
                 $form->prepare();
                 echo $this->form()->openTag($form);
-                echo $this->formHidden($form->get('id_product'));
+                echo $this->formHidden($form->get('id_evaluate'));
+                echo $this->formHidden($form->get('fk_product'));
                 ?>
                 <tr>
-                    <td class="tdlabel">名称</td>
-                    <td class="tdinput">
-                        <?php echo $this->formRow($form->get('name')); ?>
+                    <td class="tdlabel">App产品：</td>
+                    <td>
+                        <?php echo $product->name; ?>
                     </td>
                 </tr>
                 <tr>
-                    <td class="tdlabel">描述</td>
-                    <td class="tdinput">
-                        <?php echo $this->formRow($form->get('description')); ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tdlabel">类型</td>
+                    <td class="tdlabel">产品卖点</td>
                     <td class="tdtextarea">
-                        <?php echo $this->formRow($form->get('type')); ?>
+                        <?php echo $this->formRow($form->get('highlight')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdlabel">建议媒体采用的产品截图：</td>
+                    <td>
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdlabel">web下载链接</td>
+                    <td class="tdinput">
+                        <?php echo $this->formRow($form->get('web_link')); ?>
                     </td>
                 </tr>
                 <tr>
@@ -100,12 +116,16 @@
                     <td class="tdinput">
                         <?php echo $this->formRow($form->get('androidmkt_link')); ?>
                     </td>
+                </tr>                
+                <tr>
+                    <td class="tdlabel">下载二维码</td>
+                    <td class="tdinput">
+                        <?php echo $this->formRow($form->get('barcode')); ?>
+                    </td>
                 </tr>
                 <tr>
-                    <td class="tdlabel">web下载链接</td>
-                    <td class="tdinput">
-                        <?php echo $this->formRow($form->get('web_link')); ?>
-                    </td>
+                    <td class="tdlabel">媒体评测费用</td>
+                    <td>评测撰稿及发布，2000元/篇</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -147,7 +167,7 @@ table
 .tdinput
 
 {
-    width: 70%;
+    width: 80%;
 }
 .tdlabel
 {

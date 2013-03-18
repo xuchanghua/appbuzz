@@ -27,6 +27,14 @@ class ProductForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'description',
+            'attributes' => array(
+                'type' => 'textarea',
+                'placeholder' => '描述',
+                'rows' => 5,
+            ),
+        ));
+        $this->add(array(
             'name' => 'type',
             'attributes' => array(
                 'type'  => 'text',
