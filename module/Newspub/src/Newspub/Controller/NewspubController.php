@@ -19,7 +19,9 @@ class NewspubController extends AbstractActionController
     public function indexAction()
     {     
         //Authenticate the user information from the session
-        $cur_user = $this->_authenticateSession(1);
+        //$cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
         $request = $this->getRequest();
         $keyword = trim($request->getQuery(''));
@@ -41,7 +43,9 @@ class NewspubController extends AbstractActionController
 
     public function addAction()
     {
-        $cur_user = $this->_authenticateSession(1);
+        //$cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
         //handle the form
         $form = new NewspubForm();
@@ -85,7 +89,9 @@ class NewspubController extends AbstractActionController
 
     public function detailAction()
     {
-        $cur_user = $this->_authenticateSession(1);
+        //$cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
         $id = (int)$this->params()->fromRoute('id',0);        
         if (!$id) {
@@ -106,7 +112,9 @@ class NewspubController extends AbstractActionController
 
     public function editAction()
     {
-        $cur_user = $this->_authenticateSession(1);
+        //$cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
         $id = (int)$this->params()->fromRoute('id',0);        
         if (!$id) {
@@ -163,7 +171,9 @@ class NewspubController extends AbstractActionController
     public function adminAction()
     {
         //authenticate the admin user:
-        $cur_user = $this->_authenticateSession(3);
+        //$cur_user = $this->_authenticateSession(3);
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
 
         return new ViewModel(array(
@@ -174,7 +184,9 @@ class NewspubController extends AbstractActionController
 
     public function neworderAction()
     {
-        $cur_user = $this->_authenticateSession(1);
+        //$cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
         if(!$id_product = (int)$this->params()->fromQuery('id_product',0))
         {
@@ -215,7 +227,10 @@ class NewspubController extends AbstractActionController
                 $form->getData()->fk_newspub_status = 1;
                 $form->getData()->fk_product = $id_product;
                 $this->getNewspubTable()->saveNewspub($form->getData());   
-
+                $id = $this->getNewspubTable()->getId(
+                    $form->getData()->created_at, 
+                    $form->getData()->created_by
+                );
                 return $this->redirect()->toRoute('newspub',array(
                     'action'=>'detail',
                     'id'    => $id,
@@ -305,6 +320,68 @@ class NewspubController extends AbstractActionController
             echo "Welcome, ".$username;
             return $username;
         }
+    }
+
+    protected function _auth($arr_type_allowed)
+    {
+        $this->session = new SessionContainer('userinfo');
+        $username = $this->session->username;
+        $password = $this->session->password;
+        $usertype = $this->session->usertype;
+        if(($this->_checkUser($username, $password, $usertype))
+            && ($this->_checkRole($usertype, $arr_type_allowed)))
+        {
+            echo "Welcome, ".$username."</br>";
+            return $username;
+        }
+    }
+
+    /**
+     * Check if the username, password, and usertype are corresponded
+     * @param string $user: the username (from the session)
+     * @param string $pass: the password (from the session)
+     * @param int $type: the usertype (from the string)
+     */
+    protected function _checkUser($user, $pass, $type)
+    {
+         //check if the username or password or usertype is empty
+        if((!$user)||(!$pass)||(!$type))
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("Please input the username and password!");
+        }
+        //check if the username and the password are corresponded:
+        if($this->getUserTable()->getUserByName($user)->password != $pass)
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("The username and password are NOT corresponded! Please login again!");
+        }
+        //check if the username and the usertype are corresponded:
+        if($this->getUserTable()->getUserByName($user)->fk_user_type != $type)
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("User information error! Please login again!");
+        }
+        return true;
+    }
+
+    /**
+     * Check if the current user type is allowed
+     * @param int $type: the current user type (from session)
+     * @param array $arr_type_allowed: the allowed user type
+     * @return boolean
+     */
+    protected function _checkRole($type, $arr_type_allowed)
+    {
+        foreach ($arr_type_allowed as $ta)
+        {
+            if($type == $ta)
+            {
+                return true;
+            }
+        }
+        echo "<a href='/'>Back</a></br>";
+        die("Insufficient privilege!");
     }
 
     /**

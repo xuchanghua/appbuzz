@@ -43,6 +43,19 @@ class EvaluateTable
         return $row;
     }
 
+    public function getId($created_at, $created_by)
+    {
+        $rowset = $this->tableGateway->select(array(
+            'created_at' => $created_at,
+            'created_by' => $created_by,
+        ));
+        $row = $rowset->current();
+        if (!$row) {
+            throw new \Exception("Could not find row $id");
+        }
+        return $row->id_evaluate;
+    }
+
     public function saveEvaluate(Evaluate $evaluate)
     {
         $data = array(

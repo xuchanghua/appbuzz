@@ -1,4 +1,4 @@
-<h1>Admin Index</h1>
+<h1>用户管理：</h1>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/style.css">
 
@@ -37,14 +37,30 @@
             </div>
         </div>
         <div id="mid" class="span8 mid">
-            <div id="slides" class="slides">
-                焦点推荐图
-            </div>
-            <div id="abstract" class="abstract">
-                摘要
-            </div>
-            <div id="news" class="news">
-                新闻与评测
+            <div id="appinfo" class="widget-box">
+                <div class="widget-title">
+                    <h4>用户信息——</h4>
+                </div>
+                <div class="widget-content nopadding">
+                    <table id="tbappinfo" class="table table-bordered table-striped">
+                        <tr>
+                            <th>id</th>
+                            <th>用户名</th>
+                            <th>用户类型</th>
+                            <th>真实姓名</th>
+                            <th>电子邮箱</th>
+                        </tr>
+                        <?php foreach ($allusers as $u):?>
+                        <tr>
+                            <td><?php echo $u->id; ?></td>
+                            <td><a href="/user/detail/<?php echo $u->id ;?>"><?php echo $u->username; ?></a></td>
+                            <td><?php echo $u->fk_user_type; ?> </td>
+                            <td><?php echo $u->real_name; ?> </td>
+                            <td><?php echo $u->email; ?> </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </table>
+                </div>
             </div>
         </div>
         <div id="right" class="span3 right">
