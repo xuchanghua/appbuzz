@@ -16,6 +16,7 @@ class User implements InputFilterAwareInterface
 	public $fk_user_type;
 	public $email;
 	public $fk_enterprise;
+	public $fk_media;
 	protected $inputFilter;
 
 	public function exchangeArray($data)
@@ -28,6 +29,7 @@ class User implements InputFilterAwareInterface
 		$this->fk_user_type  = (isset($data['fk_user_type']))  ? $data['fk_user_type']  : null;
 		$this->email         = (isset($data['email']))         ? $data['email']         : null;
 		$this->fk_enterprise = (isset($data['fk_enterprise'])) ? $data['fk_enterprise'] : null;
+		$this->fk_media      = (isset($data['fk_media']))      ? $data['fk_media']      : null;
 	}
 
 	public function setInputFilter(InputFilterInterface $inputFilter)

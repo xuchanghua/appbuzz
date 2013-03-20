@@ -69,6 +69,12 @@ class UserForm extends Form
 				)
 			));
 		$this->add(array(
+			'name' => 'fk_media',
+			'attributes' => array(
+				'type' => 'hidden'
+				)
+			));
+		$this->add(array(
 			'name' => 'password_salt',
 			'attributes' => array(
 				'type' => 'hidden'

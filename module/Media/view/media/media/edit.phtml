@@ -18,9 +18,7 @@
     </div>
 </BR>
     <div id="main" class="container" style="width:1170px;">
-        CONTAINER
     <div id="row" class="row">
-        ROW
         <div id="left" class="span2 left">
             <div id="user" class="user">
                 用户: <?php echo $user;?>
@@ -48,11 +46,10 @@
             </div>            
         </div>
         <div id="mid" class="span8 mid">
-            
             <div>
                 <div class="linkbtns">
                     <form action="/media/mediainfo">
-                        <input type="submit" class="btn btn-primary linkbtn" value="媒体资料">
+                        <input type="submit" class="btn btn-primary linkbtn" value="企业资料">
                     </form>
                 </div>
                 <div class="linkbtns">
@@ -98,91 +95,8 @@
                             <tr><td>&nbsp;</td></tr>
                         </table>
                     </div>
-                    <?php 
-                    //show the media information if exist.
-                    //if not, render the form to create it for the user.
-                    $mediainfo = 'none';
-                    $addmediainfo = '';
-                    if($fk_media)
-                    {
-                        $mediainfo = '';
-                        $addmediainfo = 'none';
-                    }
-                    ?>
-                    <div id="mediainfo" style="display:<?php echo $mediainfo;?>;">
-                        <table id="tbmediainfo">
-                            <tr>
-                                <td>公司信息——</td>
-                                <td colspan=2>
-                                    &nbsp;&nbsp;<a href="<?php echo $this->url('media',
-                                array('action' => 'edit', 'id' => $media->id_media)) ;?>">编辑</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>公司名称：</td>
-                                <td colspan=2>
-                                    <?php echo $media->name;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>所在地：</td>
-                                <td colspan=2>
-                                    <?php echo $media->location;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>办公地址：</td>
-                                <td colspan=2>
-                                    <?php echo $media->address;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>发票信息：</td>
-                                <td>发票抬头：</td>
-                                <td>
-                                    <?php echo $media->invoice_title;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>发票类型：</td>
-                                <td>
-                                    <?php echo $media->invoice_type;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>联系人：</td>
-                                <td>姓名：</td>
-                                <td>
-                                    <?php echo $media->contacter_name;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>职位：</td>
-                                <td>
-                                    <?php echo $media->contacter_post;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>电话：</td>
-                                <td>
-                                    <?php echo $media->contacter_phone;?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>邮箱：</td>
-                                <td>
-                                    <?php echo $media->contacter_email;?>
-                                </td>
-                            </tr>
-                            <tr><td>&nbsp;</td></tr>
-                        </table>
-                    </div>
                     <div id="addmediainfo" style="display:<?php echo $addmediainfo;?>;">
-                        未创建媒体公司信息，请在下表中填写：
+                        请在下表中编辑媒体信息：
                         <table>
                         <?php
                         $form = $this->form;

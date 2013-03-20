@@ -49,6 +49,7 @@ class UserTable
 			'email'         => $user->email,
 			'fk_user_type'  => $user->fk_user_type,
 			'fk_enterprise' => $user->fk_enterprise,
+			'fk_media'      => $user->fk_media,
 		);
 		$id = (int)$user->id;
 		if($id == 0){

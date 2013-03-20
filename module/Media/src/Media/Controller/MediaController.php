@@ -5,10 +5,13 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
+use Media\Model\Media;
+use Media\Form\MediaForm;
 
 class MediaController extends AbstractActionController
 {
     protected $userTable;
+    protected $mediaTable;
 
     public function indexAction()
     {
@@ -16,6 +19,78 @@ class MediaController extends AbstractActionController
         //$this->_authenticateSession();
         $arr_type_allowed = array(2, 3);
         $cur_user = $this->_auth($arr_type_allowed);
+
+        $email = $this->_getUserEmail($cur_user);
+        $fk_media = $this->_getUserFkMedia($cur_user);
+
+        $form = new MediaForm();
+        $form->get('submit')->setValue('保存');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $media = new Media();
+            $form->setInputFilter($media->getInputFilter());
+            $form->setData($request->getPost());
+            $user = new User();
+            $user = $this->getUserTable()->getUserByName($cur_user);
+            if($form->isValid()){
+                $media->exchangeArray($form->getData());
+                $this->getMediaTable()->saveMedia($media);
+                $newMed = $this->getMediaTable()->getMediaByName($media->name);
+                $user->fk_media = $newMed->id_media;
+                //die(var_dump($user));
+                $this->getUserTable()->saveUser($user);
+                return $this->redirect()->toRoute('media',array(
+                    'action' => 'index',
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'email' => $email,
+            'fk_media' => $fk_media,
+            'media' => (isset($fk_media))? $this->getMediaTable()->getMedia($fk_media) : null,
+            'form' => $form,
+            //'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            ));
+    }
+
+    public function editAction()
+    {        
+        $arr_type_allowed = array(2, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id = (int)$this->params()->fromRoute('id',0);
+        if (!$id) {
+            return $this->redirect()->toRoute('media', array(
+                'action' => 'index',
+            ));
+        }
+        $media = $this->getMediaTable()->getMedia($id);
+        $form = new MediaForm();
+        $form->bind($media);
+        $form->get('submit')->setAttribute('value','保存');
+
+        $request = $this->getRequest();
+        if ($request->isPost()){
+            $form->setInputFilter($media->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $this->getMediaTable()->saveMedia($form->getData());
+
+                return $this->redirect()->toRoute('media',array(
+                    'action' => 'index',
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'email' => $this->_getUserEmail($cur_user),
+            'fk_media' => $this->_getUserFkMedia($cur_user),
+            'media' => (isset($fk_media))? $this->getMediaTable()->getMedia($fk_media) : null,
+            'form' => $form,
+        ));
     }
 
     public function topicpublishAction()
@@ -43,6 +118,15 @@ class MediaController extends AbstractActionController
         return $this->userTable;
     }
 
+    public function getMediaTable()
+    {
+        if(!$this->mediaTable){
+            $sm = $this->getServiceLocator();
+            $this->mediaTable = $sm->get('Media\Model\MediaTable');
+        }
+        return $this->mediaTable;
+    }
+
     protected function _authorizeUser($type, $user, $pass)
     {        
          //check if the username or password is empty
@@ -51,7 +135,7 @@ class MediaController extends AbstractActionController
             echo "<a href='/'>Back</a></br>";
             die("Username or Password cannot be empty!");
         }
-        //check if the username is exist, and if it's a enterprise user
+        //check if the username is exist, and if it's a media user
         if((!$this->getUserTable()->checkUser($user))
             ||($this->getUserTable()->getUserByName($user)->fk_user_type != $type))
         {
@@ -139,5 +223,15 @@ class MediaController extends AbstractActionController
         }
         echo "<a href='/'>Back</a></br>";
         die("Insufficient privilege!");
+    }
+
+    protected function _getUserEmail($user)
+    {
+        return $this->getUserTable()->getUserByName($user)->email;
+    }
+
+    protected function _getUserFkMedia($user)
+    {
+        return $this->getUserTable()->getUserByName($user)->fk_media;
     }
 }

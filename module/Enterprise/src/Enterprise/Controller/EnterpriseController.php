@@ -88,14 +88,13 @@ class EnterpriseController extends AbstractActionController
             }
         }
 
-
         return new ViewModel(array(
             'user' => $cur_user,
             'email' => $this->_getUserEmail($cur_user),
             'fk_enterprise' => $this->_getUserFkEnterprise($cur_user),
             'enterprise' => (isset($fk_enterprise))? $this->getEnterpriseTable()->getEnterprise($fk_enterprise) : null,
             'form' => $form,
-            ));
+        ));
     }
 
     public function enterpriseinfoAction()
