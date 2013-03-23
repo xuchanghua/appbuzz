@@ -84,6 +84,7 @@ class NewspubController extends AbstractActionController
             'user' => $cur_user,
             'form' => $form,
             'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
+            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
         ));        
     }
 
@@ -256,6 +257,10 @@ class NewspubController extends AbstractActionController
                 echo implode("\n", $adapter->getMessages());
             }
         }
+    }
+
+    public function ajaxAction()
+    {
     }
 
     public function getNewspubTable()

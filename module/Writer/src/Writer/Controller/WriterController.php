@@ -18,7 +18,20 @@ class WriterController extends AbstractActionController
 
     public function indexAction()
     {     
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
+        $request = $this->getRequest();
+        $keyword = trim($request->getQuery(''));
+        $page = intval($request->getQuery('page',1));
+        $paginator = $this->getWriterTable()->getPaginator($keyword, $page, 5, 1, $cur_user);
+        $view = new ViewModel(array(
+            'user' => $cur_user,
+            'writer' => $this->getWriterTable()->fetchWriterByUser($cur_user),
+            )
+        );
+        $view->setVariable('paginator', $paginator);
+        return $view;
     }
 
     public function neworderAction()
@@ -151,6 +164,52 @@ class WriterController extends AbstractActionController
             'id'       => $id,
             'product'  => $product,
         ));
+    }
+
+    public function addAction()
+    {
+        //$cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        //handle the form
+        $form = new WriterForm();
+        $form->get('submit')->setValue('保存');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            //upload start
+            $adapter = new FileHttp();
+            $adapter->setDestination('public');
+            if (!$adapter->receive()) 
+            {
+                echo implode("\n", $adapter->getMessages());
+                //die($adapter->getMessages());
+            }
+            //upload end
+            $writer = new Writer();
+            $form->setInputFilter($writer->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $writer->exchangeArray($form->getData());
+                $writer->created_by = $cur_user;
+                $writer->created_at = $this->_getDateTime();
+                $writer->updated_by = $cur_user;
+                $writer->updated_at = $this->_getDateTime();
+                $this->getWriterTable()->saveWriter($writer);
+                
+                return $this->redirect()->toRoute('writer',array(
+                    'action'=>'detail',
+                    'id'    => $writer->id_writer,
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'writer' => $this->getWriterTable()->fetchWriterByUser($cur_user),
+            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+        ));                
     }
 
     public function getWriterTable()

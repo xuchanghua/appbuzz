@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>新闻撰写</h1>  
+    <h1>产品评测</h1>  
     <div id="header" class="container" style="width:1170px;"> 
         CONTAINER
         <div class="row">
@@ -76,16 +76,16 @@
 
         <div id="mid" class="span8 mid">
             <div class="linkbtns">
-                <form action="/writer/index">
-                    <input type="submit" class="btn btn-primary linkbtn" value="新闻撰写">
+                <form action="/evaluate/index">
+                    <input type="submit" class="btn btn-primary linkbtn" value="产品评测">
                 </form>
             </div>
             <div>
-                <form action="/writer/add">
-                    <input type="submit" class="btn btn-primary linkbtn" value="我要撰稿">
+                <form action="/evaluate/add">
+                    <input type="submit" class="btn btn-primary linkbtn" value="我要评测">
                 </form>
             </div>
-            <div id="writeredit">
+            <div id="evaedit">
                 <div>
                     <h4>新建订单：</h4>
                 </div>
@@ -93,40 +93,48 @@
                 <?php 
                 $form = $this->form;
                 $form->setAttribute('action',$this->url(
-                    'writer', 
+                    'evaluate', 
                     array(
-                        'action' => 'neworder',
+                        'action' => 'add',
                     )
+                ));
+                $arr_products = array();
+                foreach ($products as $p)
+                {
+                    $arr_products[$p->id_product] = $p->name;
+                }
+                $form->add(array(
+                    'name' => 'fk_product',
+                    'type'  => 'Zend\Form\Element\Select',
+                    'attributes' => array(
+                        'id' => 'appproduct',
+                        ),
+                    'options' => array(
+                        'value_options' => $arr_products,
+                        ),
                 ));
                 $form->prepare();
                 echo $this->form()->openTag($form);
-                echo $this->formHidden($form->get('id_writer'));
-                echo $this->formHidden($form->get('fk_product'));
+                echo $this->formHidden($form->get('id_evaluate'));
                 ?>
                 <tr>
                     <td class="tdlabel">App产品：</td>
                     <td>
-                        <?php echo $product->name; ?>
+                        <?php echo $this->formRow($form->get('fk_product')); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td class="tdlabel">撰稿要求：</td>
+                    <td class="tdlabel">产品卖点</td>
                     <td class="tdtextarea">
-                        <?php echo $this->formRow($form->get('requirement')); ?>
+                        <?php echo $this->formRow($form->get('highlight')); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td class="tdlabel">信息提示：</td>
-                    <td class="tdtextarea">
-                        <?php echo $this->formRow($form->get('hint')); ?>
-                    </td>
-                </tr>
-                <!--<tr>
                     <td class="tdlabel">建议媒体采用的产品截图：</td>
                     <td>
                         
                     </td>
-                </tr>-->
+                </tr>
                 <tr>
                     <td class="tdlabel">web下载链接</td>
                     <td class="tdinput">
@@ -152,8 +160,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="tdlabel">撰稿费用：</td>
-                    <td>1500元/篇（800字左右）</td>
+                    <td class="tdlabel">媒体评测费用</td>
+                    <td>评测撰稿及发布，2000元/篇</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -210,3 +218,15 @@ input[type="text"], textarea
     width: 100%;
 }
 </style>
+
+
+            <script src="js/excanvas.min.js"></script>
+            <script src="js/jquery.min.js"></script>
+            <script src="js/jquery.ui.custom.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script src="js/jquery.flot.min.js"></script>
+            <script src="js/jquery.flot.resize.min.js"></script>
+            <script src="js/jquery.peity.min.js"></script>
+            <script src="js/fullcalendar.min.js"></script>
+            <script src="js/unicorn.js"></script>
+            <script src="js/unicorn.dashboard.js"></script>

@@ -95,8 +95,23 @@
                 $form->setAttribute('action',$this->url(
                     'writer', 
                     array(
-                        'action' => 'neworder',
+                        'action' => 'add',
                     )
+                ));
+                $arr_products = array();
+                foreach ($products as $p)
+                {
+                    $arr_products[$p->id_product] = $p->name;
+                }
+                $form->add(array(
+                    'name' => 'fk_product',
+                    'type'  => 'Zend\Form\Element\Select',
+                    'attributes' => array(
+                        'id' => 'appproduct',
+                        ),
+                    'options' => array(
+                        'value_options' => $arr_products,
+                        ),
                 ));
                 $form->prepare();
                 echo $this->form()->openTag($form);
@@ -106,7 +121,7 @@
                 <tr>
                     <td class="tdlabel">App产品：</td>
                     <td>
-                        <?php echo $product->name; ?>
+                        <?php echo $this->formRow($form->get('fk_product')); ?>
                     </td>
                 </tr>
                 <tr>

@@ -18,7 +18,20 @@ class EvaluateController extends AbstractActionController
 
     public function indexAction()
     {     
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
+        $request = $this->getRequest();
+        $keyword = trim($request->getQuery(''));
+        $page = intval($request->getQuery('page',1));
+        $paginator = $this->getEvaluateTable()->getPaginator($keyword, $page, 5, 1, $cur_user);
+        $view = new ViewModel(array(
+            'user' => $cur_user,
+            'evaluate' => $this->getEvaluateTable()->fetchEvaluateByUser($cur_user),
+            )
+        );
+        $view->setVariable('paginator', $paginator);
+        return $view;
     }
 
     public function neworderAction()
@@ -158,6 +171,52 @@ class EvaluateController extends AbstractActionController
             'id'       => $id,
             'product'  => $product,
         ));
+    }
+
+    public function addAction()
+    {
+        //$cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        //handle the form
+        $form = new EvaluateForm();
+        $form->get('submit')->setValue('保存');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            //upload start
+            $adapter = new FileHttp();
+            $adapter->setDestination('public');
+            if (!$adapter->receive()) 
+            {
+                echo implode("\n", $adapter->getMessages());
+                //die($adapter->getMessages());
+            }
+            //upload end
+            $evaluate = new Evaluate();
+            $form->setInputFilter($evaluate->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $evaluate->exchangeArray($form->getData());
+                $evaluate->created_by = $cur_user;
+                $evaluate->created_at = $this->_getDateTime();
+                $evaluate->updated_by = $cur_user;
+                $evaluate->updated_at = $this->_getDateTime();
+                $this->getEvaluateTable()->saveEvaluate($evaluate);
+                
+                return $this->redirect()->toRoute('evaluate',array(
+                    'action'=>'detail',
+                    'id'    => $evaluate->id_evaluate,
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'evaluate' => $this->getEvaluateTable()->fetchEvaluateByUser($cur_user),
+            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+        ));        
     }
 
     public function getEvaluateTable()
