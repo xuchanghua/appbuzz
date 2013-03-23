@@ -101,7 +101,6 @@ class NewspubController extends AbstractActionController
         }
         $np = $this->getNewspubTable()->getNewspub($id);
 
-
         return new ViewModel(array(
             'np' => $np,
             'user' => $cur_user,

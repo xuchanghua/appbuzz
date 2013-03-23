@@ -1,0 +1,169 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <h1>选题信息</h1>  
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+        CONTAINER
+    <div id="row" class="row">
+        ROW
+        <div id="left" class="span2 left">
+            <div id="user" class="user">
+                用户: <?php echo $user;?>
+                <a href="/user/logout">退出</a>
+            </br>
+                <a href="">媒体资料</a>
+            </br>
+                <a href="">我的账户</a>
+            </br>
+                <a href="">我的订单</a>
+            </br>
+                <a href="">APP新闻助手</a>           
+            </div>
+            <div id="topicpublish" class="topicpublish">
+                <a href="/topic">发布选题</a>
+            </div>
+            <div id="appevaluating" class="appevaluating">
+                <a href="appevaluating">评测APP</a>
+            </div>
+            <div id="appinterview" class="appinterview">
+                <a href="appinterview">采访APP</a>
+            </div>
+            <div id="editor" class="editor">
+                <a href="editor">自由撰稿人</a>
+            </div>            
+        </div>
+        <div id="mid" class="span8 mid">
+            <div>
+                <div class="linkbtns">
+                    <form action="#">
+                        <input type="submit" class="btn btn-primary linkbtn" value="媒体选题"/>
+                    </form>
+                </div>
+                <div>
+                    <form action="#">
+                        <input type="submit" class="btn btn-primary linkbtn" value="选题信息"/>
+                    </form>
+                </div>
+            </div>
+            <div id="addtopic">
+                <div>
+                    <h4>选题<?php echo $id.":";?></h4>
+                </div>
+                <table>
+                    <tr>
+                        <td class="tdlabel">选题类型：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->topic_type; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">选题概要：</td>
+                        <td class="tdtextarea">
+                            <?php echo $topic->abstract; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">征集APP产品类型：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->app_type; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">创建人：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->created_by; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">创建日期：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->created_at; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">修改人：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->updated_by; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">修改日期：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->updated_at; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <form action="/topic/edit/<?php echo $id; ?>" 
+                                style="display:<?php echo ($usertype==1)?'none':'inline';?>;">
+                                <input type="submit" class="btn btn-primary" value="修改"/>
+                            </form>
+                            <form action="/topic/contact/<?php echo $id; ?>"
+                                style="display:<?php echo ($usertype==1)?'inline':'none';?>;">
+                                <input type="submit" class="btn btn-primary" value="我要联系"/>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>        
+        <div id="right" class="span4 right">
+            SPAN4 RIGHT
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div.user, .mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 70%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>
