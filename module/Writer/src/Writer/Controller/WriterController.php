@@ -9,12 +9,14 @@ use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use Zend\File\Transfer\Adapter\Http as FileHttp;
 use DateTime;
+use Writer\Model\Wrtmedia;
 
 class WriterController extends AbstractActionController
 {
     protected $writerTable;
     protected $userTable;
     protected $productTable;
+    protected $wrtmediaTable;
 
     public function indexAction()
     {     
@@ -73,13 +75,40 @@ class WriterController extends AbstractActionController
                 $form->getData()->updated_at = $this->_getDateTime();
                 $form->getData()->fk_product = $id_product;
                 $this->getWriterTable()->saveWriter($form->getData());   
-                $id = $this->getWriterTable()->getId(
+                $id_writer = $this->getWriterTable()->getId(
                     $form->getData()->created_at, 
                     $form->getData()->created_by
                 );
+
+                //start: handle the assigned media
+                $arr_get = $form->getData();
+                $str_wrtmedias = trim($arr_get->wrtmedia);
+                $arr_wrtmedias = explode(";", $str_wrtmedias);
+                foreach ($arr_wrtmedias as $wm)
+                {
+                    $wrtmedia = new Wrtmedia();
+                    $wrtmedia->fk_writer = $id_writer;
+                    $enterprise_user = $this->getUserTable()->getUserByName($cur_user);
+                    $wrtmedia->fk_enterprise_user = $enterprise_user->id;
+                    if($this->getUserTable()->checkUser($wm)) {
+                        $media_user = $this->getUserTable()->getUserByName($wm);
+                        $wrtmedia->fk_media_user = $media_user->id;
+                        $wrtmedia->created_by = $cur_user;
+                        $wrtmedia->created_at = $this->_getDateTime();
+                        $wrtmedia->updated_by = $cur_user;
+                        $wrtmedia->updated_at = $this->_getDateTime();
+                        $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+
                 return $this->redirect()->toRoute('writer',array(
                     'action'=>'detail',
-                    'id'    => $id,
+                    'id'    => $id_writer,
                 ));
             }
         }
@@ -103,12 +132,23 @@ class WriterController extends AbstractActionController
         }
         $writer = $this->getWriterTable()->getWriter($id);
 
+        $arr_media_assignees = array();
+        $wrtmedia = $this->getWrtmediaTable()->fetchWrtmediaByFkWrt($id);
+        if($wrtmedia)
+        {
+            foreach ($wrtmedia as $wm)
+            {
+                $media_user = $this->getUserTable()->getUser($wm->fk_media_user);
+                $arr_media_assignees[] = $media_user->username;
+            }
+        }
 
         return new ViewModel(array(
             'writer' => $writer,
             'user' => $cur_user,
             'id' => $id,
             'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'media_assignees' => $arr_media_assignees,
         ));
     }    
 
@@ -157,12 +197,24 @@ class WriterController extends AbstractActionController
             }
         }
 
+        $arr_media_assignees = array();
+        $wrtmedia = $this->getWrtmediaTable()->fetchWrtmediaByFkWrt($id);
+        if($wrtmedia)
+        {
+            foreach ($wrtmedia as $wm)
+            {
+                $media_user = $this->getUserTable()->getUser($wm->fk_media_user);
+                $arr_media_assignees[] = $media_user->username;
+            }
+        }
+
         return new ViewModel(array(
             //'writer' => $this->getWriterTable()->getWriter($id),
             'user'     => $cur_user,
             'form'     => $form,
             'id'       => $id,
             'product'  => $product,
+            'media_assignees' => $arr_media_assignees,
         ));
     }
 
@@ -196,10 +248,40 @@ class WriterController extends AbstractActionController
                 $writer->updated_by = $cur_user;
                 $writer->updated_at = $this->_getDateTime();
                 $this->getWriterTable()->saveWriter($writer);
+                $id_writer = $this->getWriterTable()->getId(
+                        $writer->created_at,
+                        $writer->created_by
+                    );
+
+                //start: handle the assigned media
+                $arr_get = $form->getData();
+                $str_wrtmedias = trim($arr_get["wrtmedia"]);
+                $arr_wrtmedias = explode(";", $str_wrtmedias);
+                foreach ($arr_wrtmedias as $wm)
+                {
+                    $wrtmedia = new Wrtmedia();    
+                    $wrtmedia->fk_writer = $id_writer;
+                    $enterprise_user = $this->getUserTable()->getUserByName($cur_user);
+                    $wrtmedia->fk_enterprise_user = $enterprise_user->id;
+                    if($this->getUserTable()->checkUser($wm)) {
+                        $media_user = $this->getUserTable()->getUserByName($wm);
+                        $wrtmedia->fk_media_user = $media_user->id;                        
+                        $wrtmedia->created_by = $cur_user;
+                        $wrtmedia->created_at = $this->_getDateTime();
+                        $wrtmedia->updated_by = $cur_user;
+                        $wrtmedia->updated_at = $this->_getDateTime();
+                        $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                //end: handle the assigned media
                 
                 return $this->redirect()->toRoute('writer',array(
                     'action'=>'detail',
-                    'id'    => $writer->id_writer,
+                    'id'    => $id_writer,
                 ));
             }
         }
@@ -237,6 +319,15 @@ class WriterController extends AbstractActionController
         $this->productTable = $sm->get('Product\Model\ProductTable');
         }
         return $this->productTable;
+    }
+
+    public function getWrtmediaTable()
+    {
+        if (!$this->wrtmediaTable) {
+            $sm = $this->getServiceLocator();
+            $this->wrtmediaTable = $sm->get('Writer\Model\WrtmediaTable');
+        }
+        return $this->wrtmediaTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

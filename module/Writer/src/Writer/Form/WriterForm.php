@@ -94,6 +94,16 @@ class WriterForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'wrtmedia',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '输入媒体用户，用分号";"分隔',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
             'name' => 'submit',
             'attributes' => array(
                 'type'  => 'submit',

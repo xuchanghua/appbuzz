@@ -3,6 +3,8 @@ namespace Writer;
 
 use Writer\Model\Writer;
 use Writer\Model\WriterTable;
+use Writer\Model\Wrtmedia;
+use Writer\Model\WrtmediaTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -41,6 +43,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Writer());
                     return new TableGateway('writer', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Writer\Model\WrtmediaTable' =>  function($sm) {
+                    $tableGateway = $sm->get('WrtmediaTableGateway');
+                    $table = new WrtmediaTable($tableGateway);
+                    return $table;
+                },
+                'WrtmediaTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Wrtmedia());
+                    return new TableGateway('wrtmedia', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );
