@@ -126,6 +126,7 @@ class TopicController extends AbstractActionController
 
     public function mgmtAction()
     {        
+        //for enterprise user, to see all the topics
         $arr_type_allowed = array(1, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 

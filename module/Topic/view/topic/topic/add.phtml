@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>媒体用户首页</h1>  
+    <h1>我要发布</h1>  
     <div id="header" class="container" style="width:1170px;"> 
     CONTAINER
     <div class="row">
@@ -23,29 +23,48 @@
         ROW
         <div id="left" class="span2 left">
             <div id="user" class="user">
-                用户: <?php echo $user;?>
-                <a href="/user/logout">退出</a>
-            </br>
-                <a href="">媒体资料</a>
-            </br>
-                <a href="">我的账户</a>
-            </br>
-                <a href="">我的订单</a>
-            </br>
-                <a href="">APP新闻助手</a>           
+                <ul>
+                    <li>
+                        <span>用户: <?php echo $user;?></span>
+                        <a href="/user/logout">退出</a>
+                    </li>
+                    <li><a href="">媒体资料</a></li>
+                    <li><a href="">我的账户</a></li>
+                    <li><a href="">我的订单</a></li>
+                    <li><a href="">APP新闻助手</a></li>
             </div>
-            <div id="topicpublish" class="topicpublish">
-                <a href="/topic">发布选题</a>
-            </div>
-            <div id="appevaluating" class="appevaluating">
-                <a href="appevaluating">评测APP</a>
-            </div>
-            <div id="appinterview" class="appinterview">
-                <a href="appinterview">采访APP</a>
-            </div>
-            <div id="editor" class="editor">
-                <a href="editor">自由撰稿人</a>
-            </div>            
+            <div id="sidebar">
+                <ul>
+                    <li class="submenu">
+                        <a href="#"><span>发布选题</span></a>
+                        <ul>
+                            <li><a href="/topic/add">我要发布</a></li>
+                            <li><a href="/topic/index">选题管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="submenu">
+                        <a href="#"><span>评测APP</span></a>
+                        <ul>
+                            <li><a href="#">评测邀约</a></li>
+                            <li><a href="#">评测管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="submenu">
+                        <a href="#"><span>采访APP</span></a>
+                        <ul>
+                            <li><a href="#">采访邀约</a></li>
+                            <li><a href="#">采访管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="submenu">
+                        <a href="#"><span>自由撰稿人</span></a>
+                        <ul>
+                            <li><a href="#">需求列表</a></li>
+                            <li><a href="#">撰稿管理</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>   
         </div>
         <div id="mid" class="span8 mid">
             <div>
@@ -149,3 +168,14 @@ input[type="text"], textarea
     width: 100%;
 }
 </style>
+
+            <script src="js/excanvas.min.js"></script>
+            <script src="js/jquery.min.js"></script>
+            <script src="js/jquery.ui.custom.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script src="js/jquery.flot.min.js"></script>
+            <script src="js/jquery.flot.resize.min.js"></script>
+            <script src="js/jquery.peity.min.js"></script>
+            <script src="js/fullcalendar.min.js"></script>
+            <script src="js/unicorn.js"></script>
+            <script src="js/unicorn.dashboard.js"></script>

@@ -9,12 +9,14 @@ use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use Zend\File\Transfer\Adapter\Http as FileHttp;
 use DateTime;
+use Evaluate\Model\Evamedia;
 
 class EvaluateController extends AbstractActionController
 {
     protected $evaluateTable;
     protected $userTable;
     protected $productTable;
+    protected $evamediaTable;
 
     public function indexAction()
     {     
@@ -108,12 +110,23 @@ class EvaluateController extends AbstractActionController
         }
         $evaluate = $this->getEvaluateTable()->getEvaluate($id);
 
+        $arr_media_assignees = array();
+        $evamedia = $this->getEvamediaTable()->fetchEvamediaByFkEva($id);
+        if($evamedia)
+        {
+            foreach ($evamedia as $em)
+            {
+                $media_user = $this->getUserTable()->getUser($em->fk_media_user);
+                $arr_media_assignees[] = $media_user->username;
+            }
+        }
 
         return new ViewModel(array(
             'evaluate' => $evaluate,
             'user' => $cur_user,
             'id' => $id,
             'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
+            'media_assignees' => $arr_media_assignees,
         ));
     }    
 
@@ -203,10 +216,38 @@ class EvaluateController extends AbstractActionController
                 $evaluate->updated_by = $cur_user;
                 $evaluate->updated_at = $this->_getDateTime();
                 $this->getEvaluateTable()->saveEvaluate($evaluate);
+                $id_evaluate = $this->getEvaluateTable()->getId(
+                        $evaluate->created_at,
+                        $evaluate->created_by
+                    );
+
+                //start: handle the assigned media
+                $arr_get = $form->getData();
+                $str_evamedias = trim($arr_get["evamedia"]);
+                $arr_evamedias = explode(";", $str_evamedias);
+                foreach ($arr_evamedias as $em)
+                {
+                    $evamedia = new Evamedia();    
+                    $evamedia->fk_evaluate = $id_evaluate;
+                    //$em->fk_enterprise 
+                    $enterprise_user = $this->getUserTable()->getUserByName($cur_user);
+                    $evamedia->fk_enterprise_user = $enterprise_user->id;
+                    $media_user = $this->getUserTable()->getUserByName($em);
+                    if(is_a($media_user,'User\Model\User'))
+                    {
+                        $evamedia->fk_media_user = $media_user->id;
+                        $this->getEvamediaTable()->saveEvamedia($evamedia);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                //end: handle the assigned media
                 
                 return $this->redirect()->toRoute('evaluate',array(
                     'action'=>'detail',
-                    'id'    => $evaluate->id_evaluate,
+                    'id'    => $id_evaluate,
                 ));
             }
         }
@@ -226,6 +267,15 @@ class EvaluateController extends AbstractActionController
 	    $this->evaluateTable = $sm->get('Evaluate\Model\EvaluateTable');
         }
         return $this->evaluateTable;
+    }
+
+    public function getEvamediaTable()
+    {
+        if (!$this->evamediaTable) {
+        $sm = $this->getServiceLocator();
+        $this->evamediaTable = $sm->get('Evaluate\Model\EvamediaTable');
+        }
+        return $this->evamediaTable;
     }
 
     public function getUserTable()

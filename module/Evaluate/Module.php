@@ -3,6 +3,8 @@ namespace Evaluate;
 
 use Evaluate\Model\Evaluate;
 use Evaluate\Model\EvaluateTable;
+use Evaluate\Model\Evamedia;
+use Evaluate\Model\EvamediaTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -41,6 +43,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Evaluate());
                     return new TableGateway('evaluate', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Evaluate\Model\EvamediaTable' =>  function($sm) {
+                    $tableGateway = $sm->get('EvamediaTableGateway');
+                    $table = new EvamediaTable($tableGateway);
+                    return $table;
+                },
+                'EvamediaTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Evamedia());
+                    return new TableGateway('evamedia', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );
