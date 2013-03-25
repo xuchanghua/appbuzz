@@ -26,6 +26,14 @@ class EvaluateTable
         return $resultSet;
     }
 
+    public function fetchAllDesc()
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select){
+            $select->order('id_evaluate DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchEvaluateByUser($created_by)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
@@ -72,6 +80,8 @@ class EvaluateTable
             'created_at'      => $evaluate->created_at,
             'updated_by'      => $evaluate->updated_by,
             'updated_at'      => $evaluate->updated_at,
+            'requirement'     => $evaluate->requirement,
+            'due_date'        => $evaluate->due_date,
         );
 
         $id = (int)$evaluate->id_evaluate;

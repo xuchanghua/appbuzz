@@ -26,10 +26,28 @@ class EvamediaTable
         return $resultSet;
     }
 
+    public function fetchEvamediaByUser($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
+            $select->where->equalTo('created_by', $created_by);
+        });
+        return $rowset;
+    }
+
     public function fetchEvamediaByFkEva($fk_evaluate)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($fk_evaluate){
             $select->where->equalTo('fk_evaluate', $fk_evaluate);
+            $select->order('id_evamedia DESC');
+        });
+        return $rowset;
+    }
+
+    public function fetchEmExRejByMedByFkEva($fk_evaluate)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($fk_evaluate){
+            $select->where->equalTo('fk_evaluate', $fk_evaluate);
+            $select->where->notequalTo('fk_evaluate_status',2);
             $select->order('id_evamedia DESC');
         });
         return $rowset;
@@ -69,6 +87,8 @@ class EvamediaTable
             'created_at'         => $evamedia->created_at,
             'updated_by'         => $evamedia->updated_by,
             'updated_at'         => $evamedia->updated_at,
+            'fk_evaluate_status' => $evamedia->fk_evaluate_status,
+            'news_link'          => $evamedia->news_link,
         );
 
         $id = (int)$evamedia->id_evamedia;

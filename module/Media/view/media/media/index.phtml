@@ -22,49 +22,10 @@
     <div id="row" class="row">
         ROW
         <div id="left" class="span2 left">
-            <div id="user" class="user">
-                <ul>
-                    <li>
-                        <span>用户: <?php echo $user;?></span>
-                        <a href="/user/logout">退出</a>
-                    </li>
-                    <li><a href="">媒体资料</a></li>
-                    <li><a href="">我的账户</a></li>
-                    <li><a href="">我的订单</a></li>
-                    <li><a href="">APP新闻助手</a></li>
-            </div>
-            <div id="sidebar">
-                <ul>
-                    <li class="submenu">
-                        <a href="#"><span>发布选题</span></a>
-                        <ul>
-                            <li><a href="/topic/add">我要发布</a></li>
-                            <li><a href="/topic/index">选题管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>评测APP</span></a>
-                        <ul>
-                            <li><a href="#">评测邀约</a></li>
-                            <li><a href="#">评测管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>采访APP</span></a>
-                        <ul>
-                            <li><a href="#">采访邀约</a></li>
-                            <li><a href="#">采访管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>自由撰稿人</span></a>
-                        <ul>
-                            <li><a href="#">需求列表</a></li>
-                            <li><a href="#">撰稿管理</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>   
+        <?php 
+        set_include_path("public/include");
+        include 'sidebar_media.phtml'; 
+        ?>            
         </div>
         <div id="mid" class="span8 mid">
             

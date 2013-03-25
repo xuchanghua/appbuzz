@@ -20,6 +20,8 @@ class Evaluate implements InputFilterAwareInterface
     public $updated_by;
     public $updated_at;
     public $evamedia;
+    public $requirement;
+    public $due_date;
 
     protected $inputFilter;                       // <-- Add this variable
 
@@ -37,6 +39,8 @@ class Evaluate implements InputFilterAwareInterface
         $this->updated_by      = (isset($data['updated_by']))      ? $data['updated_by']      : null;
         $this->updated_at      = (isset($data['updated_at']))      ? $data['updated_at']      : null;
         $this->evamedia        = (isset($data['evamedia']))        ? $data['evamedia']        : null;
+        $this->requirement     = (isset($data['requirement']))     ? $data['requirement']     : null;
+        $this->due_date        = (isset($data['due_date']))        ? $data['due_date']        : null;
     }
 
     // Add the following method:

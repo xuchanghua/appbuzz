@@ -20,77 +20,30 @@
     <div id="main" class="container" style="width:1170px;">
     <div id="row" class="row">
         <div id="left" class="span2 left">
-            <div id="user" class="user">
-                <ul>
-                    <li>
-                        <span>用户: <?php echo $user;?></span>
-                        <a href="/user/logout">退出</a>
-                    </li>
-                    <li><a href="">企业资料</a></li>
-                    <li><a href="">我的账户</a></li>
-                    <li><a href="">我的订单</a></li>
-                    <li><a href="">APP新闻助手</a></li>
-                </ul>
-            </div>
-            <div id="sidebar">
-                <ul>
-                    <!--
-                    <li>
-                        <a href="netmonitor"><span>网络监测</span></a>
-                    </li>
-                    -->
-                    <li class="submenu">
-                        <a href="#"><span>新闻发布</span></a>
-                        <ul>
-                            <li><a href="/newspub/add">我要发布</a></li>
-                            <li><a href="/newspub/index">发布管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>产品测评</span></a>
-                        <ul>
-                            <li><a href="/evaluate/add">我要评测</a></li>
-                            <li><a href="/evaluate/index">评测管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>新闻撰写</span></a>
-                        <ul>
-                            <li><a href="/writer/add">我要撰稿</a></li>
-                            <li><a href="/writer/index">撰稿管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>媒体选题</span></a>
-                        <ul>
-                            <li><a href="/topic/current">当期选题</a></li>
-                            <li><a href="/topic/mgmt">选题管理</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="interview">媒体采访</a>
-                    </li>
-                </ul>
-            </div>
+        <?php 
+        set_include_path("public/include");
+        
+        include 'sidebar_enterprise.phtml'; 
+        ?>
         </div>
-
         <div id="mid" class="span8 mid"> 
-            <div class="linkbtns">
-                <form action="/evaluate/index">
-                    <input type="submit" class="btn btn-primary linkbtn" value="产品评测">
-                </form>
-            </div>
-            <div>
-                <form action="/evaluate/add">
-                    <input type="submit" class="btn btn-primary linkbtn" value="我要评测">
-                </form>
-            </div>
+            <?php 
+            set_include_path("public/include");        
+            include 'breadcrumb_enterprise_evaluate.phtml'; 
+            ?>
             <div id="pubmgmt" class="widget-box">
                 <div class="widget-title">
                     <h4>我的产品评测订单</h4>
                 </div>
                 <div class="widget-content nopadding">
                 <table class="table table-bordered table-striped">
+                    <?php
+                    $arr_products = array();
+                    foreach ($products as $p)
+                    {
+                        $arr_products[$p->id_product] = $p->name;
+                    }
+                    ?>
                     <tr>
                         <th>App产品</th>
                         <th>产品卖点</th>
@@ -99,7 +52,7 @@
                     </tr>
                     <?php foreach($paginator as $np): ?>
                     <tr>
-                        <td><?php echo $this->escapeHtml($np->fk_product);?></td>
+                        <td><?php echo $this->escapeHtml($arr_products[$np->fk_product]);?></td>
                         <td><a href="<?php echo $this->url('evaluate',array('action'=>'detail','id'=>$np->id_evaluate));?>"><?php echo $this->escapeHtml($np->highlight);?></a></td>
                         <td><?php echo $this->escapeHtml($np->created_at);?></td>
                         <td><?php echo $this->escapeHtml($np->created_by);?></td>

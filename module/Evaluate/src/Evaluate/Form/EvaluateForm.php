@@ -36,6 +36,28 @@ class EvaluateForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'requirement',
+            'attributes' => array(
+                'type' => 'textarea',
+                'placeholder' => '评测要求',
+                'rows'        => 5,
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'due_date',
+            'attributes' => array(
+                'type' => 'text',
+                'placeholder' => '点击选择日期',
+                'id' => 'f_date_ETA',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
             'name' => 'web_link',
             'attributes' => array(
                 'type'  => 'text',

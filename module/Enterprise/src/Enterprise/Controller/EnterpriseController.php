@@ -114,7 +114,7 @@ class EnterpriseController extends AbstractActionController
         return new ViewModel(array(
             'user' => $cur_user,
             'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
-            'product' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'evaluate' => $this->getEvaluateTable()->fetchEvaluateByUser($cur_user),
         ));
     }

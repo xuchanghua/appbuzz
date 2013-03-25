@@ -26,12 +26,22 @@ class EvaluateController extends AbstractActionController
         $request = $this->getRequest();
         $keyword = trim($request->getQuery(''));
         $page = intval($request->getQuery('page',1));
-        $paginator = $this->getEvaluateTable()->getPaginator($keyword, $page, 5, 1, $cur_user);
+        $cur_user_role = $this->getUserTable()->getUserByName($cur_user)->fk_user_type;
         $view = new ViewModel(array(
             'user' => $cur_user,
-            'evaluate' => $this->getEvaluateTable()->fetchEvaluateByUser($cur_user),
+            'products' => $this->getProductTable()->fetchAll(),
             )
         );
+        if($cur_user_role == 1)
+        {            
+            $paginator = $this->getEvaluateTable()->getPaginator($keyword, $page, 5, 1, $cur_user);
+            $view->setVariable('evaluate',$this->getEvaluateTable()->fetchEvaluateByUser($cur_user));
+        }
+        else
+        {
+            $paginator = $this->getEvaluateTable()->getPaginator($keyword, $page, 5, 1, null);
+            $view->setVariable('evaluate',$this->getEvaluateTable()->fetchAll());
+        }
         $view->setVariable('paginator', $paginator);
         return $view;
     }
@@ -150,9 +160,11 @@ class EvaluateController extends AbstractActionController
         return new ViewModel(array(
             'evaluate' => $evaluate,
             'user' => $cur_user,
+            'allusers' => $this->getUserTable()->fetchAll(),
             'id' => $id,
             'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
             'media_assignees' => $arr_media_assignees,
+            'evamedias' => $this->getEvamediaTable()->fetchEmExRejByMedByFkEva($id),//not include those rejected by the media
         ));
     }    
 
@@ -232,7 +244,7 @@ class EvaluateController extends AbstractActionController
 
         //handle the form
         $form = new EvaluateForm();
-        $form->get('submit')->setValue('保存');
+        $form->get('submit')->setValue('提交订单');
         $request = $this->getRequest();
         if($request->isPost()){
             //upload start
@@ -249,6 +261,7 @@ class EvaluateController extends AbstractActionController
             $form->setData($request->getPost());
             if($form->isValid()){
                 $evaluate->exchangeArray($form->getData());
+                die(var_dump($form->getData()));
                 $evaluate->created_by = $cur_user;
                 $evaluate->created_at = $this->_getDateTime();
                 $evaluate->updated_by = $cur_user;
@@ -259,6 +272,7 @@ class EvaluateController extends AbstractActionController
                         $evaluate->created_by
                     );
 
+                /*
                 //start: handle the assigned media
                 $arr_get = $form->getData();
                 $str_evamedias = trim($arr_get["evamedia"]);
@@ -285,7 +299,8 @@ class EvaluateController extends AbstractActionController
                     }
                 }
                 //end: handle the assigned media
-                
+                */
+
                 return $this->redirect()->toRoute('evaluate',array(
                     'action'=>'detail',
                     'id'    => $id_evaluate,
@@ -299,6 +314,184 @@ class EvaluateController extends AbstractActionController
             'evaluate' => $this->getEvaluateTable()->fetchEvaluateByUser($cur_user),
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
         ));        
+    }
+
+    public function mgmtAction()
+    {
+        //媒体->评测管理
+        $arr_type_allowed = array(2, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));
+    }
+
+    public function invitationAction()
+    {
+        //媒体->评测邀约
+        $arr_type_allowed = array(2, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'evaluate' => $this->getEvaluateTable()->fetchAllDesc(),
+            'products' => $this->getProductTable()->fetchAll(),
+            'evamedia' => $this->getEvamediaTable()->fetchEvamediaByUser($cur_user),
+        ));        
+    }
+
+    public function mediaaccAction()
+    {
+        //媒体->评测邀约->接受订单
+        $arr_type_allowed = array(2, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_evaluate = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evaluate) {
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'invitation'
+            ));
+        }
+
+        $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+        $product = $this->getProductTable()->getProduct($evaluate->fk_product);
+        $media_user = $this->getUserTable()->getUserByName($cur_user);
+        $enterprise_user = $this->getUserTable()->getUserByName($evaluate->created_by);
+
+        $evamedia = new Evamedia();    
+        $evamedia->fk_evaluate = $id_evaluate;
+        $evamedia->fk_media_user = $media_user->id;
+        $evamedia->fk_enterprise_user = $enterprise_user->id;
+        $evamedia->created_by = $cur_user;
+        $evamedia->created_at = $this->_getDateTime();
+        $evamedia->updated_by = $cur_user;
+        $evamedia->updated_at = $this->_getDateTime();
+        $evamedia->fk_evaluate_status = 3;//accept the order
+        $this->getEvamediaTable()->saveEvamedia($evamedia);
+
+        return $this->redirect()->toRoute('evaluate',array(
+            'action'=>'invitation',
+        ));
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));        
+    }
+
+    public function mediarejAction()
+    {
+        //媒体->评测邀约->拒绝订单
+        $arr_type_allowed = array(2, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_evaluate = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evaluate) {
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'invitation'
+            ));
+        }
+
+        $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+        $product = $this->getProductTable()->getProduct($evaluate->fk_product);
+        $media_user = $this->getUserTable()->getUserByName($cur_user);
+        $enterprise_user = $this->getUserTable()->getUserByName($evaluate->created_by);
+
+        $evamedia = new Evamedia();    
+        $evamedia->fk_evaluate = $id_evaluate;
+        $evamedia->fk_media_user = $media_user->id;
+        $evamedia->fk_enterprise_user = $enterprise_user->id;
+        $evamedia->created_by = $cur_user;
+        $evamedia->created_at = $this->_getDateTime();
+        $evamedia->updated_by = $cur_user;
+        $evamedia->updated_at = $this->_getDateTime();
+        $evamedia->fk_evaluate_status = 2;//reject the order
+        $this->getEvamediaTable()->saveEvamedia($evamedia);
+
+        return $this->redirect()->toRoute('evaluate',array(
+            'action'=>'invitation',
+        ));
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));  
+    }
+
+    public function entaccAction()
+    {
+        //企业->我要评测->企业接受
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_evamedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evamedia) {
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'index'
+            ));
+        }
+
+        $evamedia = $this->getEvamediaTable()->getEvamedia($id_evamedia);
+        $evamedia->updated_by = $cur_user;
+        $evamedia->updated_at = $this->_getDateTime();
+        $evamedia->fk_evaluate_status = 5;//accept the order
+        $this->getEvamediaTable()->saveEvamedia($evamedia);
+
+        return $this->redirect()->toRoute('evaluate',array(
+            'action' => 'detail',
+            'id'     => $evamedia->fk_evaluate,
+        ));
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));  
+    }
+
+    public function entrejAction()
+    {
+        //企业->我要评测->企业接受
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_evamedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evamedia) {
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'index'
+            ));
+        }
+
+        $evamedia = $this->getEvamediaTable()->getEvamedia($id_evamedia);
+        $evamedia->updated_by = $cur_user;
+        $evamedia->updated_at = $this->_getDateTime();
+        $evamedia->fk_evaluate_status = 4;//reject the order
+        $this->getEvamediaTable()->saveEvamedia($evamedia);
+
+        return $this->redirect()->toRoute('evaluate',array(
+            'action' => 'detail',
+            'id'     => $evamedia->fk_evaluate,
+        ));
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));  
+    }
+
+    public function evainfoAction()
+    {
+        //媒体->评测邀约->查看评测信息
+        $arr_type_allowed = array(2, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_evalute = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evalute) {
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'invitation'
+            ));
+        }
+
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));  
     }
 
     public function getEvaluateTable()

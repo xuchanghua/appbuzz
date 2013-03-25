@@ -81,6 +81,15 @@
                             <h4>新闻发布订单——</h4>
                         </div>
                         <div class="widget-content nopadding">
+                        <?php
+                        $arr_product_name = array();
+                        $arr_product_description = array();
+                        foreach ($products as $p)
+                        {
+                            $arr_product_name[$p->id_product] = $p->name;
+                            $arr_product_description[$p->id_product] = $p->description;
+                        }
+                        ?>
                         <table id="tbappinfo" class="table table-bordered table-striped">
                             <th>
                                 <td>产品</td>
@@ -96,7 +105,16 @@
                             <tr>
                                 <td></td>
                                 <td>
-                                    
+                                    <?php 
+                                    if(array_key_exists($eva->fk_product, $arr_product_name))
+                                    {
+                                        echo $arr_product_name[$eva->fk_product];
+                                    }
+                                    else
+                                    {
+                                        echo "未关联产品";
+                                    }
+                                    ?>
                                 </td>
                                 <td>
                                     <a href="/newspub/detail/<?php echo $eva->id_newspub ;?>"><?php echo $eva->title; ?></a>
@@ -105,6 +123,16 @@
                                     <?php echo $eva->body; ?>
                                 </td>
                                 <td>
+                                    <?php 
+                                    if(array_key_exists($eva->fk_product, $arr_product_description))
+                                    {
+                                        echo $arr_product_description[$eva->fk_product];
+                                    }
+                                    else
+                                    {
+                                        echo "未关联产品";
+                                    }
+                                    ?>
 
                                 </td>
                                 <td>
