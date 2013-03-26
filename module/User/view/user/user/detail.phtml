@@ -20,24 +20,20 @@
     <div id="main" class="container" style="width:1170px;">
     <div id="row" class="row">
         <div id="left" class="span2 left">
-            <div id="userinfo">
-                <h4>用户：<?php echo $user;?></h4>
-            </div>
-            <div>
-                <a href="/user/admin">用户管理</a>
-            </div>
-            <div>
-                <a href="/product/admin">所有产品</a>
-            </div>
-            <div>
-                <a href="/newspub/admin">新闻发布</a>
-            </div>
-            <div id="medialogos" class="medialogos">
-                合作媒体
-            </div>
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_admin.phtml'; 
+        ?>
         </div>
         <div id="mid" class="span8 mid">
             <div>
+                <?php
+                $arr_user_type = array(
+                    '1' => '企业用户',
+                    '2' => '媒体用户',
+                    '3' => '管理员用户',
+                    );
+                ?>
                 <table>
                     <tr>
                         <td>id：</td>
@@ -57,7 +53,18 @@
                     </tr>
                     <tr>
                         <td>用户类型：</td>
-                        <td><?php echo $target_user->fk_user_type;?></td>
+                        <td>
+                            <?php 
+                            if(array_key_exists($target_user->fk_user_type, $arr_user_type))
+                            {
+                                echo $arr_user_type[$target_user->fk_user_type];
+                            }
+                            else
+                            {
+                                echo "用户类型“ ".$target_user->fk_user_type." ”不存在！";
+                            }
+                            ?>
+                        </td>
                     </tr>
                     <tr>
                         <td>电子邮箱：</td>
@@ -65,14 +72,23 @@
                     </tr>
                     <tr>
                         <td>
-                            <form action="/user/edit/<?php echo $target_user->id;?>">
-                                <input type="submit" class="btn btn-primary" value="修改用户信息">
-                            </form>
                         </td>
                         <td>
-                            <form action="/user/admin">
-                                <input type="submit" class="btn btn-primary" value="返回列表">
-                            </form>
+                            <div class="linkbtns">
+                                <form action="/user/edit/<?php echo $target_user->id;?>">
+                                    <input type="submit" class="btn btn-primary" value="修改用户信息">
+                                </form>
+                            </div>
+                            <div class="linkbtns">
+                                <form action="/user/delete/<?php echo $target_user->id;?>">
+                                    <input type="submit" class="btn btn-danger" value="删除此用户">
+                                </form>
+                            </div>
+                            <div>
+                                <form action="/user/admin">
+                                    <input type="submit" class="btn btn-primary" value="返回列表">
+                                </form>
+                            </div>
                         </td>
                     </tr>
 
@@ -93,8 +109,33 @@
 </div>
 
 <style>
-div#userinfo
+div.user,.mid
 {
-    border: 1px solid black;
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 80%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
 }
 </style>

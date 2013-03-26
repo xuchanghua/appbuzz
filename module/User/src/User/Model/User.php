@@ -11,6 +11,7 @@ class User implements InputFilterAwareInterface
 	public $id;
 	public $username;
 	public $password;
+	public $confirmpassword;
 	public $password_salt;
 	public $real_name;
 	public $fk_user_type;
@@ -30,7 +31,13 @@ class User implements InputFilterAwareInterface
 		$this->email         = (isset($data['email']))         ? $data['email']         : null;
 		$this->fk_enterprise = (isset($data['fk_enterprise'])) ? $data['fk_enterprise'] : null;
 		$this->fk_media      = (isset($data['fk_media']))      ? $data['fk_media']      : null;
+		$this->confirmpassword = (isset($data['confirmpassword'])) ? $data['confirmpassword'] : null;
 	}
+
+    public function getArrayCopy()
+    {
+        return get_object_vars($this);
+    }
 
 	public function setInputFilter(InputFilterInterface $inputFilter)
 	{
@@ -52,6 +59,20 @@ class User implements InputFilterAwareInterface
 				)));
 
 			$inputFilter->add($factory->createInput(array(
+				'name' => 'fk_user_type',
+				'required' => true,
+				'filters'  => array(
+					array('name' => 'Int'),
+					),
+				'validators' => array(
+					array(
+						'name' => 'GreaterThan',
+						'_min' => 0,
+						),
+					),
+				)));
+
+			$inputFilter->add($factory->createInput(array(
 				'name'     => 'username',
 				'required' => true,
 				'unique'   => true,
@@ -64,8 +85,28 @@ class User implements InputFilterAwareInterface
 						'name' => 'StringLength',
 						'options' => array(
 							'encoding' => 'UTF-8',
-							'min'      => 1,
+							'min'      => 6,
 							'max'      => 50,
+							),
+						),
+					),
+				)));
+
+			$inputFilter->add($factory->createInput(array(
+				'name'     => 'real_name',
+				'required' => true,
+				'unique'   => true,
+				'filters'  => array(
+					array('name' => 'StripTags'),
+					array('name' => 'StringTrim'),
+					),
+				'validators' => array(
+					array(
+						'name' => 'StringLength',
+						'options' => array(
+							'encoding' => 'UTF-8',
+							'min'      => 1,
+							'max'      => 150,
 							),
 						),
 					),
@@ -80,12 +121,7 @@ class User implements InputFilterAwareInterface
 					),
 				'validators' => array(
 					array(
-						'name' => 'StringLength',
-						'options' => array(
-							'encoding' => 'UTF-8',
-							'min'      => 1,
-							'max'      => 255,
-							),
+						'name' => 'EmailAddress',
 						),
 					),
 				)));
@@ -102,13 +138,13 @@ class User implements InputFilterAwareInterface
 						'name' => 'StringLength',
 						'options' => array(
 							'encoding' => 'UTF-8',
-							'min'      => 1,
+							'min'      => 6,
 							'max'      => 32,
 							),
 						),
 					),
 				)));
-
+			/*
 			$inputFilter->add($factory->createInput(array(
 				'name'     => 'confirmpassword',
 				'required' => true,
@@ -121,13 +157,13 @@ class User implements InputFilterAwareInterface
 						'name' => 'StringLength',
 						'options' => array(
 							'encoding' => 'UTF-8',
-							'min'      => 1,
+							'min'      => 6,
 							'max'      => 32,
 							),
 						),
 					),
 				)));
-
+			*/
 			$this->inputFilter = $inputFilter;
 		}
 

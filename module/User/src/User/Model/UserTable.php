@@ -1,7 +1,12 @@
 <?php
 namespace User\Model;
 
-use Zend\Db\TableGateway\TableGateway;
+use Zend\Db\TableGateway\TableGateway;  
+use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Where;
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\DbSelect;
+use Zend\Db\ResultSet\ResultSet;
 
 class UserTable
 {
@@ -16,6 +21,14 @@ class UserTable
 	public function fetchAll()
 	{
 		$resultSet = $this->tableGateway->select();
+		return $resultSet;
+	}
+
+	public function fetchAllDesc()
+	{
+		$resultSet = $this->tableGateway->select(function(Select $select){
+			$select->order('id DESC');
+		});
 		return $resultSet;
 	}
 
@@ -50,6 +63,7 @@ class UserTable
 			'fk_user_type'  => $user->fk_user_type,
 			'fk_enterprise' => $user->fk_enterprise,
 			'fk_media'      => $user->fk_media,
+			'real_name'     => $user->real_name,
 		);
 		$id = (int)$user->id;
 		if($id == 0){
@@ -76,5 +90,10 @@ class UserTable
 		{
 			return true;
 		}
+	}
+
+	public function deleteUser($id)
+	{
+		$this->tableGateway->delete(array('id' => $id));
 	}
 }

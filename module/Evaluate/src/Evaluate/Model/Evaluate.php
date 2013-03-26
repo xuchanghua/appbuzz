@@ -68,6 +68,15 @@ class Evaluate implements InputFilterAwareInterface
                     array('name' => 'Int'),
                 ),
             )));
+            $inputFilter->add($factory->createInput(array(
+                'name'     => 'due_date',
+                'validators' => array(
+                    array(
+                        'name' => 'Date',
+                        'format' => 'YYYY-MM-DD',
+                    ),
+                ),
+            )));
 
             $this->inputFilter = $inputFilter;
         }

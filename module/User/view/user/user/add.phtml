@@ -1,7 +1,7 @@
 <?php
 
 $form = $this->form;
-$form->setAttribute('action', $this->url('user', array('action' => 'signup')));
+$form->setAttribute('action', $this->url('user', array('action' => 'add')));
 $form->add(array(
     'name' => 'fk_user_type',
     'type'  => 'Zend\Form\Element\Select',
@@ -13,6 +13,7 @@ $form->add(array(
 			''  => '*用户类型',
 			'1' => '企业用户',
 			'2' => '媒体用户',
+            '3' => '管理员用户',
         ),
     ),
 ));

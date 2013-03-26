@@ -50,7 +50,7 @@ class EvaluateForm extends Form
             'name' => 'due_date',
             'attributes' => array(
                 'type' => 'text',
-                'placeholder' => '点击选择日期',
+                'placeholder' => 'YYYY-MM-DD',
                 'id' => 'f_date_ETA',
             ),
             'options' => array(

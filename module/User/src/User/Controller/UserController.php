@@ -110,7 +110,7 @@ class UserController extends AbstractActionController
     public function signupAction()
     {
         $form = new UserForm();
-        $form->get('submit')->setValue('Sign Up!!!');
+        $form->get('submit')->setValue('立即注册');
         $request = $this->getRequest();
         if($request->isPost()){
             $user = new User();
@@ -118,11 +118,20 @@ class UserController extends AbstractActionController
             $form->setData($request->getPost());
             if($form->isValid()){
                 $user->exchangeArray($form->getData());
-                $this->getUserTable()->saveUser($user);
+                if($user->password == $user->confirmpassword)
+                {
+                    $this->getUserTable()->saveUser($user);
+                }
+                else
+                {
+                    echo "<a href='/user/signup'>Back</a></br>";
+                    die("Password and confirm password must be corresponded!");
+                }
                 //Set Session for the authorized user:
                 $this->session = new SessionContainer('userinfo');
                 $this->session->username = $user->username;
                 $this->session->password = $user->password;
+                $this->session->usertype = $user->fk_user_type;
                 switch($user->fk_user_type)
                 {
                     case 1:
@@ -143,6 +152,43 @@ class UserController extends AbstractActionController
         return array('form' => $form);
     }
 
+    public function addAction()
+    {
+        //用户管理->创建用户 （可以创建企业、媒体、管理用户）        
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $form = new UserForm();
+        $form->get('submit')->setValue('创建用户');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $user = new User();
+            $form->setInputFilter($user->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $user->exchangeArray($form->getData());
+                if($user->password == $user->confirmpassword)
+                {
+                    $this->getUserTable()->saveUser($user);
+                }
+                else
+                {
+                    echo "<a href='/user/add'>Back</a></br>";
+                    die("Password and confirm password must be corresponded!");
+                }
+
+                return $this->redirect()->toRoute('user', array(
+                    'action' => 'admin',
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+        ));
+    }    
+
     public function logoutAction()
     {
         $this->session = new SessionContainer('userinfo');
@@ -154,6 +200,7 @@ class UserController extends AbstractActionController
 
     public function adminAction()
     {
+        //用户管理->所有用户
         $arr_type_allowed = array(3);
         $cur_user = $this->_auth($arr_type_allowed);
 
@@ -161,7 +208,7 @@ class UserController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
-            'allusers' => $this->getUserTable()->fetchAll(),
+            'allusers' => $this->getUserTable()->fetchAllDesc(),
         ));
     }
 
@@ -187,6 +234,7 @@ class UserController extends AbstractActionController
     {        
         $arr_type_allowed = array(3);
         $cur_user = $this->_auth($arr_type_allowed);
+
         $id = (int)$this->params()->fromRoute('id', 0);
         if(!$id) {
             return $this->redirect()->toRoute('user',array(
@@ -195,7 +243,9 @@ class UserController extends AbstractActionController
         }
 
         $target_user = $this->getUserTable()->getUser($id);
+        //die(var_dump($target_user));
         $form = new UserForm();
+        //die(var_dump($form));
         $form->bind($target_user);
         $form->get('submit')->setAttribute('value','保存');
 
@@ -205,7 +255,6 @@ class UserController extends AbstractActionController
             $form->setData($request->getPost());
             if($form->isValid()){
                 $this->getUserTable()->saveUser($form->getData());
-
                 return $this->redirect()->toRoute('user', array(
                     'action' => 'detail',
                     'id'     => $target_user->id,
@@ -215,7 +264,26 @@ class UserController extends AbstractActionController
         return new ViewModel(array(
             'user' => $cur_user,
             'target_user' => $target_user,
+            'form' => $form,
         ));
+    }
+
+    public function deleteAction()
+    {        
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id = (int)$this->params()->fromRoute('id', 0);
+        if(!$id) {
+            return $this->redirect()->toRoute('user',array(
+                'action' => 'admin'
+            ));
+        }
+
+        $this->getUserTable()->deleteUser($id);
+        return $this->redirect()->toRoute('user',array(
+                'action' => 'admin'
+            ));
     }
 
     public function getUserTable()

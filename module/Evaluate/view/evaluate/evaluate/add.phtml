@@ -94,6 +94,7 @@
                     <td>
                         <?php echo $this->formRow($form->get('due_date')); ?>
                     </td>
+                </tr>
                 <tr>
                     <td class="tdlabel">建议媒体采用的产品截图：</td>
                     <td>
@@ -194,7 +195,7 @@ input[type="text"], textarea
     window.onload = function(){
         new JsDatePick({
             useMode:2,
-            target:"f_date_ETA",
+            target:"f_date_ETA_",
             dateFormat:"%Y-%m-%d"
             /*selectedDate:{                This is an example of what the full configuration offers.
                 day:5,                      For full documentation about these settings please see the full version of the code.

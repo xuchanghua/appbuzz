@@ -261,7 +261,7 @@ class EvaluateController extends AbstractActionController
             $form->setData($request->getPost());
             if($form->isValid()){
                 $evaluate->exchangeArray($form->getData());
-                die(var_dump($form->getData()));
+                //die(var_dump($form->getData()));
                 $evaluate->created_by = $cur_user;
                 $evaluate->created_at = $this->_getDateTime();
                 $evaluate->updated_by = $cur_user;
