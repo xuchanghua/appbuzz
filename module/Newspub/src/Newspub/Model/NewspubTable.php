@@ -26,6 +26,14 @@ class NewspubTable
         return $resultSet;
     }
 
+    public function fetchAllDesc()
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select){
+            $select->order('id_newspub DESC');
+        });
+        return $resultSet;
+    }
+
     public function getNewspubByUser($created_by)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use ($created_by){

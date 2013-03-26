@@ -20,40 +20,74 @@
     <div id="main" class="container" style="width:1170px;">
     <div id="row" class="row">
         <div id="left" class="span2 left">
-            <div id="userinfo">
-                <h4>用户：<?php echo $user;?></h4>
-            </div>
-            <div>
-                <a href="/product/admin">所有产品</a>
-            </div>
-            <div>
-                <a href="/newspub/admin">新闻发布</a>
-            </div>
-            <div id="medialogos" class="medialogos">
-                合作媒体
-            </div>
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_admin.phtml'; 
+        ?>
         </div>
-        <div id="mid" class="span6 mid">
-            <div id="pubmgmt">
-                <h4>企业新闻发布订单</h4>
-                <table class="pubmgmttable">
+        <div id="mid" class="span8 mid">
+            <?php
+                $arr_pub_mode = array(
+                    '1' => '单篇发布',
+                    '2' => '打包发布',
+                );
+                $arr_newspub_status = array(                    
+                    '1' => '未付款',
+                    '2' => '已付款',
+                    '3' => '已发布',
+                );
+            ?>
+            <div id="pubmgmt" class="widget-box">
+                <div class="widget-title">
+                    <h4>企业新闻发布订单</h4>
+                </div>
+                <div class="widget-content nopadding">
+                <table class="table table-bordered table-striped">
                     <tr>
                         <th>订单号</th>
                         <th>业务内容</th>
                         <th>发布方式</th>
                         <th>订单状态</th>
                         <th>创建人</th>
+                        <th>操作</th>
                     </tr>
                     <?php foreach($newspubs as $np): ?>
                     <tr>
                         <td><?php echo $this->escapeHtml($np->id_newspub);?></td>
                         <td><a href="<?php echo $this->url('newspub',array('action'=>'detail','id'=>$np->id_newspub));?>"><?php echo $this->escapeHtml($np->title);?></a></td>
-                        <td><?php echo $this->escapeHtml($np->fk_pub_mode);?></td>
-                        <td><?php echo $this->escapeHtml($np->fk_newspub_status);?></td>
+                        <td>
+                            <?php 
+                            if(array_key_exists($np->fk_pub_mode, $arr_pub_mode))
+                            {
+                                echo $this->escapeHtml($arr_pub_mode[$np->fk_pub_mode]);
+                            }                            
+                            ?>
+                        </td>
+                        <td>
+                            <?php 
+                            if(array_key_exists($np->fk_newspub_status, $arr_newspub_status))
+                            {
+                                echo $this->escapeHtml($arr_newspub_status[$np->fk_newspub_status]);
+                            }                            
+                            ?>  
+                        </td>
                         <td><?php echo $this->escapeHtml($np->created_by);?></td>
+                        <td>
+                            <div id="btns" style="display:<?php echo ($np->fk_newspub_status==1)?"inline":"none";?>">
+                                <form action="<?php echo $this->url('newspub', array('action' => 'paid', 'id' => $np->id_newspub)) ;?>">
+                                    <input type="submit" class="btn btn-primary btn-mini" value="确认付款">
+                                </form>                                   
+                            </div>
+                            <div id="btns" style="display:<?php echo ($np->fk_newspub_status==2)?"inline":"none";?>">
+                                <form action="<?php echo $this->url('newspub', array('action' => 'completed', 'id' => $np->id_newspub)) ;?>">
+                                    <input type="submit" class="btn btn-primary btn-mini" value="已发布">
+                                </form>                                   
+                            </div>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                 </table>
+                </div>
             </div>
         </div>
         <div id="right" class="span3 right">

@@ -178,7 +178,7 @@ class NewspubController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
-            'newspubs' => $this->getNewspubTable()->fetchAll(),
+            'newspubs' => $this->getNewspubTable()->fetchAllDesc(),
         ));
     }
 
@@ -243,7 +243,62 @@ class NewspubController extends AbstractActionController
             'user' => $cur_user,
             'form' => $form,
         ));
+    }
 
+    public function paidAction()
+    {
+        //管理员->新闻发布->确认付款
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_newspub = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_newspub) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'admin'
+            ));
+        }
+
+        $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
+        $newspub->fk_newspub_status = 2;
+        $newspub->updated_by = $cur_user;
+        $newspub->updated_at = $this->_getDateTime();
+        $this->getNewspubTable()->saveNewspub($newspub);
+
+        return $this->redirect()->toRoute('newspub', array(
+            'action' => 'admin',
+        ));
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));
+    }
+
+    public function completedAction()
+    {
+        //管理员->新闻发布->确认付款
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_newspub = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_newspub) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'admin'
+            ));
+        }
+
+        $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
+        $newspub->fk_newspub_status = 3;
+        $newspub->updated_by = $cur_user;
+        $newspub->updated_at = $this->_getDateTime();
+        $this->getNewspubTable()->saveNewspub($newspub);
+
+        return $this->redirect()->toRoute('newspub', array(
+            'action' => 'admin',
+        ));
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));
     }
 
     public function uploadAction()

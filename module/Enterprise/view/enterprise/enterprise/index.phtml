@@ -20,58 +20,10 @@
     <div id="main" class="container" style="width:1170px;">
     <div id="row" class="row">
         <div id="left" class="span2 left">
-            <div id="user" class="user">
-                <ul>
-                    <li>
-                        <span>用户: <?php echo $user;?></span>
-                        <a href="/user/logout">退出</a>
-                    </li>
-                    <li><a href="">企业资料</a></li>
-                    <li><a href="">我的账户</a></li>
-                    <li><a href="">我的订单</a></li>
-                    <li><a href="">APP新闻助手</a></li>
-                </ul>
-            </div>
-            <div id="sidebar">
-                <ul>
-                    <!--
-                    <li>
-                        <a href="netmonitor"><span>网络监测</span></a>
-                    </li>
-                    -->
-                    <li class="submenu">
-                        <a href="#"><span>新闻发布</span></a>
-                        <ul>
-                            <li><a href="/newspub/add">我要发布</a></li>
-                            <li><a href="/newspub/index">发布管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>产品测评</span></a>
-                        <ul>
-                            <li><a href="/evaluate/add">我要评测</a></li>
-                            <li><a href="/evaluate/index">评测管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>新闻撰写</span></a>
-                        <ul>
-                            <li><a href="/writer/add">我要撰稿</a></li>
-                            <li><a href="/writer/index">撰稿管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>媒体选题</span></a>
-                        <ul>
-                            <li><a href="/topic/current">当期选题</a></li>
-                            <li><a href="/topic/mgmt">选题管理</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="interview">媒体采访</a>
-                    </li>
-                </ul>
-            </div>
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_enterprise.phtml'; 
+        ?>
         </div>
         <div id="mid" class="span8 mid">
             <div>
