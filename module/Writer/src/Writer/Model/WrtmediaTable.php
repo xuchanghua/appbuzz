@@ -34,6 +34,15 @@ class WrtmediaTable
         });
         return $rowset;
     }
+
+    public function fetchWrtmediaByUser($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->order('id_wrtmedia DESC');
+        });
+        return $rowset;
+    }
     
     public function getWrtmedia($id)
     {

@@ -26,6 +26,14 @@ class WriterTable
         return $resultSet;
     }
 
+    public function fetchAllDesc()
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select){
+            $select->order('id_writer DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchWriterByUser($created_by)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
