@@ -1,0 +1,190 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <h1>评测APP</h1>  
+    <div id="header" class="container" style="width:1170px;"> 
+        CONTAINER
+        <div class="row">
+            ROW
+            <div id="logo" class="span2 logo">
+                APPBUZZ LOGO
+            </div>
+            <div id="banner" class="span8 banner">
+                BANNER
+            </div>
+        </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span2 left">            
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_media.phtml'; 
+        ?>
+        </div>
+
+        <div id="mid" class="span8 mid">  
+            <div class="linkbtns">
+                <form action="/evaluate/index">
+                    <input type="submit" class="btn btn-primary linkbtn" value="产品评测">
+                </form>
+            </div>
+            <div>
+                <form action="/evaluate/add">
+                    <input type="submit" class="btn btn-primary linkbtn" value="我要评测">
+                </form>
+            </div>
+            <div id="evamgmt">
+                <h4>订单号：<?php echo $this->escapeHtml($evaluate->id_evaluate);?></h4>
+                <table class="pubdetailtable">
+                    <?php
+                    $arr_evaluate_status = array(
+                        1 => '新订单',
+                        2 => '媒体拒绝',
+                        3 => '媒体接受',
+                        4 => '企业拒绝',
+                        5 => '企业接受',
+                    );
+                    ?>
+                    <tr>
+                        <td class="tdlabel">App产品：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($product->name); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">产品卖点：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($evaluate->highlight);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">评测要求：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($evaluate->requirement);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">有效时间：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($evaluate->due_date);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">建议媒体采用的产品截图：</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">web下载链接</td>
+                        <td>
+                            <?php echo $this->escapeHtml($evaluate->web_link);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">Appstore下载链接</td>
+                        <td>
+                            <?php echo $this->escapeHtml($evaluate->appstore_link);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">安卓市场下载链接</td>
+                        <td>
+                            <?php echo $this->escapeHtml($evaluate->androidmkt_link);?>
+                    <tr>
+                        <td class="tdlabel">下载二维码</td>
+                        <td>
+                            <?php echo $this->escapeHtml($evaluate->barcode);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">评测状态</td>
+                        <td>
+                            <?php
+                            if($evamedia)
+                            {
+                                echo $this->escapeHtml($arr_evaluate_status[$evamedia->fk_evaluate_status]);
+                            }
+                            else
+                            {
+                                echo "新订单";
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">评测链接</td>
+                        <td>
+                            <?php 
+                            if($evamedia)
+                            {
+                                echo $this->escapeHtml($evamedia->news_link);
+                            } 
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <div style="display:<?php echo ($evamedia==false)?'none':'inline';?>">
+                                <div style="display:<?php echo ($evamedia->fk_evaluate_status==5)?'inline':'none';?>;">
+                                    <form action="<?php echo $this->url('evaluate',
+                                        array('action' => 'editnewslink', 'id' => $evaluate->id_evaluate));?>">
+                                        <input type="submit" class="btn btn-primary" value="修改评测链接">
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>                    
+                </table>
+            </div>
+        </div>
+
+        <div id="right" class="span3 right">
+            SPAN3 RIGHT
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div.user,.mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 80%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>

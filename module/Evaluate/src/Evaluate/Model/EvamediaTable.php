@@ -64,6 +64,19 @@ class EvamediaTable
         return $row;
     }
 
+    public function getEvemediaByUserAndFkEva($created_by, $fk_evaluate)
+    {
+        $rowset = $this->tableGateway->select(array(
+            'created_by' => $created_by,
+            'fk_evaluate' => $fk_evaluate,
+        ));
+        $row = $rowset->current();
+        /*if (!$row) {
+            throw new \Exception("Could not find row by $created_by and $fk_evaluate");
+        }*/
+        return $row;
+    }
+
     public function getId($created_at, $created_by)
     {
         $rowset = $this->tableGateway->select(array(

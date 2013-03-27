@@ -10,6 +10,7 @@ use User\Model\User;
 use Zend\File\Transfer\Adapter\Http as FileHttp;
 use DateTime;
 use Evaluate\Model\Evamedia;
+use Evaluate\Form\EvamediaForm;
 
 class EvaluateController extends AbstractActionController
 {
@@ -478,20 +479,78 @@ class EvaluateController extends AbstractActionController
     public function evainfoAction()
     {
         //媒体->评测邀约->查看评测信息
-        $arr_type_allowed = array(2, 3);
+        $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
-        $id_evalute = (int)$this->params()->fromRoute('id',0);        
-        if (!$id_evalute) {
+        $id_evaluate = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evaluate) {
             return $this->redirect()->toRoute('evaluate', array(
                 'action' => 'invitation'
             ));
         }
-
+        $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+        $evamedia = $this->getEvamediaTable()->getEvemediaByUserAndFkEva($cur_user, $evaluate->id_evaluate);
 
         return new ViewModel(array(
+            'evaluate' => $evaluate,
             'user' => $cur_user,
-        ));  
+            'id' => $id_evaluate,
+            'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
+            'evamedia' => $evamedia,
+        ));
+    }
+
+    public function editnewslinkAction()
+    {
+        //媒体->评测APP->添加评论链接        
+        $arr_type_allowed = array(2);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_evaluate = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evaluate) {
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'invitation'
+            ));
+        }
+        $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+        $evamedia = $this->getEvamediaTable()->getEvemediaByUserAndFkEva($cur_user, $evaluate->id_evaluate);
+
+        $em_fk_evaluate        = $evamedia->fk_evaluate;
+        $em_fk_enterprise_user = $evamedia->fk_enterprise_user;
+        $em_fk_media_user      = $evamedia->fk_media_user;
+        $em_fk_evaluate_status = $evamedia->fk_evaluate_status;
+        $em_created_by         = $evamedia->created_by;
+        $em_created_at         = $evamedia->created_at;
+
+        $form = new EvamediaForm();
+        $form->bind($evamedia);
+        $form->get('submit')->setAttribute('value','保存');
+
+        $request = $this->getRequest();
+        if($request->isPost()){   
+            $form->setInputFilter($evaluate->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $form->getData()->fk_evaluate        = $em_fk_evaluate;
+                $form->getData()->fk_enterprise_user = $em_fk_enterprise_user;
+                $form->getData()->fk_media_user      = $em_fk_media_user;
+                $form->getData()->fk_evaluate_status = $em_fk_evaluate_status;
+                $form->getData()->created_by         = $em_created_by;
+                $form->getData()->created_at         = $em_created_at;
+                $form->getData()->updated_by         = $cur_user;
+                $form->getData()->updated_at         = $this->_getDateTime();
+                $this->getEvaluateTable()->saveEvaluate($form->getData());
+
+                return $this->redirect()->toRoute('evaluate',array(
+                    'action' => 'evainfo',
+                    'id'     => $id_evaluate,
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+
+        ));
     }
 
     public function getEvaluateTable()
