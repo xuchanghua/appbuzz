@@ -43,6 +43,16 @@ class WrtmediaTable
         });
         return $rowset;
     }
+
+    public function fetchWmExRejByMedByFkWrt($fk_writer)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($fk_writer){
+            $select->where->equalTo('fk_writer', $fk_writer);
+            $select->where->notequalTo('fk_wrtmedia_status',2);
+            $select->order('id_wrtmedia DESC');
+        });
+        return $rowset;
+    }
     
     public function getWrtmedia($id)
     {
@@ -78,6 +88,7 @@ class WrtmediaTable
             'created_at'         => $wrtmedia->created_at,
             'updated_by'         => $wrtmedia->updated_by,
             'updated_at'         => $wrtmedia->updated_at,
+            'fk_wrtmedia_status' => $wrtmedia->fk_wrtmedia_status,
         );
 
         $id = (int)$wrtmedia->id_wrtmedia;

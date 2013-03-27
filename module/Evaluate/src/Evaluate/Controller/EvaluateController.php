@@ -146,7 +146,7 @@ class EvaluateController extends AbstractActionController
         }
         $evaluate = $this->getEvaluateTable()->getEvaluate($id);
 
-        $arr_media_assignees = array();
+        /*$arr_media_assignees = array();
         $evamedia = $this->getEvamediaTable()->fetchEvamediaByFkEva($id);
         if($evamedia)
         {
@@ -155,7 +155,7 @@ class EvaluateController extends AbstractActionController
                 $media_user = $this->getUserTable()->getUser($em->fk_media_user);
                 $arr_media_assignees[] = $media_user->username;
             }
-        }
+        }*/
 
         return new ViewModel(array(
             'evaluate' => $evaluate,
@@ -163,7 +163,7 @@ class EvaluateController extends AbstractActionController
             'allusers' => $this->getUserTable()->fetchAll(),
             'id' => $id,
             'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
-            'media_assignees' => $arr_media_assignees,
+            //'media_assignees' => $arr_media_assignees,
             'evamedias' => $this->getEvamediaTable()->fetchEmExRejByMedByFkEva($id),//not include those rejected by the media
         ));
     }    
@@ -448,7 +448,7 @@ class EvaluateController extends AbstractActionController
 
     public function entrejAction()
     {
-        //企业->我要评测->企业接受
+        //企业->我要评测->企业拒绝
         $arr_type_allowed = array(1, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 

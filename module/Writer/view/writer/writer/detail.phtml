@@ -20,58 +20,10 @@
     <div id="main" class="container" style="width:1170px;">
     <div id="row" class="row">
         <div id="left" class="span2 left">
-            <div id="user" class="user">
-                <ul>
-                    <li>
-                        <span>用户: <?php echo $user;?></span>
-                        <a href="/user/logout">退出</a>
-                    </li>
-                    <li><a href="">企业资料</a></li>
-                    <li><a href="">我的账户</a></li>
-                    <li><a href="">我的订单</a></li>
-                    <li><a href="">APP新闻助手</a></li>
-                </ul>
-            </div>
-            <div id="sidebar">
-                <ul>
-                    <!--
-                    <li>
-                        <a href="netmonitor"><span>网络监测</span></a>
-                    </li>
-                    -->
-                    <li class="submenu">
-                        <a href="#"><span>新闻发布</span></a>
-                        <ul>
-                            <li><a href="/newspub/add">我要发布</a></li>
-                            <li><a href="/newspub/index">发布管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>产品测评</span></a>
-                        <ul>
-                            <li><a href="/evaluate/add">我要评测</a></li>
-                            <li><a href="/evaluate/index">评测管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>新闻撰写</span></a>
-                        <ul>
-                            <li><a href="/writer/add">我要撰稿</a></li>
-                            <li><a href="/writer/index">撰稿管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>媒体选题</span></a>
-                        <ul>
-                            <li><a href="/topic/current">当期选题</a></li>
-                            <li><a href="/topic/mgmt">选题管理</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="interview">媒体采访</a>
-                    </li>
-                </ul>
-            </div>
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_enterprise.phtml'; 
+        ?>
         </div>
 
         <div id="mid" class="span8 mid">  
@@ -88,6 +40,20 @@
             <div id="evamgmt">
                 <h4>订单号：<?php echo $this->escapeHtml($writer->id_writer);?></h4>
                 <table class="pubdetailtable">
+                    <?php
+                    $arr_id_user = array();
+                    foreach($allusers as $u)
+                    {
+                        $arr_id_user[$u->id] = $u->username;
+                    }
+                    $arr_wrtmedia_status = array(
+                        1 => '新订单',
+                        2 => '媒体拒绝',
+                        3 => '媒体接受',
+                        4 => '企业拒绝',
+                        5 => '企业接受',
+                    );
+                    ?>
                     <tr>
                         <td class="tdlabel">App产品：</td>
                         <td>
@@ -106,17 +72,17 @@
                             <?php echo $this->escapeHtml($writer->hint);?>
                         </td>
                     </tr>
-                    <tr>
+                    <!--<tr>
                         <td class="tdlabel">评测媒体：</td>
                         <td>
-                            <?php 
+                            <?php /*
                             foreach ($this->media_assignees as $media)
                             {
                                 echo $media."; ";
-                            }
+                            }*/
                             ?>
                         </td>
-                    </tr>
+                    </tr>-->
                     <tr>
                         <td class="tdlabel">web下载链接</td>
                         <td>
@@ -142,6 +108,48 @@
                     <tr>
                         <td class="tdlabel">撰稿费用：</td>
                         <td>1500元/篇（800字左右）</td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">接受评测的媒体：</td>
+                        <td>
+                            <div class="widget-box">
+                                <div class="widget-content nopadding">
+                                    <table class="table table-bordered table-striped">
+                                        <tr>
+                                            <th>媒体名称</th>
+                                            <th>订单状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        <?php foreach ($wrtmedias as $wm): ?>
+                                        <tr>
+                                            <td><?php echo $arr_id_user[$wm->fk_media_user]; ?></td>
+                                            <td>
+                                                <div class="linkbtns">
+                                                    <?php echo $arr_wrtmedia_status[$wm->fk_wrtmedia_status]; ?>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div id="btns" style="display:<?php echo ($wm->fk_wrtmedia_status==3)?"inline":"none";?>">
+                                                    <div class="linkbtns">
+                                                        <form action="<?php echo $this->url('writer',
+                                                        array('action' => 'entacc', 'id' => $wm->id_wrtmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary" value="接受">
+                                                        </form>
+                                                    </div>
+                                                    <div>
+                                                        <form action="<?php echo $this->url('writer',
+                                                        array('action' => 'entrej', 'id' => $wm->id_wrtmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary" value="拒绝">
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </td>                                            
+                                        </tr>
+                                        <?php endforeach;?>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <td></td>

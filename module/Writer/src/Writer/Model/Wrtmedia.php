@@ -16,6 +16,7 @@ class Wrtmedia implements InputFilterAwareInterface
     public $created_at;
     public $updated_by;
     public $updated_at;
+    public $fk_wrtmedia_status;
 
     protected $inputFilter;                       // <-- Add this variable
 
@@ -29,6 +30,7 @@ class Wrtmedia implements InputFilterAwareInterface
         $this->created_at         = (isset($data['created_at']))         ? $data['created_at']         : null;
         $this->updated_by         = (isset($data['updated_by']))         ? $data['updated_by']         : null;
         $this->updated_at         = (isset($data['updated_at']))         ? $data['updated_at']         : null;
+        $this->fk_wrtmedia_status = (isset($data['fk_wrtmedia_status'])) ? $data['fk_wrtmedia_status'] : null;
     }
 
     // Add the following method:

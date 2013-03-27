@@ -32,6 +32,13 @@
                     <h4>用户信息——</h4>
                 </div>
                 <div class="widget-content nopadding">
+                    <?php
+                    $arr_user_type = array(
+                        '1' => '企业用户',
+                        '2' => '媒体用户',
+                        '3' => '管理员用户',
+                        );
+                    ?>
                     <table id="tbappinfo" class="table table-bordered table-striped">
                         <tr>
                             <th>id</th>
@@ -44,7 +51,18 @@
                         <tr>
                             <td><?php echo $u->id; ?></td>
                             <td><a href="/user/detail/<?php echo $u->id ;?>"><?php echo $u->username; ?></a></td>
-                            <td><?php echo $u->fk_user_type; ?> </td>
+                            <td>
+                                <?php 
+                                if(array_key_exists($u->fk_user_type, $arr_user_type))
+                                {
+                                    echo $arr_user_type[$u->fk_user_type]; 
+                                }
+                                else
+                                {
+                                    echo "用户类型错误！";
+                                }
+                                ?> 
+                            </td>
                             <td><?php echo $u->real_name; ?> </td>
                             <td><?php echo $u->email; ?> </td>
                         </tr>
