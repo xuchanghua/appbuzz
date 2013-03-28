@@ -19,7 +19,7 @@ class EvamediaForm extends Form
             ),
         ));
         $this->add(array(
-            'name' => 'newslink',
+            'name' => 'news_link',
             'attributes' => array(
                 'type'  => 'text',
                 'placeholder' => '评测链接',

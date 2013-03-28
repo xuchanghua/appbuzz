@@ -539,7 +539,7 @@ class EvaluateController extends AbstractActionController
                 $form->getData()->created_at         = $em_created_at;
                 $form->getData()->updated_by         = $cur_user;
                 $form->getData()->updated_at         = $this->_getDateTime();
-                $this->getEvaluateTable()->saveEvaluate($form->getData());
+                $this->getEvamediaTable()->saveEvamedia($form->getData());
 
                 return $this->redirect()->toRoute('evaluate',array(
                     'action' => 'evainfo',
@@ -549,7 +549,11 @@ class EvaluateController extends AbstractActionController
         }
 
         return new ViewModel(array(
-
+            'user' => $cur_user,
+            'form' => $form,
+            'evaluate' => $evaluate,
+            'evamedia' => $evamedia,
+            'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
         ));
     }
 
