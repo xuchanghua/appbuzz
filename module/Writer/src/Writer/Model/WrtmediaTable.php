@@ -65,6 +65,19 @@ class WrtmediaTable
         return $row;
     }
 
+    public function getWrtmediaByUserAndFkWrt($created_by, $fk_writer)
+    {
+        $rowset = $this->tableGateway->select(array(
+            'created_by' => $created_by,
+            'fk_writer' => $fk_writer,
+        ));
+        $row = $rowset->current();
+        /*if (!$row) {
+            throw new \Exception("Could not find row by $created_by and $fk_writer");
+        }*/
+        return $row;
+    }
+
     public function getId($created_at, $created_by)
     {
         $rowset = $this->tableGateway->select(array(

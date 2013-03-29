@@ -120,6 +120,7 @@
                                             <th>媒体名称</th>
                                             <th>订单状态</th>
                                             <th>操作</th>
+                                            <th>评测链接</th>
                                         </tr>
                                         <?php foreach ($evamedias as $em): ?>
                                         <tr>
@@ -144,7 +145,10 @@
                                                         </form>
                                                     </div>
                                                 </div>
-                                            </td>                                            
+                                            </td>    
+                                            <td>
+                                                <?php echo $em->news_link; ?>
+                                            </td>                                        
                                         </tr>
                                         <?php endforeach;?>
                                     </table>

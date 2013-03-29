@@ -1,0 +1,14 @@
+<form name="uploadform" action="/attachment/upload" enctype="multipart/form-data" method="POST">
+    <input type="hidden" name="MAX_FILE_SIZE" value="100000000" />
+    文件：<input name="uploadedfile" type="file" />
+    <br />
+    <!--<input type="submit" value="Upload File" />-->
+    <input type="button" onClick=uploadSubmit() value="Upload File!"/>
+</form>
+
+<script>
+function uploadSubmit()
+{
+	uploadform.submit();
+}
+</script>

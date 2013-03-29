@@ -224,7 +224,7 @@ class WriterController extends AbstractActionController
     public function addAction()
     {
         //$cur_user = $this->_authenticateSession(1);
-        $arr_type_allowed = array(1, 3);
+        $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
         //handle the form
@@ -255,7 +255,7 @@ class WriterController extends AbstractActionController
                         $writer->created_at,
                         $writer->created_by
                     );
-
+                /*
                 //start: handle the assigned media
                 $arr_get = $form->getData();
                 $str_wrtmedias = trim($arr_get["wrtmedia"]);
@@ -281,7 +281,7 @@ class WriterController extends AbstractActionController
                     }
                 }
                 //end: handle the assigned media
-                
+                */
                 return $this->redirect()->toRoute('writer',array(
                     'action'=>'detail',
                     'id'    => $id_writer,
@@ -441,6 +441,30 @@ class WriterController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+        ));
+    }
+
+    public function wrtinfoAction()
+    {
+        //媒体->自由撰稿人->需求列表->查看撰稿订单信息
+        $arr_type_allowed = array(2);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_writer = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_writer) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'reqlist'
+            ));
+        }
+        $writer = $this->getWriterTable()->getWriter($id_writer);
+        $wrtmedia = $this->getWrtmediaTable()->getWrtmediaByUserAndFkWrt($cur_user, $writer->id_writer);
+
+        return new ViewModel(array(
+            'writer' => $writer,
+            'user' => $cur_user,
+            'id' => $id_writer,
+            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'wrtmedia' => $wrtmedia,
         ));
     }
 
