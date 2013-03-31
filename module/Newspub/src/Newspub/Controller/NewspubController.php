@@ -11,6 +11,7 @@ use Zend\File\Transfer\Adapter\Http as FileHttp;
 use Zend\Validator\File\Size as FileSize;
 use Zend\Validator\File\Extension as FileExt;
 use Attachment\Model\Attachment;
+use Attachment\Model\Barcode;
 use DateTime;
 
 class NewspubController extends AbstractActionController
@@ -19,9 +20,10 @@ class NewspubController extends AbstractActionController
     protected $newspubTable;
     protected $productTable;
     protected $attachmentTable;
+    protected $barcodeTable;
 
     public function indexAction()
-    {     
+    {
         //Authenticate the user information from the session
         //$cur_user = $this->_authenticateSession(1);
         $arr_type_allowed = array(1, 3);
@@ -72,127 +74,6 @@ class NewspubController extends AbstractActionController
 
             //upload start
             $file = $this->params()->fromFiles('barcode');
-            $max = 40000;//单位比特
-            $sizeObj = new FileSize(array("max"=>$max));
-            $extObj = new FileExt(array("jpg","gif","png"));
-            $adapter = new FileHttp();
-            $adapter->setValidators(array($sizeObj, $extObj),$file['name']);
-            if(!$adapter->isValid()){
-                echo implode("\n",$dataError = $adapter->getMessages());
-            }else{
-                //check if the path exists
-                //path format: /public/upload/user_name/module_name/id_module_name/
-                $path_0    = 'public/upload/';
-                $path_1    = $path_0.$cur_user.'/';
-                $path_2    = $path_1.'newspub/';
-                $path_full = $path_2.$id_newspub.'/';
-                if(!is_dir($path_1))
-                {
-                    mkdir($path_1);
-                }
-                if(!is_dir($path_2))
-                {
-                    mkdir($path_2);
-                }
-                if(!is_dir($path_full))
-                {
-                    mkdir($path_full);
-                }
-                $adapter->setDestination($path_full);
-                if(!$adapter->receive($file['name'])){
-                    echo implode("\n", $adapter->getMessages());
-                }
-                else
-                {
-                    //create a record in the table 'attachment'
-                    $attachment = new Attachment();
-                    $attachment->filename = $file['name'];
-                    $attachment->path = $path_full;
-                    $attachment->created_by = $cur_user;
-                    $attachment->created_at = $this->_getDateTime();
-                    $this->getAttachmentTable()->saveAttachment($attachment);
-                    $id_attachment = $this->getAttachmentTable()->getId($attachment->created_at, $attachment->created_by);
-                    //md5() the file name
-                    //rename($file['name'], md5($file['name']));
-                }
-            }
-            //upload end
-
-                $newspub2 = $this->getNewspubTable()->getNewspub($id_newspub);
-                $newspub2->barcode = $id_attachment;
-                $this->getNewspubTable()->saveNewspub($newspub2);
-                
-                return $this->redirect()->toRoute('newspub',array(
-                    'action'=>'detail',
-                    'id'    => $id_newspub,
-                ));
-            }
-        }
-
-        return new ViewModel(array(
-            'user' => $cur_user,
-            'form' => $form,
-            'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
-            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
-        ));        
-    }
-
-    public function detailAction()
-    {
-        //$cur_user = $this->_authenticateSession(1);
-        $arr_type_allowed = array(1, 3);
-        $cur_user = $this->_auth($arr_type_allowed);
-
-        $id = (int)$this->params()->fromRoute('id',0);        
-        if (!$id) {
-            return $this->redirect()->toRoute('newspub', array(
-                'action' => 'index'
-            ));
-        }
-        $np = $this->getNewspubTable()->getNewspub($id);
-        if($np->barcode)
-        {
-            $attachment = $this->getAttachmentTable()->getAttachment($np->barcode);
-            $barcode_path = '/upload/'.$cur_user.'/newspub/'.$id.'/'.$attachment->filename;
-        }
-        else
-        {
-            $barcode_path = '#';
-        }
-
-        return new ViewModel(array(
-            'np' => $np,
-            'user' => $cur_user,
-            'id' => $id,
-            'product' => $this->getProductTable()->getProduct($np->fk_product),
-            'barcode_path' => $barcode_path,
-        ));
-    }
-
-    public function editAction()
-    {
-        //$cur_user = $this->_authenticateSession(1);
-        $arr_type_allowed = array(1, 3);
-        $cur_user = $this->_auth($arr_type_allowed);
-
-        $id_newspub = (int)$this->params()->fromRoute('id',0);        
-        if (!$id_newspub) {
-            return $this->redirect()->toRoute('newspub', array(
-                'action' => 'index',
-            ));
-        }
-        $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
-        $product = $this->getProductTable()->getProduct($newspub->fk_product);
-        $np_created_by = $newspub->created_by;
-        $np_created_at = $newspub->created_at;
-        $form = new NewspubForm();
-        $form->bind($newspub);
-        $form->get('submit')->setAttribute('value','保存');
-
-        $request = $this->getRequest();
-        if ($request->isPost()){
-            //upload start
-            $file = $this->params()->fromFiles('barcode');
             $max = 400000;//单位比特
             $sizeObj = new FileSize(array("max"=>$max));
             $extObj = new FileExt(array("jpg","gif","png"));
@@ -225,36 +106,165 @@ class NewspubController extends AbstractActionController
                 }
                 else
                 {
-                    //create a record in the table 'attachment'
-                    $attachment = new Attachment();
-                    $attachment->filename = $file['name'];
-                    $attachment->path = $path_full;
-                    $attachment->created_by = $cur_user;
-                    $attachment->created_at = $this->_getDateTime();
-                    $this->getAttachmentTable()->saveAttachment($attachment);
-                    $id_attachment = $this->getAttachmentTable()->getId($attachment->created_at, $attachment->created_by);
+                    //create a record in the table 'barcode'
+                    $barcode = new Barcode();
+                    $barcode->filename = $file['name'];
+                    $barcode->path = $path_full;
+                    $barcode->created_by = $cur_user;
+                    $barcode->created_at = $this->_getDateTime();
+                    $this->getBarcodeTable()->saveBarcode($barcode);
+                    $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
                     //md5() the file name
                     //rename($file['name'], md5($file['name']));
                 }
             }
             //upload end
 
+                $newspub2 = $this->getNewspubTable()->getNewspub($id_newspub);
+                $newspub2->barcode = $id_barcode;
+                $this->getNewspubTable()->saveNewspub($newspub2);
+                
+                return $this->redirect()->toRoute('newspub',array(
+                    'action'=>'detail',
+                    'id'    => $id_newspub,
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
+            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+        ));        
+    }
+
+    public function detailAction()
+    {
+        //$cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id = (int)$this->params()->fromRoute('id',0);        
+        if (!$id) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'index'
+            ));
+        }
+        $np = $this->getNewspubTable()->getNewspub($id);
+        if($np->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($np->barcode);
+            $barcode_path = '/upload/'.$cur_user.'/newspub/'.$id.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
+
+        return new ViewModel(array(
+            'np' => $np,
+            'user' => $cur_user,
+            'id' => $id,
+            'product' => $this->getProductTable()->getProduct($np->fk_product),
+            'barcode_path' => $barcode_path,
+        ));
+    }
+
+    public function editAction()
+    {
+        //$cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_newspub = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_newspub) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'index',
+            ));
+        }
+        $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
+        $product = $this->getProductTable()->getProduct($newspub->fk_product);
+        $np_created_by = $newspub->created_by;
+        $np_created_at = $newspub->created_at;
+        $np_barcode = $newspub->barcode;
+        $form = new NewspubForm();
+        $form->bind($newspub);
+        $form->get('submit')->setAttribute('value','保存');
+
+        $request = $this->getRequest();
+        if ($request->isPost()){
+            //upload start
+            $file = $this->params()->fromFiles('barcode');
+            if(!$file['name'])
+            {
+                //if the barcode is not pick up:
+                //skip the upload section
+            }
+            else
+            {
+                $max = 400000;//单位比特
+                $sizeObj = new FileSize(array("max"=>$max));
+                $extObj = new FileExt(array("jpg","gif","png"));
+                $adapter = new FileHttp();
+                $adapter->setValidators(array($sizeObj, $extObj),$file['name']);
+                if(!$adapter->isValid()){
+                    echo implode("\n",$dataError = $adapter->getMessages());
+                }else{
+                    //check if the path exists
+                    //path format: /public/upload/user_name/module_name/id_module_name/
+                    $path_0    = 'public/upload/';
+                    $path_1    = $path_0.$cur_user.'/';
+                    $path_2    = $path_1.'newspub/';
+                    $path_full = $path_2.$id_newspub.'/';
+                    if(!is_dir($path_1))
+                    {
+                        mkdir($path_1);
+                    }
+                    if(!is_dir($path_2))
+                    {
+                        mkdir($path_2);
+                    }
+                    if(!is_dir($path_full))
+                    {
+                        mkdir($path_full);
+                    }
+                    $adapter->setDestination($path_full);
+                    if(!$adapter->receive($file['name'])){
+                        echo implode("\n", $adapter->getMessages());
+                    }
+                    else
+                    {
+                        //create a record in the table 'barcode'
+                        $barcode = new Barcode();
+                        $barcode->filename = $file['name'];
+                        $barcode->path = $path_full;
+                        $barcode->created_by = $cur_user;
+                        $barcode->created_at = $this->_getDateTime();
+                        $this->getBarcodeTable()->saveBarcode($barcode);
+                        $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
+                        //md5() the file name
+                        //rename($file['name'], md5($file['name']));
+                    }
+                }
+            }
+            //upload end
+
             $form->setInputFilter($newspub->getInputFilter());
             $form->setData($request->getPost());
-            //die(var_dump($request->getPost()));
             if($form->isValid()){
                 $form->getData()->created_by = $np_created_by;
                 $form->getData()->created_at = $np_created_at;
                 $form->getData()->updated_by = $cur_user;
                 $form->getData()->updated_at = $this->_getDateTime();
                 $form->getData()->fk_newspub_status = 1;
-                if($id_attachment)
+                if(isset($id_barcode))
                 {
-                    $form->getData()->barcode = $id_attachment;
+                    $form->getData()->barcode = $id_barcode;
                 }
                 else
                 {
-                    $form->getData()->barcode = $newspub->barcode;
+                    $form->getData()->barcode = $np_barcode;
                 }
                 $this->getNewspubTable()->saveNewspub($form->getData());   
 
@@ -312,16 +322,8 @@ class NewspubController extends AbstractActionController
         $form->get('submit')->setAttribute('value','保存');
 
         $request = $this->getRequest();
-        if ($request->isPost()){
-            //upload start
-            $adapter = new FileHttp();
-            $adapter->setDestination('public');
-            if (!$adapter->receive()) 
-            {
-                echo implode("\n", $adapter->getMessages());
-                //die($adapter->getMessages());
-            }
-            //upload end
+        if ($request->isPost()){            
+
             $form->setInputFilter($newspub->getInputFilter());
             $form->setData($request->getPost());
             //die(var_dump($request->getPost()));
@@ -332,14 +334,67 @@ class NewspubController extends AbstractActionController
                 $form->getData()->updated_at = $this->_getDateTime();
                 $form->getData()->fk_newspub_status = 1;
                 $form->getData()->fk_product = $id_product;
-                $this->getNewspubTable()->saveNewspub($form->getData());   
-                $id = $this->getNewspubTable()->getId(
+                $this->getNewspubTable()->saveNewspub($form->getData());                   
+                $id_newspub = $this->getNewspubTable()->getId(
                     $form->getData()->created_at, 
                     $form->getData()->created_by
                 );
+
+            //upload start
+            $file = $this->params()->fromFiles('barcode');
+            $max = 40000;//单位比特
+            $sizeObj = new FileSize(array("max"=>$max));
+            $extObj = new FileExt(array("jpg","gif","png"));
+            $adapter = new FileHttp();
+            $adapter->setValidators(array($sizeObj, $extObj),$file['name']);
+            if(!$adapter->isValid()){
+                echo implode("\n",$dataError = $adapter->getMessages());
+            }else{
+                //check if the path exists
+                //path format: /public/upload/user_name/module_name/id_module_name/
+                $path_0    = 'public/upload/';
+                $path_1    = $path_0.$cur_user.'/';
+                $path_2    = $path_1.'newspub/';
+                $path_full = $path_2.$id_newspub.'/';
+                if(!is_dir($path_1))
+                {
+                    mkdir($path_1);
+                }
+                if(!is_dir($path_2))
+                {
+                    mkdir($path_2);
+                }
+                if(!is_dir($path_full))
+                {
+                    mkdir($path_full);
+                }
+                $adapter->setDestination($path_full);
+                if(!$adapter->receive($file['name'])){
+                    echo implode("\n", $adapter->getMessages());
+                }
+                else
+                {
+                    //create a record in the table 'barcode'
+                    $barcode = new Barcode();
+                    $barcode->filename = $file['name'];
+                    $barcode->path = $path_full;
+                    $barcode->created_by = $cur_user;
+                    $barcode->created_at = $this->_getDateTime();
+                    $this->getBarcodeTable()->saveBarcode($barcode);
+                    $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
+                    //md5() the file name
+                    //rename($file['name'], md5($file['name']));
+                }
+            }
+            //upload end
+
+                $newspub2 = $this->getNewspubTable()->getNewspub($id_newspub);
+                $newspub2->barcode = $id_barcode;
+                $this->getNewspubTable()->saveNewspub($newspub2);
+
                 return $this->redirect()->toRoute('newspub',array(
                     'action'=>'detail',
-                    'id'    => $id,
+                    'id'    => $id_newspub,
                 ));
             }
         }
@@ -458,6 +513,15 @@ class NewspubController extends AbstractActionController
         $this->attachmentTable = $sm->get('Attachment\Model\AttachmentTable');
         }
         return $this->attachmentTable;
+    }
+
+    public function getBarcodeTable()
+    {
+        if (!$this->barcodeTable) {
+        $sm = $this->getServiceLocator();
+        $this->barcodeTable = $sm->get('Attachment\Model\BarcodeTable');
+        }
+        return $this->barcodeTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

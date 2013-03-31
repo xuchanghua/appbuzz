@@ -3,6 +3,8 @@ namespace Attachment;
 
 use Attachment\Model\Attachment;
 use Attachment\Model\AttachmentTable;
+use Attachment\Model\Barcode;
+use Attachment\Model\BarcodeTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -41,6 +43,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Attachment());
                     return new TableGateway('attachment', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Attachment\Model\BarcodeTable' =>  function($sm) {
+                    $tableGateway = $sm->get('BarcodeTableGateway');
+                    $table = new BarcodeTable($tableGateway);
+                    return $table;
+                },
+                'BarcodeTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Barcode());
+                    return new TableGateway('barcode', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );
