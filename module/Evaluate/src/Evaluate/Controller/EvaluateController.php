@@ -8,9 +8,12 @@ use Evaluate\Form\EvaluateForm;       // <-- Add this import
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use Zend\File\Transfer\Adapter\Http as FileHttp;
+use Zend\Validator\File\Size as FileSize;
+use Zend\Validator\File\Extension as FileExt;
 use DateTime;
 use Evaluate\Model\Evamedia;
 use Evaluate\Form\EvamediaForm;
+use Attachment\Model\Barcode;
 
 class EvaluateController extends AbstractActionController
 {
@@ -18,6 +21,7 @@ class EvaluateController extends AbstractActionController
     protected $userTable;
     protected $productTable;
     protected $evamediaTable;
+    protected $barcodeTable;
 
     public function indexAction()
     {     
@@ -70,15 +74,6 @@ class EvaluateController extends AbstractActionController
 
         $request = $this->getRequest();
         if($request->isPost()){
-            //upload start
-            $adapter = new FileHttp();
-            $adapter->setDestination('public');
-            if (!$adapter->receive()) 
-            {
-                echo implode("\n", $adapter->getMessages());
-                //die($adapter->getMessages());
-            }
-            //upload end
             $form->setInputFilter($evaluate->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
@@ -92,33 +87,58 @@ class EvaluateController extends AbstractActionController
                     $form->getData()->created_at, 
                     $form->getData()->created_by
                 );
-                
-                //start: handle the assigned media
-                $arr_get = $form->getData();
-                $str_evamedias = trim($arr_get->evamedia);
-                $arr_evamedias = explode(";", $str_evamedias);
-                foreach ($arr_evamedias as $em)
+
+            //upload start
+            $file = $this->params()->fromFiles('barcode');
+            $max = 400000;//单位比特
+            $sizeObj = new FileSize(array("max"=>$max));
+            $extObj = new FileExt(array("jpg","gif","png"));
+            $adapter = new FileHttp();
+            $adapter->setValidators(array($sizeObj, $extObj),$file['name']);
+            if(!$adapter->isValid()){
+                echo implode("\n",$dataError = $adapter->getMessages());
+            }else{
+                //check if the path exists
+                //path format: /public/upload/user_name/module_name/id_module_name/
+                $path_0    = 'public/upload/';
+                $path_1    = $path_0.$cur_user.'/';
+                $path_2    = $path_1.'evaluate/';
+                $path_full = $path_2.$id_evaluate.'/';
+                if(!is_dir($path_1))
                 {
-                    $evamedia = new Evamedia();    
-                    $evamedia->fk_evaluate = $id_evaluate;
-                    $enterprise_user = $this->getUserTable()->getUserByName($cur_user);
-                    $evamedia->fk_enterprise_user = $enterprise_user->id;
-                    if($this->getUserTable()->checkUser($em)) {
-                        $media_user = $this->getUserTable()->getUserByName($em);
-                        $evamedia->fk_media_user = $media_user->id;                        
-                        $evamedia->created_by = $cur_user;
-                        $evamedia->created_at = $this->_getDateTime();
-                        $evamedia->updated_by = $cur_user;
-                        $evamedia->updated_at = $this->_getDateTime();
-                        $this->getEvamediaTable()->saveEvamedia($evamedia);
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    mkdir($path_1);
                 }
-                //end: handle the assigned media
+                if(!is_dir($path_2))
+                {
+                    mkdir($path_2);
+                }
+                if(!is_dir($path_full))
+                {
+                    mkdir($path_full);
+                }
+                $adapter->setDestination($path_full);
+                if(!$adapter->receive($file['name'])){
+                    echo implode("\n", $adapter->getMessages());
+                }
+                else
+                {
+                    //create a record in the table 'barcode'
+                    $barcode = new Barcode();
+                    $barcode->filename = $file['name'];
+                    $barcode->path = $path_full;
+                    $barcode->created_by = $cur_user;
+                    $barcode->created_at = $this->_getDateTime();
+                    $this->getBarcodeTable()->saveBarcode($barcode);
+                    $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
+                    //md5() the file name
+                    //rename($file['name'], md5($file['name']));
+                }
+            }
+            //upload end
                 
+                $evaluate2 = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+                $evaluate2->barcode = $id_barcode;
+                $this->getEvaluateTable()->saveEvaluate($evaluate2);
 
                 return $this->redirect()->toRoute('evaluate',array(
                     'action'=>'detail',
@@ -146,6 +166,15 @@ class EvaluateController extends AbstractActionController
             ));
         }
         $evaluate = $this->getEvaluateTable()->getEvaluate($id);
+        if($evaluate->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
+            $barcode_path = '/upload/'.$cur_user.'/evaluate/'.$id.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
 
         /*$arr_media_assignees = array();
         $evamedia = $this->getEvamediaTable()->fetchEvamediaByFkEva($id);
@@ -166,6 +195,7 @@ class EvaluateController extends AbstractActionController
             'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
             //'media_assignees' => $arr_media_assignees,
             'evamedias' => $this->getEvamediaTable()->fetchEmExRejByMedByFkEva($id),//not include those rejected by the media
+            'barcode_path' => $barcode_path,
         ));
     }    
 
@@ -175,31 +205,88 @@ class EvaluateController extends AbstractActionController
         $arr_type_allowed = array(1, 2, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
-        $id = (int)$this->params()->fromRoute('id',0);
-        if(!$id){
+        $id_evaluate = (int)$this->params()->fromRoute('id',0);
+        if(!$id_evaluate){
             return $this->redirect()->toRoute('evaluate', array(
                 'action' => 'index',
             ));
         }
-        $evaluate = $this->getEvaluateTable()->getEvaluate($id);
+        $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+        if($evaluate->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
+            $barcode_path = '/upload/'.$cur_user.'/evaluate/'.$id_evaluate.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
         $product = $this->getProductTable()->getProduct($evaluate->fk_product);
         $eva_created_by = $evaluate->created_by;
         $eva_created_at = $evaluate->created_at;
+        $eva_barcode    = $evaluate->barcode;
         $form = new EvaluateForm();
         $form->bind($evaluate);
         $form->get('submit')->setAttribute('value','保存');
 
         $request = $this->getRequest();
-        if($request->isPost()){            
+        if($request->isPost()){
             //upload start
-            $adapter = new FileHttp();
-            $adapter->setDestination('public');
-            if (!$adapter->receive()) 
+            $file = $this->params()->fromFiles('barcode');
+            if(!$file['name'])
             {
-                echo implode("\n", $adapter->getMessages());
-                //die($adapter->getMessages());
+                //if the barcode is not pick up:
+                //skip the upload section
+            }
+            else
+            {
+                $max = 400000;
+                $sizeObj = new FileSize(array("max"=>$max));
+                $extObj = new FileExt(array("jpg", "gif", "png"));
+                $adapter = new FileHttp();
+                $adapter->setValidators(array($sizeObj, $extObj), $file['name']);
+                if(!$adapter->isValid()){
+                    echo implode("\n", $dataError = $adapter->getMessages());
+                }else{
+                    //check if the path exists
+                    //path format: /public/upload/user_name/module_name/id_module_name/
+                    $path_0    = 'public/upload/';
+                    $path_1    = $path_0.$cur_user.'/';
+                    $path_2    = $path_1.'evaluate/';
+                    $path_full = $path_2.$id_evaluate.'/';
+                    if(!is_dir($path_1))
+                    {
+                        mkdir($path_1);
+                    }
+                    if(!is_dir($path_2))
+                    {
+                        mkdir($path_2);
+                    }
+                    if(!is_dir($path_full))
+                    {
+                        mkdir($path_full);
+                    }
+                    $adapter->setDestination($path_full);
+                    if(!$adapter->receive($file['name'])){
+                        echo implode("\n", $adapter->getMessages());
+                    }
+                    else
+                    {
+                        //create a record in the table 'barcode'
+                        $barcode = new Barcode();
+                        $barcode->filename = $file['name'];
+                        $barcode->path = $path_full;
+                        $barcode->created_by = $cur_user;
+                        $barcode->created_at = $this->_getDateTime();
+                        $this->getBarcodeTable()->saveBarcode($barcode);
+                        $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
+                        //md5() the file name
+                        //rename($file['name'], md5($file['name']));
+                    }
+                }
             }
             //upload end
+
             $form->setInputFilter($evaluate->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
@@ -207,15 +294,24 @@ class EvaluateController extends AbstractActionController
                 $form->getData()->created_at = $eva_created_at;
                 $form->getData()->updated_by = $cur_user;
                 $form->getData()->updated_at = $this->_getDateTime();
+                if(isset($id_barcode))
+                {
+                    $form->getData()->barcode = $id_barcode;
+                }
+                else
+                {
+                    $form->getData()->barcode = $eva_barcode;
+                }
                 $this->getEvaluateTable()->saveEvaluate($form->getData());
 
                 return $this->redirect()->toRoute('evaluate',array(
                     'action' => 'detail',
-                    'id'     => $id,
+                    'id'     => $id_evaluate,
                 ));
             }
         }
 
+        /*
         $arr_media_assignees = array();
         $evamedia = $this->getEvamediaTable()->fetchEvamediaByFkEva($id);
         if($evamedia)
@@ -226,14 +322,16 @@ class EvaluateController extends AbstractActionController
                 $arr_media_assignees[] = $media_user->username;
             }
         }
+        */
 
         return new ViewModel(array(
             //'evaluate' => $this->getEvaluateTable()->getEvaluate($id),
             'user'     => $cur_user,
             'form'     => $form,
-            'id'       => $id,
+            'id'       => $id_evaluate,
             'product'  => $product,
-            'media_assignees' => $arr_media_assignees,
+            //'media_assignees' => $arr_media_assignees,
+            'barcode_path' => $barcode_path,
         ));
     }
 
@@ -248,15 +346,6 @@ class EvaluateController extends AbstractActionController
         $form->get('submit')->setValue('提交订单');
         $request = $this->getRequest();
         if($request->isPost()){
-            //upload start
-            $adapter = new FileHttp();
-            $adapter->setDestination('public');
-            if (!$adapter->receive()) 
-            {
-                echo implode("\n", $adapter->getMessages());
-                //die($adapter->getMessages());
-            }
-            //upload end
             $evaluate = new Evaluate();
             $form->setInputFilter($evaluate->getInputFilter());
             $form->setData($request->getPost());
@@ -272,6 +361,58 @@ class EvaluateController extends AbstractActionController
                         $evaluate->created_at,
                         $evaluate->created_by
                     );
+
+                //upload start
+                $file = $this->params()->fromFiles('barcode');
+                $max = 400000;//单位比特
+                $sizeObj = new FileSize(array("max"=>$max));
+                $extObj = new FileExt(array("jpg","gif","png"));
+                $adapter = new FileHttp();
+                $adapter->setValidators(array($sizeObj, $extObj),$file['name']);
+                if(!$adapter->isValid()){
+                    echo implode("\n",$dataError = $adapter->getMessages());
+                }else{
+                    //check if the path exists
+                    //path format: /public/upload/user_name/module_name/id_module_name/
+                    $path_0    = 'public/upload/';
+                    $path_1    = $path_0.$cur_user.'/';
+                    $path_2    = $path_1.'evaluate/';
+                    $path_full = $path_2.$id_evaluate.'/';
+                    if(!is_dir($path_1))
+                    {
+                        mkdir($path_1);
+                    }
+                    if(!is_dir($path_2))
+                    {
+                        mkdir($path_2);
+                    }
+                    if(!is_dir($path_full))
+                    {
+                        mkdir($path_full);
+                    }
+                    $adapter->setDestination($path_full);
+                    if(!$adapter->receive($file['name'])){
+                        echo implode("\n", $adapter->getMessages());
+                    }
+                    else
+                    {
+                        //create a record in the table 'barcode'
+                        $barcode = new Barcode();
+                        $barcode->filename = $file['name'];
+                        $barcode->path = $path_full;
+                        $barcode->created_by = $cur_user;
+                        $barcode->created_at = $this->_getDateTime();
+                        $this->getBarcodeTable()->saveBarcode($barcode);
+                        $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
+                        //md5() the file name
+                        //rename($file['name'], md5($file['name']));
+                    }
+                }
+                //upload end
+
+                $evaluate2 = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+                $evaluate2->barcode = $id_barcode;
+                $this->getEvaluateTable()->saveEvaluate($evaluate2);
 
                 /*
                 //start: handle the assigned media
@@ -591,6 +732,15 @@ class EvaluateController extends AbstractActionController
         $this->productTable = $sm->get('Product\Model\ProductTable');
         }
         return $this->productTable;
+    }
+
+    public function getBarcodeTable()
+    {
+        if (!$this->barcodeTable) {
+            $sm = $this->getServiceLocator();
+            $this->barcodeTable = $sm->get('Attachment\Model\BarcodeTable');
+        }
+        return $this->barcodeTable;
     }
 
     protected function _getEvamedia(Evaluate $evaluate)

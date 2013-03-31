@@ -100,10 +100,13 @@
                         <td class="tdlabel">安卓市场下载链接</td>
                         <td>
                             <?php echo $this->escapeHtml($evaluate->androidmkt_link);?>
+                        </td>
+                    </tr>
                     <tr>
                         <td class="tdlabel">下载二维码</td>
                         <td>
-                            <?php echo $this->escapeHtml($evaluate->barcode);?>
+                            <img src="<?php echo $barcode_path;?>" height="200" width="200">
+                            <?php //echo $this->escapeHtml($np->barcode);?>
                         </td>
                     </tr>
                     <tr>

@@ -70,55 +70,58 @@ class NewspubController extends AbstractActionController
                 $newspub->fk_newspub_status = 1;
                 //$newspub->barcode = $id_attachment;
                 $this->getNewspubTable()->saveNewspub($newspub);
-                $id_newspub = $this->getNewspubTable()->getId($newspub->created_at, $newspub->created_by);
+                $id_newspub = $this->getNewspubTable()->getId(
+                        $newspub->created_at, 
+                        $newspub->created_by
+                    );
 
-            //upload start
-            $file = $this->params()->fromFiles('barcode');
-            $max = 400000;//单位比特
-            $sizeObj = new FileSize(array("max"=>$max));
-            $extObj = new FileExt(array("jpg","gif","png"));
-            $adapter = new FileHttp();
-            $adapter->setValidators(array($sizeObj, $extObj),$file['name']);
-            if(!$adapter->isValid()){
-                echo implode("\n",$dataError = $adapter->getMessages());
-            }else{
-                //check if the path exists
-                //path format: /public/upload/user_name/module_name/id_module_name/
-                $path_0    = 'public/upload/';
-                $path_1    = $path_0.$cur_user.'/';
-                $path_2    = $path_1.'newspub/';
-                $path_full = $path_2.$id_newspub.'/';
-                if(!is_dir($path_1))
-                {
-                    mkdir($path_1);
+                //upload start
+                $file = $this->params()->fromFiles('barcode');
+                $max = 400000;//单位比特
+                $sizeObj = new FileSize(array("max"=>$max));
+                $extObj = new FileExt(array("jpg","gif","png"));
+                $adapter = new FileHttp();
+                $adapter->setValidators(array($sizeObj, $extObj),$file['name']);
+                if(!$adapter->isValid()){
+                    echo implode("\n",$dataError = $adapter->getMessages());
+                }else{
+                    //check if the path exists
+                    //path format: /public/upload/user_name/module_name/id_module_name/
+                    $path_0    = 'public/upload/';
+                    $path_1    = $path_0.$cur_user.'/';
+                    $path_2    = $path_1.'newspub/';
+                    $path_full = $path_2.$id_newspub.'/';
+                    if(!is_dir($path_1))
+                    {
+                        mkdir($path_1);
+                    }
+                    if(!is_dir($path_2))
+                    {
+                        mkdir($path_2);
+                    }
+                    if(!is_dir($path_full))
+                    {
+                        mkdir($path_full);
+                    }
+                    $adapter->setDestination($path_full);
+                    if(!$adapter->receive($file['name'])){
+                        echo implode("\n", $adapter->getMessages());
+                    }
+                    else
+                    {
+                        //create a record in the table 'barcode'
+                        $barcode = new Barcode();
+                        $barcode->filename = $file['name'];
+                        $barcode->path = $path_full;
+                        $barcode->created_by = $cur_user;
+                        $barcode->created_at = $this->_getDateTime();
+                        $this->getBarcodeTable()->saveBarcode($barcode);
+                        $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
+                        //md5() the file name
+                        //rename($file['name'], md5($file['name']));
+                    }
                 }
-                if(!is_dir($path_2))
-                {
-                    mkdir($path_2);
-                }
-                if(!is_dir($path_full))
-                {
-                    mkdir($path_full);
-                }
-                $adapter->setDestination($path_full);
-                if(!$adapter->receive($file['name'])){
-                    echo implode("\n", $adapter->getMessages());
-                }
-                else
-                {
-                    //create a record in the table 'barcode'
-                    $barcode = new Barcode();
-                    $barcode->filename = $file['name'];
-                    $barcode->path = $path_full;
-                    $barcode->created_by = $cur_user;
-                    $barcode->created_at = $this->_getDateTime();
-                    $this->getBarcodeTable()->saveBarcode($barcode);
-                    $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
-                    //md5() the file name
-                    //rename($file['name'], md5($file['name']));
-                }
-            }
-            //upload end
+                //upload end
 
                 $newspub2 = $this->getNewspubTable()->getNewspub($id_newspub);
                 $newspub2->barcode = $id_barcode;
@@ -184,6 +187,15 @@ class NewspubController extends AbstractActionController
             ));
         }
         $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
+        if($evaluate->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
+            $barcode_path = '/upload/'.$cur_user.'/newspub/'.$id.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
         $product = $this->getProductTable()->getProduct($newspub->fk_product);
         $np_created_by = $newspub->created_by;
         $np_created_at = $newspub->created_at;
@@ -281,6 +293,7 @@ class NewspubController extends AbstractActionController
             'form'    => $form,
             'id'      => $id_newspub,
             'product' => $product,
+            'barcode_path' => $barcode_path,
         ));
     }
 
@@ -342,7 +355,7 @@ class NewspubController extends AbstractActionController
 
             //upload start
             $file = $this->params()->fromFiles('barcode');
-            $max = 40000;//单位比特
+            $max = 400000;//单位比特
             $sizeObj = new FileSize(array("max"=>$max));
             $extObj = new FileExt(array("jpg","gif","png"));
             $adapter = new FileHttp();

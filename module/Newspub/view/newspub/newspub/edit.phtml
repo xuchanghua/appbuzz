@@ -98,6 +98,8 @@
                 <tr>
                     <td class="tdlabel">下载二维码</td>
                     <td>
+                        <?php echo $this->escapeHtml($np->fk_pub_mode);?>
+                        </br>
                         <?php echo $this->formRow($form->get('barcode')); ?>
                     </td>
                 </tr>
