@@ -37,8 +37,8 @@
                     <input type="submit" class="btn btn-primary linkbtn" value="我要撰稿">
                 </form>
             </div>
-            <div id="evamgmt">
-                <h4>订单号：<?php echo $this->escapeHtml($writer->id_writer);?></h4>
+            <div id="wrtmgmt">
+                <!--<h4>订单号：<?php echo $this->escapeHtml($writer->id_writer);?></h4>-->
                 <table class="pubdetailtable">
                     <?php
                     $arr_id_user = array();
@@ -51,7 +51,12 @@
                         2 => '媒体拒绝',
                         3 => '媒体接受',
                         4 => '企业拒绝',
-                        5 => '企业接受',
+                        5 => '企业接受，等待媒体提交一稿',
+                        6 => '一稿提交，等待企业审核',
+                        7 => '一稿退回，企业给出修改意见，等待媒体提交二稿',
+                        8 => '二稿提交，等待企业回复',
+                        9 => '稿件通过',
+                        10 => '订单终止',
                     );
                     ?>
                     <tr>
@@ -116,12 +121,14 @@
                                 <div class="widget-content nopadding">
                                     <table class="table table-bordered table-striped">
                                         <tr>
+                                            <th>订单号：</th>
                                             <th>媒体名称</th>
                                             <th>订单状态</th>
                                             <th>操作</th>
                                         </tr>
                                         <?php foreach ($wrtmedias as $wm): ?>
                                         <tr>
+                                            <td><?php echo $wm->order_no;?></td>
                                             <td><?php echo $arr_id_user[$wm->fk_media_user]; ?></td>
                                             <td>
                                                 <div class="linkbtns">
@@ -140,6 +147,14 @@
                                                         <form action="<?php echo $this->url('writer',
                                                         array('action' => 'entrej', 'id' => $wm->id_wrtmedia)) ;?>">
                                                             <input type="submit" class="btn btn-primary" value="拒绝">
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div id="btns" style="display:<?php echo ($wm->fk_wrtmedia_status>5)?"inline":"none";?>">
+                                                    <div>
+                                                        <form action="<?php echo $this->url('writer',
+                                                        array('action' => 'wrtinfoent', 'id' => $wm->id_wrtmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary" value="查看新闻稿">
                                                         </form>
                                                     </div>
                                                 </div>

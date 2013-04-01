@@ -102,6 +102,7 @@ class EvamediaTable
             'updated_at'         => $evamedia->updated_at,
             'fk_evaluate_status' => $evamedia->fk_evaluate_status,
             'news_link'          => $evamedia->news_link,
+            'order_no'           => $evamedia->order_no,
         );
 
         $id = (int)$evamedia->id_evamedia;

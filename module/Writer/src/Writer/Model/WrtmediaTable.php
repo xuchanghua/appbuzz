@@ -94,14 +94,20 @@ class WrtmediaTable
     public function saveWrtmedia(Wrtmedia $wrtmedia)
     {
         $data = array(
-            'fk_writer'          => $wrtmedia->fk_writer,
-            'fk_enterprise_user' => $wrtmedia->fk_enterprise_user,
-            'fk_media_user'      => $wrtmedia->fk_media_user,
-            'created_by'         => $wrtmedia->created_by,
-            'created_at'         => $wrtmedia->created_at,
-            'updated_by'         => $wrtmedia->updated_by,
-            'updated_at'         => $wrtmedia->updated_at,
-            'fk_wrtmedia_status' => $wrtmedia->fk_wrtmedia_status,
+            'fk_writer'           => $wrtmedia->fk_writer,
+            'fk_enterprise_user'  => $wrtmedia->fk_enterprise_user,
+            'fk_media_user'       => $wrtmedia->fk_media_user,
+            'created_by'          => $wrtmedia->created_by,
+            'created_at'          => $wrtmedia->created_at,
+            'updated_by'          => $wrtmedia->updated_by,
+            'updated_at'          => $wrtmedia->updated_at,
+            'fk_wrtmedia_status'  => $wrtmedia->fk_wrtmedia_status,
+            'first_draft_title'   => $wrtmedia->first_draft_title,
+            'first_draft_body'    => $wrtmedia->first_draft_body,
+            'second_draft_title'  => $wrtmedia->second_draft_title,
+            'second_draft_body'   => $wrtmedia->second_draft_body,
+            'revision_suggestion' => $wrtmedia->revision_suggestion, 
+            'order_no'            => $wrtmedia->order_no,
         );
 
         $id = (int)$wrtmedia->id_wrtmedia;

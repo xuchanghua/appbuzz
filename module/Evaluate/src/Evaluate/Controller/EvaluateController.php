@@ -486,7 +486,7 @@ class EvaluateController extends AbstractActionController
     public function mediaaccAction()
     {
         //媒体->评测邀约->接受订单
-        $arr_type_allowed = array(2, 3);
+        $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_evaluate = (int)$this->params()->fromRoute('id',0);        
@@ -501,7 +501,7 @@ class EvaluateController extends AbstractActionController
         $media_user = $this->getUserTable()->getUserByName($cur_user);
         $enterprise_user = $this->getUserTable()->getUserByName($evaluate->created_by);
 
-        $evamedia = new Evamedia();    
+        $evamedia = new Evamedia();
         $evamedia->fk_evaluate = $id_evaluate;
         $evamedia->fk_media_user = $media_user->id;
         $evamedia->fk_enterprise_user = $enterprise_user->id;
@@ -511,6 +511,11 @@ class EvaluateController extends AbstractActionController
         $evamedia->updated_at = $this->_getDateTime();
         $evamedia->fk_evaluate_status = 3;//accept the order
         $this->getEvamediaTable()->saveEvamedia($evamedia);
+        //save the order number
+        $id_evamedia = $this->getEvamediaTable()->getId($evamedia->created_at, $evamedia->created_by);
+        $evamedia2 = $this->getEvamediaTable()->getEvamedia($id_evamedia);
+        $evamedia2->order_no = 20000000 + $id_evamedia;
+        $this->getEvamediaTable()->saveEvamedia($evamedia2);
 
         return $this->redirect()->toRoute('evaluate',array(
             'action'=>'invitation',
@@ -524,7 +529,7 @@ class EvaluateController extends AbstractActionController
     public function mediarejAction()
     {
         //媒体->评测邀约->拒绝订单
-        $arr_type_allowed = array(2, 3);
+        $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_evaluate = (int)$this->params()->fromRoute('id',0);        
@@ -549,6 +554,11 @@ class EvaluateController extends AbstractActionController
         $evamedia->updated_at = $this->_getDateTime();
         $evamedia->fk_evaluate_status = 2;//reject the order
         $this->getEvamediaTable()->saveEvamedia($evamedia);
+        //save the order number
+        $id_evamedia = $this->getEvamediaTable()->getId($evamedia->created_at, $evamedia->created_by);
+        $evamedia2 = $this->getEvamediaTable()->getEvamedia($id_evamedia);
+        $evamedia2->order_no = 20000000 + $id_evamedia;
+        $this->getEvamediaTable()->saveEvamedia($evamedia2);
 
         return $this->redirect()->toRoute('evaluate',array(
             'action'=>'invitation',
@@ -631,6 +641,15 @@ class EvaluateController extends AbstractActionController
         }
         $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
         $evamedia = $this->getEvamediaTable()->getEvemediaByUserAndFkEva($cur_user, $evaluate->id_evaluate);
+        if($evaluate->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
+            $barcode_path = '/upload/'.$evaluate->created_by.'/evaluate/'.$id_evaluate.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
 
         return new ViewModel(array(
             'evaluate' => $evaluate,
@@ -638,6 +657,7 @@ class EvaluateController extends AbstractActionController
             'id' => $id_evaluate,
             'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
             'evamedia' => $evamedia,
+            'barcode_path' => $barcode_path,
         ));
     }
 
@@ -662,6 +682,7 @@ class EvaluateController extends AbstractActionController
         $em_fk_evaluate_status = $evamedia->fk_evaluate_status;
         $em_created_by         = $evamedia->created_by;
         $em_created_at         = $evamedia->created_at;
+        $em_order_no           = $evamedia->order_no;
 
         $form = new EvamediaForm();
         $form->bind($evamedia);
@@ -676,6 +697,7 @@ class EvaluateController extends AbstractActionController
                 $form->getData()->fk_enterprise_user = $em_fk_enterprise_user;
                 $form->getData()->fk_media_user      = $em_fk_media_user;
                 $form->getData()->fk_evaluate_status = $em_fk_evaluate_status;
+                $form->getData()->order_no           = $em_order_no;
                 $form->getData()->created_by         = $em_created_by;
                 $form->getData()->created_at         = $em_created_at;
                 $form->getData()->updated_by         = $cur_user;

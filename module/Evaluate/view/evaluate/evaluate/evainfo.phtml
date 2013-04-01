@@ -38,7 +38,14 @@
                 </form>
             </div>
             <div id="evamgmt">
-                <h4>订单号：<?php echo $this->escapeHtml($evaluate->id_evaluate);?></h4>
+                <h4>订单号：
+                <?php
+                if($evamedia)
+                {
+                    echo $this->escapeHtml($evamedia->order_no);
+                }
+                ?>
+                </h4>
                 <table class="pubdetailtable">
                     <?php
                     $arr_evaluate_status = array(
@@ -98,7 +105,7 @@
                     <tr>
                         <td class="tdlabel">下载二维码</td>
                         <td>
-                            <?php echo $this->escapeHtml($evaluate->barcode);?>
+                            <img src="<?php echo $barcode_path;?>" height="200" width="200">
                         </td>
                     </tr>
                     <tr>

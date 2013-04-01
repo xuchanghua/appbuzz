@@ -53,6 +53,7 @@
                     $arr_em_due = array();  //array[fk_evaluate] = due_date
                     $arr_em_link = array(); //array[fk_evaluate] = news_link
                     $arr_em_stat = array(); //array[fk_evaluate] = fk_evaluate_status
+                    $arr_eva_order = array(); //array[fk_evaluate] = order_no
                     foreach ($evamedia as $em)
                     {
                         $arr_eva_em[$em->fk_evaluate]  = $em->id_evamedia;
@@ -60,6 +61,7 @@
                         //$arr_em_due[$em->fk_evaluate]  = $em->due_date;
                         $arr_em_link[$em->fk_evaluate] = $em->news_link;
                         $arr_em_stat[$em->fk_evaluate] = $em->fk_evaluate_status;
+                        $arr_eva_order[$em->fk_evaluate] = $em->order_no;
                     }
                     $arr_evaluate_status = array(
                         1 => '新订单',
@@ -78,11 +80,19 @@
                         <th>创建者</th>
                         <th>评测稿费</th>
                         <th>状态</th>
+                        <th>评论链接</th>
                         <th>操作</th>
                     </tr>
                     <?php foreach($evaluate as $eva): ?>
                     <tr>
-                        <td><?php echo $this->escapeHtml($eva->id_evaluate);?></td>
+                        <td>
+                            <?php 
+                            if(array_key_exists($eva->id_evaluate, $arr_eva_order))
+                            {
+                                echo $this->escapeHtml($arr_eva_order[$eva->id_evaluate]);
+                            }
+                            ?>
+                        </td>
                         <td><?php echo $this->escapeHtml($arr_product_name[$eva->fk_product]);?></td>
                         <td>
                             <a href="<?php echo $this->url('evaluate', 
@@ -99,6 +109,11 @@
                             </div>
                             <div id="status" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_eva_em)?"inline":"none";?>"> 
                                 <?php echo $this->escapeHtml($arr_evaluate_status[$arr_em_stat[$eva->id_evaluate]]);?>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="status" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_em_link)?"inline":"none";?>"> 
+                                <?php echo $this->escapeHtml($arr_em_link[$eva->id_evaluate]);?>
                             </div>
                         </td>
                         <td>

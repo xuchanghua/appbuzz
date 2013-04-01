@@ -1,0 +1,210 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <h1>撰稿管理</h1>  
+    <div id="header" class="container" style="width:1170px;"> 
+        CONTAINER
+        <div class="row">
+            ROW
+            <div id="logo" class="span2 logo">
+                APPBUZZ LOGO
+            </div>
+            <div id="banner" class="span8 banner">
+                BANNER
+            </div>
+        </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span2 left">
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_enterprise.phtml'; 
+        ?>
+        </div>
+
+        <div id="mid" class="span8 mid">  
+            <div class="linkbtns">
+                <form action="/writer/index">
+                    <input type="submit" class="btn btn-primary linkbtn" value="新闻撰写">
+                </form>
+            </div>
+            <div>
+                <form action="/writer/add">
+                    <input type="submit" class="btn btn-primary linkbtn" value="我要撰稿">
+                </form>
+            </div>
+            <div id="evamgmt">
+                <h4>订单号：
+                    <?php 
+                    if($wrtmedia)
+                    {
+                        echo $this->escapeHtml($wrtmedia->order_no);
+                    }
+                    ?>
+                </h4>
+                <table class="pubdetailtable">
+                    <?php
+                    $arr_wrtmedia_status = array(
+                        1 => '新订单',
+                        2 => '媒体拒绝',
+                        3 => '媒体接受',
+                        4 => '企业拒绝',
+                        5 => '企业接受，等待媒体提交一稿',
+                        6 => '一稿提交，等待企业审核',
+                        7 => '一稿退回，企业给出修改意见，等待媒体提交二稿',
+                        8 => '二稿提交，等待企业回复',
+                        9 => '稿件通过',
+                        10 => '订单终止',
+                    );
+                    ?>
+                    <tr>
+                        <td class="tdlabel">App产品：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($product->name); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">撰稿要求：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($writer->requirement);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">信息提示：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($writer->hint);?>
+                        </td>
+                    </tr>
+                    <!--<tr>
+                        <td class="tdlabel">评测媒体：</td>
+                        <td>
+                            <?php /*
+                            foreach ($this->media_assignees as $media)
+                            {
+                                echo $media."; ";
+                            }*/
+                            ?>
+                        </td>
+                    </tr>-->
+                    <tr>
+                        <td class="tdlabel">web下载链接</td>
+                        <td>
+                            <?php echo $this->escapeHtml($writer->web_link);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">Appstore下载链接</td>
+                        <td>
+                            <?php echo $this->escapeHtml($writer->appstore_link);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">安卓市场下载链接</td>
+                        <td>
+                            <?php echo $this->escapeHtml($writer->androidmkt_link);?>
+                    <tr>
+                        <td class="tdlabel">下载二维码</td>
+                        <td>
+                            <img src="<?php echo $barcode_path;?>" height="200" width="200">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">撰稿费用：</td>
+                        <td>1500元/篇（800字左右）</td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">订单状态：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($arr_wrtmedia_status[$wrtmedia->fk_wrtmedia_status]);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">一稿标题：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($wrtmedia->first_draft_title);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">一稿内容：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($wrtmedia->first_draft_body);?>
+                        </td>
+                    </tr>
+                    <?php
+                    $form = $this->form;
+                    $form->setAttribute('action', $this->url(
+                        'writer',
+                        array(
+                            'action' => 'revision',
+                            'id'     => $wrtmedia->id_wrtmedia,
+                        )
+                    ));
+                    $form->prepare();
+                    echo $this->form()->openTag($form);
+                    echo $this->formHidden($form->get('id_wrtmedia'));
+                    ?>
+                    <tr>
+                        <td class="tdlabel">修改意见：</td>
+                        <td>
+                            <?php echo $this->formRow($form->get('revision_suggestion'));?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <?php echo $this->formSubmit($form->get('submit')); ?>
+                            <?php echo $this->form()->closeTag(); ?>
+                        </td>
+                    </tr>                    
+                </table>
+            </div>
+        </div>
+
+        <div id="right" class="span3 right">
+            SPAN3 RIGHT
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div.user,.mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 80%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>

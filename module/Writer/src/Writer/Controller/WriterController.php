@@ -5,6 +5,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Writer\Model\Writer;          // <-- Add this import
 use Writer\Form\WriterForm;       // <-- Add this import
+use Writer\Form\WrtmediaForm;
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use Zend\File\Transfer\Adapter\Http as FileHttp;
@@ -453,6 +454,11 @@ class WriterController extends AbstractActionController
         $wrtmedia->updated_at = $this->_getDateTime();
         $wrtmedia->fk_wrtmedia_status = 3;//accept the order
         $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
+        //save the order number
+        $id_wrtmedia = $this->getWrtmediaTable()->getId($wrtmedia->created_at, $wrtmedia->created_by);
+        $wrtmedia2 = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
+        $wrtmedia2->order_no = 30000000 + $id_wrtmedia;
+        $this->getWrtmediaTable()->saveWrtmedia($wrtmedia2);
 
         return $this->redirect()->toRoute('writer', array(
             'action' => 'reqlist',
@@ -491,6 +497,11 @@ class WriterController extends AbstractActionController
         $wrtmedia->updated_at = $this->_getDateTime();
         $wrtmedia->fk_wrtmedia_status = 2;//reject the order
         $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
+        //save the order number
+        $id_wrtmedia = $this->getWrtmediaTable()->getId($wrtmedia->created_at, $wrtmedia->created_by);
+        $wrtmedia2 = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
+        $wrtmedia2->order_no = 30000000 + $id_wrtmedia;
+        $this->getWrtmediaTable()->saveWrtmedia($wrtmedia2);
 
         return $this->redirect()->toRoute('writer', array(
             'action' => 'reqlist',
@@ -572,7 +583,16 @@ class WriterController extends AbstractActionController
             ));
         }
         $writer = $this->getWriterTable()->getWriter($id_writer);
-        $wrtmedia = $this->getWrtmediaTable()->getWrtmediaByUserAndFkWrt($cur_user, $writer->id_writer);
+        $wrtmedia = $this->getWrtmediaTable()->getWrtmediaByUserAndFkWrt($cur_user, $writer->id_writer);        
+        if($writer->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
+            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
 
         return new ViewModel(array(
             'writer' => $writer,
@@ -580,6 +600,303 @@ class WriterController extends AbstractActionController
             'id' => $id_writer,
             'product' => $this->getProductTable()->getProduct($writer->fk_product),
             'wrtmedia' => $wrtmedia,
+            'barcode_path' => $barcode_path,
+        ));
+    }
+
+    public function wrtinfoentAction()
+    {
+        //企业->撰稿管理->查看稿件(对于一稿、二稿提交的订单)
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_wrtmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_wrtmedia) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'index'
+            ));
+        }
+        $wrtmedia = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
+        $id_writer = $wrtmedia->fk_writer;
+        $writer = $this->getWriterTable()->getWriter($id_writer);        
+        if($writer->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
+            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
+
+        return new ViewModel(array(
+            'writer' => $writer,
+            'user' => $cur_user,
+            'id' => $id_writer,
+            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'wrtmedia' => $wrtmedia,
+            'barcode_path' => $barcode_path,
+        ));
+    }
+
+    public function firstdraftAction()
+    {
+        //媒体->自由撰稿人->编辑一稿              
+        $arr_type_allowed = array(2);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_wrtmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_wrtmedia) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'reqlist'
+            ));
+        }
+        $wrtmedia = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
+        $id_writer = $wrtmedia->fk_writer;
+        $writer = $this->getWriterTable()->getWriter($id_writer);
+
+        $wm_fk_writer = $wrtmedia->fk_writer;
+        $wm_fk_enterprise_user = $wrtmedia->fk_enterprise_user;
+        $wm_fk_media_user = $wrtmedia->fk_media_user;
+        $wm_created_by = $wrtmedia->created_by;
+        $wm_created_at = $wrtmedia->created_at;
+        $wm_order_no = $wrtmedia->order_no;
+
+        $form = new WrtmediaForm();
+        $form->bind($wrtmedia);
+        $form->get('submit')->setAttribute('value', '提交');
+
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $form->setInputFilter($wrtmedia->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                //keep the old values:
+                $form->getData()->fk_writer = $wm_fk_writer;
+                $form->getData()->fk_enterprise_user = $wm_fk_enterprise_user;
+                $form->getData()->fk_media_user = $wm_fk_media_user;
+                $form->getData()->created_by = $wm_created_by;
+                $form->getData()->created_at = $wm_created_at;
+                $form->getData()->order_no = $wm_order_no;
+                //update the following values:
+                $form->getData()->updated_by = $cur_user;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->fk_wrtmedia_status = 6; //first_draft_submitted
+                $this->getWrtmediaTable()->saveWrtmedia($form->getData());
+
+                return $this->redirect()->toRoute('writer', array(
+                    'action' => 'wrtinfo',
+                    'id'     => $id_writer,
+                ));
+            }
+        }
+
+        if($writer->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
+            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'writer' => $writer,
+            'wrtmedia' => $wrtmedia,
+            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'barcode_path' => $barcode_path,
+        ));
+    }
+
+    public function revisionAction()
+    {
+        //企业->转告管理->编辑修改意见              
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_wrtmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_wrtmedia) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'index',
+            ));
+        }
+        $wrtmedia = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
+        $id_writer = $wrtmedia->fk_writer;
+        $writer = $this->getWriterTable()->getWriter($id_writer);
+
+        $wm_fk_writer          = $wrtmedia->fk_writer;
+        $wm_fk_enterprise_user = $wrtmedia->fk_enterprise_user;
+        $wm_fk_media_user      = $wrtmedia->fk_media_user;
+        $wm_created_by         = $wrtmedia->created_by;
+        $wm_created_at         = $wrtmedia->created_at;
+        $wm_first_draft_title  = $wrtmedia->first_draft_title;
+        $wm_first_draft_body   = $wrtmedia->first_draft_body;
+        $wm_order_no           = $wrtmedia->order_no;
+
+        $form = new WrtmediaForm();
+        $form->bind($wrtmedia);
+        $form->get('submit')->setAttribute('value', '提交');
+
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $form->setInputFilter($wrtmedia->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                //keep the old values:
+                $form->getData()->fk_writer = $wm_fk_writer;
+                $form->getData()->fk_enterprise_user = $wm_fk_enterprise_user;
+                $form->getData()->fk_media_user = $wm_fk_media_user;
+                $form->getData()->created_by = $wm_created_by;
+                $form->getData()->created_at = $wm_created_at;
+                $form->getData()->first_draft_title = $wm_first_draft_title;
+                $form->getData()->first_draft_body = $wm_first_draft_body;
+                $form->getData()->order_no = $wm_order_no;
+                //update the following values:
+                $form->getData()->updated_by = $cur_user;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->fk_wrtmedia_status = 7; //first_draft_awaiting_correction
+                $this->getWrtmediaTable()->saveWrtmedia($form->getData());
+
+                return $this->redirect()->toRoute('writer', array(
+                    'action' => 'wrtinfoent',
+                    'id'     => $id_wrtmedia,
+                ));
+            }
+        }
+
+        if($writer->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
+            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'writer' => $writer,
+            'wrtmedia' => $wrtmedia,
+            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'barcode_path' => $barcode_path,
+        ));
+    }
+
+    public function seconddraftAction()
+    {
+        //媒体->自由撰稿人->编辑二稿              
+        $arr_type_allowed = array(2);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_wrtmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_wrtmedia) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'reqlist'
+            ));
+        }
+        $wrtmedia = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
+        $id_writer = $wrtmedia->fk_writer;
+        $writer = $this->getWriterTable()->getWriter($id_writer);
+
+        $wm_fk_writer           = $wrtmedia->fk_writer;
+        $wm_fk_enterprise_user  = $wrtmedia->fk_enterprise_user;
+        $wm_fk_media_user       = $wrtmedia->fk_media_user;
+        $wm_created_by          = $wrtmedia->created_by;
+        $wm_created_at          = $wrtmedia->created_at;
+        $wm_first_draft_title   = $wrtmedia->first_draft_title;
+        $wm_first_draft_body    = $wrtmedia->first_draft_body;
+        $wm_revision_suggestion = $wrtmedia->revision_suggestion;
+        $wm_order_no            = $wrtmedia->order_no;
+
+        $form = new WrtmediaForm();
+        $form->bind($wrtmedia);
+        $form->get('submit')->setAttribute('value', '提交');
+
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $form->setInputFilter($wrtmedia->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                //keep the old values:
+                $form->getData()->fk_writer = $wm_fk_writer;
+                $form->getData()->fk_enterprise_user = $wm_fk_enterprise_user;
+                $form->getData()->fk_media_user = $wm_fk_media_user;
+                $form->getData()->created_by = $wm_created_by;
+                $form->getData()->created_at = $wm_created_at;
+                $form->getData()->first_draft_title = $wm_first_draft_title;
+                $form->getData()->first_draft_body = $wm_first_draft_body;
+                $form->getData()->revision_suggestion = $wm_revision_suggestion;
+                $form->getData()->order_no = $wm_order_no;
+                //update the following values:
+                $form->getData()->updated_by = $cur_user;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->fk_wrtmedia_status = 8; //second_draft_submitted
+                $this->getWrtmediaTable()->saveWrtmedia($form->getData());
+
+                return $this->redirect()->toRoute('writer', array(
+                    'action' => 'wrtinfo',
+                    'id'     => $id_writer,
+                ));
+            }
+        }
+
+        if($writer->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
+            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'writer' => $writer,
+            'wrtmedia' => $wrtmedia,
+            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'barcode_path' => $barcode_path,
+        ));
+    }
+
+    public function passAction()
+    {
+        //企业->转告管理->稿件通过              
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_wrtmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_wrtmedia) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'index',
+            ));
+        }
+        $wrtmedia = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
+        $id_writer = $wrtmedia->fk_writer;
+        $writer = $this->getWriterTable()->getWriter($id_writer);
+
+        $wrtmedia->fk_wrtmedia_status = 9;//draft_passed
+        $wrtmedia->updated_by = $cur_user;
+        $wrtmedia->updated_at = $this->_getDateTime();
+        $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
+
+        return $this->redirect()->toRoute('writer', array(
+            'action' => 'wrtinfoent',
+            'id'     => $id_wrtmedia,
+        ));
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'writer' => $writer,
+            'wrtmedia' => $wrtmedia,
+            'product' => $this->getProductTable()->getProduct($writer->fk_product),
         ));
     }
 
