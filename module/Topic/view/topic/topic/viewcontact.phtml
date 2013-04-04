@@ -1,0 +1,177 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <h1>媒体选题</h1>  
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+        CONTAINER
+    <div id="row" class="row">
+        ROW
+        <div id="left" class="span2 left">
+        <?php 
+        set_include_path("public/include");
+        include 'sidebar_enterprise.phtml'; 
+        ?>        
+        </div>
+        <div id="mid" class="span8 mid">
+            <div>
+                <div class="linkbtns">
+                    <form action="#">
+                        <input type="submit" class="btn btn-primary linkbtn" value="媒体选题">
+                    </form>
+                </div>
+                <div>
+                    <form action="#">
+                        <input type="submit" class="btn btn-primary linkbtn" value="我要联系">
+                    </form>
+                </div>
+            </div>
+            <div id="addtopic">
+                <div>
+                    <h4>我要联系：</h4>
+                </div>
+                <table>
+                    <?php
+                    $arr_tpcontact_status = array(
+                        '1' => '联系中',
+                        '2' => '已结束',
+                    );
+                    ?>
+                    <tr>
+                        <td class="tdlabel">媒体：</td>
+                        <td>
+                            <?php echo $topic->created_by; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">选题类型：</td>
+                        <td>
+                            <?php echo $topic->topic_type; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">选题概要：</td>
+                        <td>
+                            <?php echo $topic->abstract; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">征集APP产品类型：</td>
+                        <td>
+                            <?php echo $topic->app_type; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">有效日期：</td>
+                        <td>
+                            <?php echo $topic->due_date; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">我的APP产品：</td>
+                        <td>
+                            <?php 
+                            if(isset($product))
+                            {
+                                echo $product->name; 
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">产品匹配度：</td>
+                        <td>
+                            <?php
+                            if($tpcontact)
+                            {
+                                echo $tpcontact->matching_degree; 
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">订单费用：</td>
+                        <td class="tdinput">免费</td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">订单状态：</td>
+                        <td>
+                            <?php
+                            if($tpcontact)
+                            {
+                                echo $arr_tpcontact_status[$tpcontact->fk_tpcontact_status];
+                            }
+                            else
+                            {
+                                echo "未联系";
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>        
+        <div id="right" class="span4 right">
+            SPAN4 RIGHT
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div.user, .mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 70%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>

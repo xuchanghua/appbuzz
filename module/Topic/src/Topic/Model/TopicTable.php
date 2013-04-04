@@ -7,6 +7,7 @@ use Zend\Db\Sql\Where;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Db\ResultSet\ResultSet;
+use DateTime;
 
 class TopicTable
 {
@@ -43,16 +44,52 @@ class TopicTable
         return $row;
     }
 
+    public function fetchPastTopic($created_by = null)
+    {
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $strdatetime = $datetime->format(DATE_ATOM);
+        $now = substr($strdatetime,0,10);
+        $rowset = $this->tableGateway->select(function(Select $select) use ($now, $created_by){
+            $select->where->lessThan('due_date', $now);
+            if($created_by)
+            {
+                $select->where->equalTo('created_by', $created_by);
+            }
+            $select->order('id_topic DESC');
+        });
+        return $rowset;
+    }
+
+    public function fetchCurrentTopic($created_by = null)
+    {
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $strdatetime = $datetime->format(DATE_ATOM);
+        $now = substr($strdatetime,0,10);
+        $rowset = $this->tableGateway->select(function(Select $select) use ($now, $created_by){
+            $select->where->greaterThanOrEqualTo('due_date', $now);
+            if($created_by)
+            {
+                $select->where->equalTo('created_by', $created_by);
+            }
+            $select->order('id_topic DESC');
+        });
+        return $rowset;
+    }
+
     public function saveTopic(Topic $topic)
     {
         $data = array(
-            'topic_type' => $topic->topic_type,
-            'abstract'   => $topic->abstract,
-            'app_type'   => $topic->app_type,
-            'created_by' => $topic->created_by,
-            'created_at' => $topic->created_at,
-            'updated_by' => $topic->updated_by,
-            'updated_at' => $topic->updated_at,
+            'topic_type'     => $topic->topic_type,
+            'abstract'       => $topic->abstract,
+            'app_type'       => $topic->app_type,
+            'created_by'     => $topic->created_by,
+            'created_at'     => $topic->created_at,
+            'updated_by'     => $topic->updated_by,
+            'updated_at'     => $topic->updated_at,
+            'due_date'       => $topic->due_date,
+            'fk_topic_table' => $topic->fk_topic_table,
         );
 
         $id = (int)$topic->id_topic;

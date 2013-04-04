@@ -3,6 +3,8 @@ namespace Topic;
 
 use Topic\Model\Topic;
 use Topic\Model\TopicTable;
+use Topic\Model\Tpcontact;
+use Topic\Model\TpcontactTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -41,6 +43,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Topic());
                     return new TableGateway('topic', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Topic\Model\TpcontactTable' =>  function($sm) {
+                    $tableGateway = $sm->get('TpcontactTableGateway');
+                    $table = new TpcontactTable($tableGateway);
+                    return $table;
+                },
+                'TpcontactTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Tpcontact());
+                    return new TableGateway('tpcontact', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );

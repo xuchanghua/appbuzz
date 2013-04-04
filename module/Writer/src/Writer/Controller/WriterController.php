@@ -900,6 +900,55 @@ class WriterController extends AbstractActionController
         ));
     }
 
+    public function printfirstdraftAction()
+    {
+        //企业->新闻撰写->撰稿管理->打印一稿
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_wrtmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_wrtmedia) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'index',
+            ));
+        }
+        $wrtmedia = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
+
+        //PHPWord start
+        require_once './vendor/Classes/PHPWord.php';
+
+        $PHPWord = new \PHPWord();
+        $section = $PHPWord->createSection();
+        $styleTable = array('borderSize'=>6, 'borderColor'=>'006699', 'cellMargin'=>80);
+        $styleCell = array('valign'=>'center');
+        $fontStyle = array('bold'=>true, 'align'=>'center');
+        $PHPWord->addTableStyle('myTableStyle', $styleTable);
+        $table = $section->addTable('myTableStyle');
+
+        $table->addRow();
+        $table->addCell(2000, $styleCell)->addText("新闻标题", $fontStyle);
+        $table->addCell()->addText($wrtmedia->first_draft_title);
+        $table->addRow();
+        $table->addCell(2000, $styleCell)->addText("新闻正文", $fontStyle);
+        $table->addCell()->addText($wrtmedia->first_draft_body);
+        $table->addRow();
+        $table->addCell(2000, $styleCell)->addText("作者", $fontStyle);
+        $table->addCell()->addText($wrtmedia->created_by);
+        $table->addRow();
+        $table->addCell(2000, $styleCell)->addText("上传时间", $fontStyle);
+        $table->addCell()->addText($wrtmedia->updated_by);
+
+        $objWriter = \PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
+        $objWriter->save('data/word/testfirstdraft.docx');
+
+        //PHPWord end
+
+        return $this->redirect()->toRoute('writer', array(
+            'action' => 'wrtinfoent',
+            'id'     => $id_wrtmedia,
+        )); 
+    }
+
     public function getWriterTable()
     {
         if (!$this->writerTable) {

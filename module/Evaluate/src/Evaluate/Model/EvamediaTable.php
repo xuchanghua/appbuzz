@@ -85,7 +85,7 @@ class EvamediaTable
         ));
         $row = $rowset->current();
         if (!$row) {
-            throw new \Exception("Could not find row $id");
+            throw new \Exception("Could not find row by $created_at and $created_by");
         }
         return $row->id_evamedia;
     }

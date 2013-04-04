@@ -57,6 +57,17 @@ class TopicForm extends Form
                 ),
             ),
         ));
+        $this->add(array(
+            'name' => 'due_date',
+            'attributes' => array(
+                'type' => 'text',
+                'placeholder' => 'YYYY-MM-DD',
+                'id' => 'f_date_ETA',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
         /*$this->add(array(
             'name' => 'app_type',
             'attributes' => array(

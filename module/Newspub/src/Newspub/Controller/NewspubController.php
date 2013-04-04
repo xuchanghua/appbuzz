@@ -158,7 +158,7 @@ class NewspubController extends AbstractActionController
         if($np->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($np->barcode);
-            $barcode_path = '/upload/'.$cur_user.'/newspub/'.$id.'/'.$barcode->filename;
+            $barcode_path = '/upload/'.$np->created_by.'/newspub/'.$id.'/'.$barcode->filename;
         }
         else
         {
@@ -187,10 +187,10 @@ class NewspubController extends AbstractActionController
             ));
         }
         $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
-        if($evaluate->barcode)
+        if($newspub->barcode)
         {
-            $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
-            $barcode_path = '/upload/'.$cur_user.'/newspub/'.$id.'/'.$barcode->filename;
+            $barcode = $this->getBarcodeTable()->getBarcode($newspub->barcode);
+            $barcode_path = '/upload/'.$cur_user.'/newspub/'.$id_newspub.'/'.$barcode->filename;
         }
         else
         {

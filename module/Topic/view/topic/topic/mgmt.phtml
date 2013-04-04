@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>选题管理</h1>  
+    <h1>媒体选题</h1>  
     <div id="header" class="container" style="width:1170px;"> 
     CONTAINER
     <div class="row">
@@ -22,105 +22,135 @@
     <div id="row" class="row">
         ROW
         <div id="left" class="span2 left">
-            <div id="user" class="user">
-                <ul>
-                    <li>
-                        <span>用户: <?php echo $user;?></span>
-                        <a href="/user/logout">退出</a>
-                    </li>
-                    <li><a href="">企业资料</a></li>
-                    <li><a href="">我的账户</a></li>
-                    <li><a href="">我的订单</a></li>
-                    <li><a href="">APP新闻助手</a></li>
-                </ul>
-            </div>
-            <div id="sidebar">
-                <ul>
-                    <!--
-                    <li>
-                        <a href="netmonitor"><span>网络监测</span></a>
-                    </li>
-                    -->
-                    <li>
-                        <a href="/newspub/index"><span>新闻发布</span></a>
-                        <ul>
-                            <li><a href="/newspub/add">我要发布</a></li>
-                            <li><a href="/newspub/index">发布管理</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="/evaluate/index"><span>产品测评</span></a>
-                        <ul>
-                            <li><a href="/evaluate/add">我要评测</a></li>
-                            <li><a href="/evaluate/index">评测管理</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="/writer/index"><span>新闻撰写</span></a>
-                        <ul>
-                            <li><a href="/writer/add">我要撰稿</a></li>
-                            <li><a href="/writer/index">撰稿管理</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="/topic/index"><span>媒体选题</span></a>
-                        <ul>
-                            <li><a href="/topic/current">当期选题</a></li>
-                            <li><a href="/topic/mgmt">选题管理</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="interview">媒体采访</a>
-                    </li>
-                </ul>
-            </div>
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_enterprise.phtml'; 
+        ?> 
         </div>
         <div id="mid" class="span8 mid">
             <div>
                 <div class="linkbtns">
                     <form action="#">
-                        <input type="submit" class="btn btn-primary linkbtn" value="媒体选题"/>
+                        <input type="submit" class="btn btn-primary linkbtn" value="媒体选题">
                     </form>
                 </div>
                 <div>
                     <form action="#">
-                        <input type="submit" class="btn btn-primary linkbtn" value="选题发布"/>
+                        <input type="submit" class="btn btn-primary linkbtn" value="选题管理">
                     </form>
                 </div>
             </div>
+            <?php
+            $arr_tp_tc = array(); //$array[id_topic] = id_tpcontact
+            $arr_tc_status = array(); //$array[id_tpcontact] = fk_tpcontact_status
+            foreach($tpcontacts as $tc)
+            {
+                $arr_tp_tc[$tc->fk_topic] = $tc->id_tpcontact;
+                $arr_tc_status[$tc->id_tpcontact] = $tc->fk_tpcontact_status;
+            }
+            $arr_tpcontact_status = array(
+                '1' => '联系中',
+                '2' => '已结束',
+            );
+            
+            ?>
             <div class="widget-box">
                 <div class="widget-title">
-                    <h4>我发布的选题:</h4>
+                    <h4>已投递素材的选题:</h4>
                 </div>
                 <div class="widget-content nopadding">
                     <table class="table table-bordered table-striped">
                         <tr>
-                            <th>id</th>
-                            <th>选题类型</th>
+                            <th>媒体</th>
                             <th>选题概要</th>
-                            <th>APP类型</th>
-                            <th>创建人</th>
-                            <th>创建日期</th>
+                            <th>有效日期</th>
+                            <th>状态</th>
+                            <th>媒体互动</th>
                         </tr>
-                        <?php foreach($topics as $tp): ?>
-                        <tr onclick="document.location = '/topic/detail/<?php echo $this->escapeHtml($tp->id_topic);?>';">
+                        <?php foreach($mytpcontact as $my_tc): ?>
+                        <!--<tr onclick="document.location = '/topic/detail/<?php echo $this->escapeHtml($ct->id_topic);?>';">-->
+                        <tr>
                             <td>
-                                <?php echo $this->escapeHtml($tp->id_topic);?>
+                                <?php echo $this->escapeHtml($ct->created_by);?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($tp->topic_type);?>
+                                <?php echo $this->escapeHtml($ct->abstract);?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($tp->abstract);?>
+                                <?php echo $this->escapeHtml($ct->due_date);?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($tp->app_type);?>
+                                <?php 
+                                if(array_key_exists($ct->id_topic, $arr_tp_tc))
+                                {
+                                    echo $arr_tpcontact_status[$arr_tc_status[$arr_tp_tc[$ct->id_topic]]];
+                                }
+                                else
+                                {
+                                    echo "未联系";
+                                }
+                                ?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($tp->created_by);?>
+                                <div style="display:<?php echo (array_key_exists($ct->id_topic, $arr_tp_tc))?'inline':'none'?>;">
+                                    <form action="<?php echo $this->url('topic', array('action' => 'viewcontact', 'id' => $ct->id_topic)) ;?>">
+                                        <input type="submit" class="btn btn-primary btn-mini" value="查看">
+                                    </form>
+                                </div>
+                                <div style="display:<?php echo (array_key_exists($ct->id_topic, $arr_tp_tc))?'none':'inline'?>;">
+                                    <form action="<?php echo $this->url('topic', array('action' => 'contact', 'id' => $ct->id_topic)) ;?>">
+                                        <input type="submit" class="btn btn-primary btn-mini" value="我要联系">
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </table>
+                </div>
+            </div>
+            <div class="widget-box">
+                <div class="widget-title">
+                    <h4>已经发布的往期选题:</h4>
+                </div>
+                <div class="widget-content nopadding">
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <th>媒体</th>
+                            <th>选题概要</th>
+                            <th>有效日期</th>
+                            <th>状态</th>
+                            <th>原文地址</th>
+                        </tr>
+                        <?php foreach($past_topics as $pt): ?>
+                        <!--<tr onclick="document.location = '/topic/detail/<?php echo $this->escapeHtml($ct->id_topic);?>';">-->
+                        <tr>
+                            <td>
+                                <?php echo $this->escapeHtml($pt->created_by);?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($tp->created_at);?>
+                                <?php echo $this->escapeHtml($pt->abstract);?>
+                            </td>
+                            <td>
+                                <?php echo $this->escapeHtml($pt->due_date);?>
+                            </td>
+                            <td>
+                                <?php 
+                                if(array_key_exists($ct->id_topic, $arr_tp_tc))
+                                {
+                                    echo $arr_tpcontact_status[$arr_tc_status[$arr_tp_tc[$ct->id_topic]]];
+                                }
+                                else
+                                {
+                                    echo "未联系";
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <div>
+                                    <form action="<?php echo $this->url('topic', array('action' => 'viewcontact', 'id' => $ct->id_topic)) ;?>">
+                                        <input type="submit" class="btn btn-primary btn-mini" value="查看">
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -172,3 +202,14 @@ input[type="text"], textarea
     width: 100%;
 }
 </style>
+
+            <script src="js/excanvas.min.js"></script>
+            <script src="js/jquery.min.js"></script>
+            <script src="js/jquery.ui.custom.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script src="js/jquery.flot.min.js"></script>
+            <script src="js/jquery.flot.resize.min.js"></script>
+            <script src="js/jquery.peity.min.js"></script>
+            <script src="js/fullcalendar.min.js"></script>
+            <script src="js/unicorn.js"></script>
+            <script src="js/unicorn.dashboard.js"></script>

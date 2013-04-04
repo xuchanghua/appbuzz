@@ -22,30 +22,10 @@
     <div id="row" class="row">
         ROW
         <div id="left" class="span2 left">
-            <div id="user" class="user">
-                用户: <?php echo $user;?>
-                <a href="/user/logout">退出</a>
-            </br>
-                <a href="">媒体资料</a>
-            </br>
-                <a href="">我的账户</a>
-            </br>
-                <a href="">我的订单</a>
-            </br>
-                <a href="">APP新闻助手</a>           
-            </div>
-            <div id="topicpublish" class="topicpublish">
-                <a href="/topic">发布选题</a>
-            </div>
-            <div id="appevaluating" class="appevaluating">
-                <a href="appevaluating">评测APP</a>
-            </div>
-            <div id="appinterview" class="appinterview">
-                <a href="appinterview">采访APP</a>
-            </div>
-            <div id="editor" class="editor">
-                <a href="editor">自由撰稿人</a>
-            </div>            
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_media.phtml'; 
+        ?>        
         </div>
         <div id="mid" class="span8 mid">
             <div>
@@ -94,6 +74,12 @@
                         <td class="tdlabel">征集APP产品类型：</td>
                         <td class="tdinput">
                             <?php echo $this->formRow($form->get('app_type')); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">有效日期：</td>
+                        <td class="tdinput">
+                            <?php echo $this->formRow($form->get('due_date')); ?>
                         </td>
                     </tr>
                     <tr>

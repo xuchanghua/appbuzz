@@ -6,6 +6,8 @@ use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 use Topic\Model\Topic;
 use Topic\Form\TopicForm;
+use Topic\Model\Tpcontact;
+use Topic\Form\TpcontactForm;
 use User\Model\User;
 use DateTime;
 
@@ -13,21 +15,25 @@ class TopicController extends AbstractActionController
 {
     protected $userTable;
     protected $topicTable;
+    protected $tpcontactTable;
+    protected $productTable;
 
     public function indexAction()
     {
-        $arr_type_allowed = array(2, 3);
+        $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'past_topics' => $this->getTopicTable()->fetchPastTopic($cur_user),
+            'current_topics' => $this->getTopicTable()->fetchCurrentTopic($cur_user),
             'topics' => $this->getTopicTable()->fetchTopicByUser($cur_user),
         ));
     }
 
     public function addAction()
     {        
-        $arr_type_allowed = array(2, 3);
+        $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $form = new TopicForm();
@@ -52,7 +58,6 @@ class TopicController extends AbstractActionController
             }
         }
 
-
         return new ViewModel(array(
             'user' => $cur_user,
             'form' => $form,            
@@ -71,18 +76,22 @@ class TopicController extends AbstractActionController
             ));
         }
         $topic = $this->getTopicTable()->getTopic($id);
+        $tpcontact = $this->getTpcontactTable()->fetchTpcontactByFkTopic($topic->id_topic);
+        $all_users = $this->getUserTable()->fetchAll();
 
         return new ViewModel(array(
             'topic' => $topic,
             'user'  => $cur_user,
             'usertype' => $this->_getCurrentUserType(),
             'id'    => $id,
+            'tpcontact' => $tpcontact,
+            'all_users' => $all_users,
         ));
     }
 
     public function editAction()
     {
-        $arr_type_allowed = array(2, 3);
+        $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id = (int)$this->params()->fromRoute('id', 0);
@@ -124,23 +133,181 @@ class TopicController extends AbstractActionController
         ));
     }
 
+    public function currentAction()
+    {
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'past_topics' => $this->getTopicTable()->fetchPastTopic(),
+            'current_topics' => $this->getTopicTable()->fetchCurrentTopic(),
+            'topics' => $this->getTopicTable()->fetchAll(),
+            'tpcontacts' => $this->getTpcontactTable()->fetchTpcontactByUser($cur_user),
+        ));
+    }
+
     public function mgmtAction()
     {        
         //for enterprise user, to see all the topics
-        $arr_type_allowed = array(1, 3);
+        $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
         return new ViewModel(array(
             'user' => $cur_user,
             'topics' => $this->getTopicTable()->fetchAll(),
+            'mytpcontact' => $this->getTpcontactTable()->fetchTpcontactByUser($cur_user),
         ));
     }
 
     public function contactAction()
     {
-        $arr_type_allowed = array(1, 3);
+        $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_topic = (int)$this->params()->fromRoute('id', 0);
+        if (!$id_topic) {
+            return $this->redirect()->toRoute('topic', array(
+                'action' => 'current',
+            ));
+        }
+        $topic = $this->getTopicTable()->getTopic($id_topic);
+        $enterprise_user = $this->getUserTable()->getUserByName($cur_user);
+        $media_user = $this->getUserTable()->getUserByName($topic->created_by);
         
+        //handle the form
+        $form = new TpcontactForm();
+        $form->get('submit')->setValue('提交');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $tpcontact = new Tpcontact();
+            $form->setInputFilter($tpcontact->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $tpcontact->exchangeArray($form->getData());
+                $tpcontact->fk_topic = $topic->id_topic;
+                $tpcontact->fk_enterprise_user = $enterprise_user->id;
+                $tpcontact->fk_media_user = $media_user->id;
+                //fk_product is post with the form
+                $tpcontact->created_at = $this->_getDateTime();
+                $tpcontact->created_by = $cur_user;
+                $tpcontact->updated_at = $this->_getDateTime();
+                $tpcontact->updated_by = $cur_user;
+                //create the order_no later after get the id
+                //matching_degree is post with the form
+                $tpcontact->fk_tpcontact_status = 1;
+                $this->getTpcontactTable()->saveTpcontact($tpcontact);
+                //save the order number
+                $id_tpcontact = $this->getTpcontactTable()->getId(
+                    $tpcontact->created_at,
+                    $tpcontact->created_by
+                );
+                $tpcontact2 = $this->getTpcontactTable()->getTpcontact($id_tpcontact);
+                $tpcontact2->order_no = 40000000 + $id_tpcontact;
+                $this->getTpcontactTable()->saveTpcontact($tpcontact2);
+
+                return $this->redirect()->toRoute('topic', array(
+                    'action' => 'current',
+                ));   
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'topic' => $topic,
+            'form' => $form,
+            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+        ));        
+    }
+
+    public function viewcontactAction()
+    {
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_topic = (int)$this->params()->fromRoute('id', 0);
+        if (!$id_topic) {
+            return $this->redirect()->toRoute('topic', array(
+                'action' => 'current',
+            ));
+        }
+        $topic = $this->getTopicTable()->getTopic($id_topic);
+        $tpcontact = $this->getTpcontactTable()->getTpcontactByFkTpAndUser($id_topic, $cur_user);
+        
+        $view = array(
+            'user' => $cur_user,
+            'topic' => $topic,
+            'tpcontact' => $tpcontact,
+        );
+
+        if($tpcontact)
+        {
+            $product = $this->getProductTable()->getProduct($tpcontact->fk_product);
+            $view['product'] = $product;
+        }
+
+        return new ViewModel($view);
+    }
+
+    public function contactinfoAction()
+    {
+
+    }
+
+    public function testwordchsAction()
+    {
+        require_once './vendor/Classes/PHPWord.php';
+
+$PHPWord = new \PHPWord();
+
+$document = $PHPWord->loadTemplate('Template.docx');
+
+$document->setValue('Value1', 'Sun 太阳');
+$document->setValue('Value2', 'Mercury 水星');
+$document->setValue('Value3', 'Venus 金星');
+$document->setValue('Value4', 'Earth 地球');
+$document->setValue('Value5', 'Mars 火星');
+$document->setValue('Value6', 'Jupiter 木星');
+$document->setValue('Value7', 'Saturn 土星');
+$document->setValue('Value8', 'Uranus 天王星');
+$document->setValue('Value9', 'Neptun 海王星');
+$document->setValue('Value10', 'Pluto 冥王星');
+
+$document->setValue('weekday', date('l'));
+$document->setValue('time', date('H:i'));
+
+$document->save('Solarsystem.docx');
+    }
+
+    public function testwordAction()
+    {
+        // Include the PHPWord.php, all other classes were loaded by an autoloader
+        require_once './vendor/Classes/PHPWord.php';
+
+        // Create a new PHPWord Object
+        $PHPWord = new \PHPWord();
+
+        // Every element you want to append to the word document is placed in a section. So you need a section:
+        $section = $PHPWord->createSection();
+
+        // After creating a section, you can append elements:
+        $section->addText('Hello world!');
+
+        // You can directly style your text by giving the addText function an array:
+        $section->addText('Hello world! I am formatted.', array('name'=>'Tahoma', 'size'=>16, 'bold'=>true));
+
+        // If you often need the same style again you can create a user defined style to the word document
+        // and give the addText function the name of the style:
+        $PHPWord->addFontStyle('myOwnStyle', array('name'=>'Verdana', 'size'=>14, 'color'=>'1B2232'));
+        $section->addText('Hello world! I am formatted by a user defined style', 'myOwnStyle');
+
+        // You can also putthe appended element to local object an call functions like this:
+        $PHPWord->addFontStyle('myFont', array('name'=>'Verdana', 'size'=>22, 'bold'=>true));
+        $myTextElement = $section->addText('Hello World!','myFont');
+
+        // At least write the document to webspace:
+        $objWriter = \PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
+        $objWriter->save('data/word/helloWorld.docx');
     }
 
     public function getTopicTable()
@@ -152,6 +319,15 @@ class TopicController extends AbstractActionController
         return $this->topicTable;
     }
 
+    public function getTpcontactTable()
+    {
+        if (!$this->tpcontactTable) {
+        $sm = $this->getServiceLocator();
+        $this->tpcontactTable = $sm->get('Topic\Model\TpcontactTable');
+        }
+        return $this->tpcontactTable;
+    }
+
     public function getUserTable()
     {
         if(!$this->userTable){
@@ -159,6 +335,15 @@ class TopicController extends AbstractActionController
             $this->userTable = $sm->get('User\Model\UserTable');
         }
         return $this->userTable;
+    }
+
+    public function getProductTable()
+    {
+        if(!$this->productTable){
+            $sm = $this->getServiceLocator();
+            $this->productTable = $sm->get('Product\Model\ProductTable');
+        }
+        return $this->productTable;
     }
 
     protected function _auth($arr_type_allowed)

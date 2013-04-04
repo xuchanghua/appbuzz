@@ -1,7 +1,14 @@
+
 body {
     padding-top: 60px;
     padding-bottom: 40px;
+    font-family:  'Droid Sans', 'STHeiti', 'Apple LiGothic Medium', 'Microsoft YaHei', 'Droid Sans';
+    /*字体依次为：华文黑体，苹果丽中黑，微软雅黑，Droid Sans*/
 }
+
+
+  
+
 
 .zf-green {
     color: #68b604;

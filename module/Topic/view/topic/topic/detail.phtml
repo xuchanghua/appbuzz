@@ -22,30 +22,21 @@
     <div id="row" class="row">
         ROW
         <div id="left" class="span2 left">
-            <div id="user" class="user">
-                用户: <?php echo $user;?>
-                <a href="/user/logout">退出</a>
-            </br>
-                <a href="">媒体资料</a>
-            </br>
-                <a href="">我的账户</a>
-            </br>
-                <a href="">我的订单</a>
-            </br>
-                <a href="">APP新闻助手</a>           
-            </div>
-            <div id="topicpublish" class="topicpublish">
-                <a href="/topic">发布选题</a>
-            </div>
-            <div id="appevaluating" class="appevaluating">
-                <a href="appevaluating">评测APP</a>
-            </div>
-            <div id="appinterview" class="appinterview">
-                <a href="appinterview">采访APP</a>
-            </div>
-            <div id="editor" class="editor">
-                <a href="editor">自由撰稿人</a>
-            </div>            
+        <?php 
+        set_include_path("public/include");  
+        if($usertype == 1)
+        {
+            include 'sidebar_enterprise.phtml';
+        }      
+        elseif($usertype == 2)
+        {
+            include 'sidebar_media.phtml'; 
+        }
+        else
+        {
+            include 'sidebar_admin.phtml';
+        }
+        ?>
         </div>
         <div id="mid" class="span8 mid">
             <div>
@@ -84,6 +75,12 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="tdlabel">有效日期：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->due_date; ?>
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="tdlabel">创建人：</td>
                         <td class="tdinput">
                             <?php echo $topic->created_by; ?>
@@ -108,16 +105,67 @@
                         </td>
                     </tr>
                     <tr>
+                        <?php
+                        $arr_tpcontact_status = array(
+                            '1' => '联系中',
+                            '2' => '已结束',
+                        );                        
+                        $arr_id_user = array();
+                        foreach($all_users as $a_u)
+                        {
+                            $arr_id_user[$a_u->id] = $a_u->username;
+                        }
+                        ?>
+                        <td class="tdlabel">有意联系的企业：</td>
+                        <td>
+                            <div class="widget-box">
+                                <div class="widget-content nopadding">
+                                    <table class="table table-bordered table-striped">
+                                        <tr>
+                                            <th>订单号</th>
+                                            <th>企业名称</th>
+                                            <th>订单状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        <?php foreach ($tpcontact as $tc): ?>
+                                        <tr>
+                                            <td><?php echo $tc->order_no; ?></td>
+                                            <td><?php echo $arr_id_user[$tc->fk_enterprise_user]; ?></td>
+                                            <td>
+                                                <div class="linkbtns">
+                                                    <?php echo $arr_tpcontact_status[$tc->fk_tpcontact_status]; ?>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div id="btns" style="display:<?php echo ($tc->fk_tpcontact_status==1)?"inline":"none";?>">
+                                                    <div>
+                                                        <form action="<?php echo $this->url('topic',
+                                                        array('action' => 'viewcontact', 'id' => $tc->id_tpcontact)) ;?>">
+                                                            <input type="submit" class="btn btn-primary btn-mini" value="查看">
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </td>                                      
+                                        </tr>
+                                        <?php endforeach;?>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                         <td></td>
                         <td>
                             <form action="/topic/edit/<?php echo $id; ?>" 
                                 style="display:<?php echo ($usertype==1)?'none':'inline';?>;">
-                                <input type="submit" class="btn btn-primary" value="修改"/>
+                                <input type="submit" class="btn btn-primary" value="修改订单"/>
                             </form>
+                            <!--
                             <form action="/topic/contact/<?php echo $id; ?>"
                                 style="display:<?php echo ($usertype==1)?'inline':'none';?>;">
                                 <input type="submit" class="btn btn-primary" value="我要联系"/>
                             </form>
+                            -->
                         </td>
                     </tr>
                 </table>

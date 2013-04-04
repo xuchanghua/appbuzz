@@ -205,6 +205,20 @@
                                         </form>
                                     </div>
                                 </div>
+                                <div style="display:<?php echo ($wrtmedia->fk_wrtmedia_status>5)?'inline':'none';?>;">
+                                    <div class="linkbtns">
+                                        <form action="<?php echo $this->url('writer', array('action' => 'printfirstdraft','id' => $wrtmedia->id_wrtmedia)) ;?>">
+                                            <input type="submit" class="btn btn-primary" value="打印一稿">
+                                        </form>
+                                    </div>
+                                </div>
+                                <div style="display:<?php echo ($wrtmedia->fk_wrtmedia_status==9)?'inline':'none';?>;">
+                                    <div class="linkbtns">
+                                        <form action="<?php echo $this->url('writer', array('action' => 'printseconddraft','id' => $wrtmedia->id_wrtmedia)) ;?>">
+                                            <input type="submit" class="btn btn-primary" value="打印二稿">
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </td>
                     </tr>                    

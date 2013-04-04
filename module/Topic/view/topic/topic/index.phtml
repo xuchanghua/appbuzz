@@ -22,49 +22,10 @@
     <div id="row" class="row">
         ROW
         <div id="left" class="span2 left">
-            <div id="user" class="user">
-                <ul>
-                    <li>
-                        <span>用户: <?php echo $user;?></span>
-                        <a href="/user/logout">退出</a>
-                    </li>
-                    <li><a href="">媒体资料</a></li>
-                    <li><a href="">我的账户</a></li>
-                    <li><a href="">我的订单</a></li>
-                    <li><a href="">APP新闻助手</a></li>
-            </div>
-            <div id="sidebar">
-                <ul>
-                    <li class="submenu">
-                        <a href="#"><span>发布选题</span></a>
-                        <ul>
-                            <li><a href="/topic/add">我要发布</a></li>
-                            <li><a href="/topic/index">选题管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>评测APP</span></a>
-                        <ul>
-                            <li><a href="#">评测邀约</a></li>
-                            <li><a href="#">评测管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>采访APP</span></a>
-                        <ul>
-                            <li><a href="#">采访邀约</a></li>
-                            <li><a href="#">采访管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>自由撰稿人</span></a>
-                        <ul>
-                            <li><a href="#">需求列表</a></li>
-                            <li><a href="#">撰稿管理</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>   
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_media.phtml'; 
+        ?> 
         </div>
         <div id="mid" class="span8 mid">
             <div>
@@ -81,7 +42,7 @@
             </div>
             <div class="widget-box">
                 <div class="widget-title">
-                    <h4>我发布的选题:</h4>
+                    <h4>我发布的当期选题:</h4>
                 </div>
                 <div class="widget-content nopadding">
                     <table class="table table-bordered table-striped">
@@ -90,9 +51,10 @@
                             <th>选题类型</th>
                             <th>选题概要</th>
                             <th>APP类型</th>
+                            <th>有效日期</th>
                             <th>创建日期</th>
                         </tr>
-                        <?php foreach($topics as $tp): ?>
+                        <?php foreach($current_topics as $tp): ?>
                         <tr onclick="document.location = '/topic/detail/<?php echo $this->escapeHtml($tp->id_topic);?>';">
                             <td>
                                 <?php echo $this->escapeHtml($tp->id_topic);?>
@@ -107,7 +69,49 @@
                                 <?php echo $this->escapeHtml($tp->app_type);?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($tp->created_at);?>
+                                <?php echo $this->escapeHtml($tp->due_date);?>
+                            </td>
+                            <td>
+                                <?php echo $this->escapeHtml(substr($tp->created_at,0,10));?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </table>
+                </div>
+            </div>
+            <div class="widget-box">
+                <div class="widget-title">
+                    <h4>往期选题:</h4>
+                </div>
+                <div class="widget-content nopadding">
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <th>id</th>
+                            <th>选题类型</th>
+                            <th>选题概要</th>
+                            <th>APP类型</th>
+                            <th>有效日期</th>
+                            <th>创建日期</th>
+                        </tr>
+                        <?php foreach($past_topics as $pt): ?>
+                        <tr onclick="document.location = '/topic/detail/<?php echo $this->escapeHtml($pt->id_topic);?>';">
+                            <td>
+                                <?php echo $this->escapeHtml($pt->id_topic);?>
+                            </td>
+                            <td>
+                                <?php echo $this->escapeHtml($pt->topic_type);?>
+                            </td>
+                            <td>
+                                <?php echo $this->escapeHtml($pt->abstract);?>
+                            </td>
+                            <td>
+                                <?php echo $this->escapeHtml($pt->app_type);?>
+                            </td>
+                            <td>
+                                <?php echo $this->escapeHtml($pt->due_date);?>
+                            </td>
+                            <td>
+                                <?php echo $this->escapeHtml(substr($pt->created_at,0,10));?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
