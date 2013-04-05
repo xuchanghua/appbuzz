@@ -61,6 +61,16 @@
                         'value_options' => $arr_products,
                         ),
                     ));
+              /*$form->add(array(
+                    'name' => 'fk_pub_mode',
+                    'type'  => 'Zend\Form\Element\Radio',
+                    'options' => array(
+                        'value_options' => array(
+                            '1' => '按媒体单篇发布，350元/篇：点击选择媒体 发布__篇，共__元',
+                            '2' => '打包发布，实发篇数不少于6篇，1500元/发布包',
+                            ),
+                        ),
+                    ));*/
                 $form->prepare();
                 echo $this->form()->openTag($form);
                 echo $this->formHidden($form->get('id_newspub'));
@@ -108,9 +118,53 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="tdlabel">发布方式及费用</td>
+                    <td class="tdlabel">发布方式</td>
                     <td class="tdinput">
                         <?php echo $this->formRow($form->get('fk_pub_mode')); ?>
+                    </td>
+                </tr>
+                <tr id="tr_pick_media">
+                    <td class="tdlabel">选择媒体</td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td class="tdlabel">
+                                    <h5>候选媒体</h5>
+                                    <select multiple class="sel" id="sel_left">
+                                        <option value="a">aaaaaaaaaaa</option>
+                                        <option value="b">bbbbbbbbbbb</option>
+                                        <option value="c">ccccccccccc</option>
+                                        <option value="d">ddddddddddd</option>
+                                        <option value="e">eeeeeeeeeee</option>
+                                    </select>
+                                </td>
+                                <td>    
+                                    <p><a class="btn btn-primary btn-mini" id="btn_1">&gt;&gt; </a></p>
+                                    <p><a class="btn btn-primary btn-mini" id="btn_2">&gt;</a></p>
+                                    <p><a class="btn btn-primary btn-mini" id="btn_3">&lt;</a></p>
+                                    <p><a class="btn btn-primary btn-mini" id="btn_4">&lt;&lt;</a></p>
+                                    
+                                </td>
+                                <td class="tdlabel">
+                                    <h5>已选媒体</h5>
+                                     <select multiple class="sel" id="sel_right">
+                                     <option value="f">fffffffffff</option>
+                                     </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr id="charge_method_single">
+                    <td class="tdlabel">费用</td>
+                    <td>
+                        按媒体单篇发布，350 元/篇：  <a id="pick_media">点击选择媒体</a>  发布___篇，共___元
+                    </td>
+                </tr>
+                <tr id="charge_method_multiple" style="display:none;">
+                    <td class="tdlabel">费用：</td>
+                    <td>
+                        打包发布，实发篇数不少于 6 篇，1500 元/发布包
                     </td>
                 </tr>
                 <tr>
@@ -138,19 +192,57 @@
 </div>
 
 <script>
-function alert()
-{
-    alert("aaaaaa");
+//show and hide the charge method according to the value of the publish mode
+var media = document.getElementById("tr_pick_media");
+var single = document.getElementById("charge_method_single");
+var multiple = document.getElementById("charge_method_multiple");
+document.getElementById("select_pub_mode").onchange = function(){
+  single.style.display = (this.selectedIndex == 1) ? "none" : "";
+  media.style.display = (this.selectedIndex == 1) ? "none" : "";
+  multiple.style.display = (this.selectedIndex == 1) ? "" : "none";
 }
-$(document).ready(function(){
-    $('#appproduct').change(function(){
-    alert("麻痹麻痹麻痹麻痹");
+//pick up the medias:
+document.getElementById("pick_media").onclick = function(){
+    //alert("aaaaaa");
+    window.open('/newspub/index','newwindow','width=200,height=200')
+}
+//media picker
+$(function(){
+    $("#sel_left,#sel_right").bind("change",checkBtn);
+    $("#btn_1,#btn_2,#btn_3,#btn_4").bind("click",clickBtn);
+    checkBtn();
     });
-});
-
+    
+    function checkBtn(){
+        jQuery("#sel_left>option").length > 0 ? jQuery("#btn_1").removeAttr("disabled") : jQuery("#btn_1").attr("disabled","disabled");
+        jQuery("#sel_left option:selected").length > 0 ? jQuery("#btn_2").removeAttr("disabled") : jQuery("#btn_2").attr("disabled","disabled");
+        jQuery("#sel_right option:selected").length > 0 ? jQuery("#btn_3").removeAttr("disabled") : jQuery("#btn_3").attr("disabled","disabled");
+        jQuery("#sel_right>option").length > 0 ? jQuery("#btn_4").removeAttr("disabled") : jQuery("#btn_4").attr("disabled","disabled");
+    }
+    
+    function clickBtn(e){
+        if("btn_1" == e.target.id){
+            jQuery("#sel_left>option").appendTo("#sel_right");
+        }else if("btn_2" == e.target.id){
+            jQuery("#sel_left option:selected").appendTo("#sel_right");
+        }else if("btn_3" == e.target.id){
+            jQuery("#sel_right option:selected").appendTo("#sel_left");
+        }else if("btn_4" == e.target.id){
+            jQuery("#sel_right>option").appendTo("#sel_left");
+        }
+        checkBtn();
+    }
 </script>
 
 <style>
+.sel
+{
+    width:150px;height:200px;
+}
+#pick_media:hover
+{
+    text-decoration: underline;
+}
 select, #appproduct
 {
     width: 100%;

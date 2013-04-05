@@ -92,9 +92,23 @@ class NewspubForm extends Form
                 'label' => '',
             ),
         ));
+        /*$this->add(array(
+            'name' => 'fk_pub_mode',
+            'type'  => 'Zend\Form\Element\Radio',
+            'options' => array(
+                'value_options' => array(
+                    '1' => '单篇发布',
+                    '2' => '打包发布',
+                    ),
+                ),
+            ));*/
         $this->add(array(
             'name' => 'fk_pub_mode',
             'type'  => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'select_pub_mode',
+                'class' => 'select_pub_mode',//class must be defined otherwise id doesn't work in the view......
+                ),
             'options' => array(
                 'value_options' => array(
                     '1' => '单篇发布',

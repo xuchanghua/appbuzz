@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> New Document </TITLE>
+  <META NAME="Generator" CONTENT="EditPlus">
+  <META NAME="Author" CONTENT="">
+  <META NAME="Keywords" CONTENT="">
+  <META NAME="Description" CONTENT="">
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+
+  <style>
+  .sel{width:150px;height:200px;}
+  .btn{width:50px;font-weight:bold;font-size:14px; }
+  </style>
+ </HEAD>
+
+ <BODY>
+ <table>
+	<tr>
+		<td>
+		  <select multiple class="sel" id="sel_left">
+			<option value="a">aaaaaaaaaaa</option>
+			<option value="b">bbbbbbbbbbb</option>
+			<option value="c">ccccccccccc</option>
+			<option value="d">ddddddddddd</option>
+			<option value="e">eeeeeeeeeee</option>
+		  </select>
+		</td>
+		<td>	
+			<p><button class="btn" id="btn_1">&gt;&gt; </button></p>
+			<p><button class="btn" id="btn_2">&gt;</button></p>
+			<p><button class="btn" id="btn_3">&lt;</button></p>
+			<p><button class="btn" id="btn_4">&lt;&lt;</button></p>
+			
+		</td>
+		<td>
+			 <select multiple class="sel" id="sel_right">
+			 <option value="f">fffffffffff</option>
+			 </select>
+		</td>
+	</tr>
+</table>
+ </BODY>
+   <script>
+  $(function(){
+	$("#sel_left,#sel_right").bind("change",checkBtn);
+	$("#btn_1,#btn_2,#btn_3,#btn_4").bind("click",clickBtn);
+	checkBtn();
+	});
+	
+	function checkBtn(){
+		jQuery("#sel_left>option").length > 0 ? jQuery("#btn_1").removeAttr("disabled") : jQuery("#btn_1").attr("disabled","disabled");
+		jQuery("#sel_left option:selected").length > 0 ? jQuery("#btn_2").removeAttr("disabled") : jQuery("#btn_2").attr("disabled","disabled");
+		jQuery("#sel_right option:selected").length > 0 ? jQuery("#btn_3").removeAttr("disabled") : jQuery("#btn_3").attr("disabled","disabled");
+		jQuery("#sel_right>option").length > 0 ? jQuery("#btn_4").removeAttr("disabled") : jQuery("#btn_4").attr("disabled","disabled");
+	}
+	
+	function clickBtn(e){
+		if("btn_1" == e.target.id){
+			jQuery("#sel_left>option").appendTo("#sel_right");
+		}else if("btn_2" == e.target.id){
+			jQuery("#sel_left option:selected").appendTo("#sel_right");
+		}else if("btn_3" == e.target.id){
+			jQuery("#sel_right option:selected").appendTo("#sel_left");
+		}else if("btn_4" == e.target.id){
+			jQuery("#sel_right>option").appendTo("#sel_left");
+		}
+		checkBtn();
+	}
+  </script>
+</HTML>
