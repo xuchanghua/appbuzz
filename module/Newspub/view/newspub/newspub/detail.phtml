@@ -21,8 +21,15 @@
     <div id="row" class="row">
         <div id="left" class="span2 left">
         <?php 
-        set_include_path("public/include");        
-        include 'sidebar_enterprise.phtml'; 
+        set_include_path("public/include");    
+        if($user_type == 1)
+        {    
+            include 'sidebar_enterprise.phtml'; 
+        }
+        elseif($user_type == 3)
+        {
+            include 'sidebar_admin.phtml';
+        }
         ?>
         </div>
 
@@ -94,7 +101,95 @@
                     <tr>
                         <td class="tdlabel">发布方式及费用</td>
                         <td>
-                            <?php echo $this->escapeHtml($np->fk_pub_mode);?>
+                            <?php
+                                $arr_pub_mode = array(
+                                    '1' => '单篇发布',
+                                    '2' => '打包发布',
+                                    );
+                                echo $this->escapeHtml($arr_pub_mode[$np->fk_pub_mode]);
+                            ?>
+                        </td>
+                    </tr>
+                    <tr style="display:<?php echo ($np->fk_pub_mode==1)?'':'none';?>;">
+                        <td class="tdlabel">已选媒体</td>
+                        <td>
+                            <?php
+                                $arr_id_user = array();
+                                foreach ($all_users as $au)
+                                {
+                                    $arr_id_user[$au->id] = $au->username;
+                                }
+                                $arr_npmedia_status = array(
+                                    '1' => '新订单',
+                                    '2' => '媒体接受',
+                                    '3' => '媒体拒绝',
+                                    '4' => '已发布',
+                                    '5' => '已取消',
+                                    );                            
+                            ?>
+                            <div class="widget-box">
+                                <div class="widget-content nopadding">
+                                    <table class="table table-bordered table-striped">
+                                        <tr>
+                                            <th>媒体</th>
+                                            <th>状态</th>
+                                            <th>新闻链接</th>
+                                            <th style="display:<?php echo ($user_type==3)?'':'none';?>">
+                                                操作
+                                            </th>
+                                        </tr>
+                                        <?php foreach($npmedia as $nm): ?>
+                                        <tr>
+                                            <td>
+                                                <?php echo $arr_id_user[$nm->fk_media_user];?>
+                                            </td>
+                                            <td>
+                                                <?php echo $arr_npmedia_status[$nm->fk_npmedia_status] ;?>
+                                            </td>
+                                            <td>
+                                                <?php echo $nm->news_link ;?>
+                                            </td>
+                                            <td style="display:<?php echo ($user_type==3)?'':'none';?>">
+                                                <div style="display:<?php echo ($nm->fk_npmedia_status==1)?'':'none';?>">
+                                                    <div class="linkbtns">
+                                                        <form action="<?php echo $this->url('newspub',
+                                                        array('action' => 'mediaacc', 'id' => $nm->id_npmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary btn-mini" value="媒体接受">
+                                                        </form>
+                                                    </div>
+                                                    <div class="linkbtns">
+                                                        <form action="<?php echo $this->url('newspub',
+                                                        array('action' => 'mediarej', 'id' => $nm->id_npmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary btn-mini" value="媒体拒绝">
+                                                        </form>
+                                                    </div>
+                                                    <div>
+                                                        <form action="<?php echo $this->url('newspub',
+                                                        array('action' => 'nmcancel', 'id' => $nm->id_npmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary btn-mini" value="企业取消">
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div style="display:<?php echo ($nm->fk_npmedia_status==2)?'':'none';?>">
+                                                    <div class="linkbtns">
+                                                        <form action="<?php echo $this->url('newspub',
+                                                        array('action' => 'publish', 'id' => $nm->id_npmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary btn-mini" value="发布">
+                                                        </form>
+                                                    </div>
+                                                    <div>
+                                                        <form action="<?php echo $this->url('newspub',
+                                                        array('action' => 'nmcancel', 'id' => $nm->id_npmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary btn-mini" value="企业取消">
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach;?>
+                                    </table>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
@@ -124,6 +219,18 @@
 </div>
 
 <style>
+.sel
+{
+    width:150px;height:200px;
+}
+#pick_media:hover
+{
+    text-decoration: underline;
+}
+select, #appproduct
+{
+    width: 100%;
+}
 div.user,.mid
 {
     border:1px black solid;
@@ -131,6 +238,27 @@ div.user,.mid
 .logout
 {
     text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 75%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
 }
 </style>
 

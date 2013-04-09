@@ -116,6 +116,25 @@ class NewspubForm extends Form
                     ),
                 ),
             ));
+        /*$this->add(array(
+            'name' => 'sel_right',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'sel_right',
+                'class' => 'sel',
+                'multiple' => 'multiple',
+                'inarrayvalidator' => false,
+                ),
+            'options' => array(
+                'registerInArrayValidator' => false,//doesn't work in zf2
+                ),
+            ));*/
+        $this->add(array(
+            'name' => 'sel_right',
+            'attributes' => array(
+                'type' => 'hidden',
+                ),
+            ));
         $this->add(array(
             'name' => 'submit',
             'attributes' => array(

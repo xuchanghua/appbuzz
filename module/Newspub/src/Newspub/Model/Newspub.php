@@ -17,6 +17,7 @@ class Newspub implements InputFilterAwareInterface
     public $fk_pub_mode;
     public $fk_product;
     public $androidmkt_link;
+    public $sel_right;
 
     protected $inputFilter;                       // <-- Add this variable
 
@@ -36,6 +37,7 @@ class Newspub implements InputFilterAwareInterface
         $this->fk_newspub_status = (isset($data['fk_newspub_status'])) ? $data['fk_newspub_status'] : null;
         $this->androidmkt_link   = (isset($data['androidmkt_link']))   ? $data['androidmkt_link']   : null;
         $this->fk_product        = (isset($data['fk_product']))        ? $data['fk_product']        : null;
+        $this->sel_right         = (isset($data['sel_right']))         ? $data['sel_right']         : null;
     }
 
     public function getArrayCopy()
@@ -62,7 +64,21 @@ class Newspub implements InputFilterAwareInterface
                     array('name' => 'Int'),
                 ),
             )));
-
+            /*$inputFilter->add($factory->createInput(array(
+                'name'     => 'sel_right',
+                'required' => true,
+                'validators' => array(
+                    array(
+                        'name'     => 'InArray',
+                        'options' => array(
+                            'haystack' => array(2, 4, 11),
+                            'messages' => array(
+                                \Zend\Validator\InArray::NOT_IN_ARRAY => 'Please select medias.',
+                            ),
+                        ),
+                    ),
+                ),
+            )));*/
             $inputFilter->add($factory->createInput(array(
                 'name'     => 'title',
                 'required' => true,

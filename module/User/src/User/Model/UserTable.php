@@ -32,6 +32,14 @@ class UserTable
 		return $resultSet;
 	}
 
+	public function fetchUserByFkType($fk_user_type)
+	{
+		$resultSet = $this->tableGateway->select(function(Select $select) use ($fk_user_type){
+			$select->where->equalTo('fk_user_type', $fk_user_type);
+		});
+		return $resultSet;
+	}
+
 	//get the record of the `user` with the passed-in id
 	public function getUser($id)
 	{

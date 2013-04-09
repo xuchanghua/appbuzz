@@ -3,6 +3,8 @@ namespace Newspub;
 
 use Newspub\Model\Newspub;
 use Newspub\Model\NewspubTable;
+use Newspub\Model\Npmedia;
+use Newspub\Model\NpmediaTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -41,6 +43,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Newspub());
                     return new TableGateway('newspub', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Newspub\Model\NpmediaTable' =>  function($sm) {
+                    $tableGateway = $sm->get('NpmediaTableGateway');
+                    $table = new NpmediaTable($tableGateway);
+                    return $table;
+                },
+                'NpmediaTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Npmedia());
+                    return new TableGateway('npmedia', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );

@@ -26,7 +26,7 @@
         ?>
         </div>
 
-        <div id="mid" class="span6 mid">            
+        <div id="mid" class="span8 mid">            
             <div>
                 <form action="/newspub/index">
                     <input type="submit" class="btn btn-primary linkbtn" value="订单管理">
@@ -71,6 +71,7 @@
                             ),
                         ),
                     ));*/
+                $arr_id_media = array();
                 $form->prepare();
                 echo $this->form()->openTag($form);
                 echo $this->formHidden($form->get('id_newspub'));
@@ -126,16 +127,22 @@
                 <tr id="tr_pick_media">
                     <td class="tdlabel">选择媒体</td>
                     <td>
+                        <?php 
+
+                        ?>
                         <table>
                             <tr>
                                 <td class="tdlabel">
                                     <h5>候选媒体</h5>
                                     <select multiple class="sel" id="sel_left">
-                                        <option value="a">aaaaaaaaaaa</option>
-                                        <option value="b">bbbbbbbbbbb</option>
-                                        <option value="c">ccccccccccc</option>
-                                        <option value="d">ddddddddddd</option>
-                                        <option value="e">eeeeeeeeeee</option>
+                                        <?php foreach($medias as $media): ?>
+                                        <option value="<?php echo $media->id;?>">
+                                            <?php 
+                                                echo $media->username;
+                                                $arr_id_media[$media->id] = $media->username;
+                                            ?>
+                                        </option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </td>
                                 <td>    
@@ -147,9 +154,22 @@
                                 </td>
                                 <td class="tdlabel">
                                     <h5>已选媒体</h5>
-                                     <select multiple class="sel" id="sel_right">
-                                     <option value="f">fffffffffff</option>
-                                     </select>
+                                    <?php                                    
+                                        $form->add(array(
+                                            'name' => 'sel_right',
+                                            'type' => 'Zend\Form\Element\Select',
+                                            'attributes' => array(
+                                                'id' => 'sel_right',
+                                                'class' => 'sel',
+                                                'multiple' => 'multiple',
+                                                'inarrayvalidator' => false,
+                                                ),
+                                            ));
+                                        echo $this->formRow($form->get('sel_right')); 
+                                    ?>
+                                    <!--<select multiple class="sel" id="sel_right">
+                                    <option value="f">fffffffffff</option>
+                                    </select>-->
                                 </td>
                             </tr>
                         </table>
@@ -158,7 +178,7 @@
                 <tr id="charge_method_single">
                     <td class="tdlabel">费用</td>
                     <td>
-                        按媒体单篇发布，350 元/篇：  <a id="pick_media">点击选择媒体</a>  发布___篇，共___元
+                        按媒体单篇发布，350 元/篇：  <!--<a id="pick_media">点击选择媒体</a>-->  发布&nbsp;<span id="total_selected">0</span>&nbsp;篇，共&nbsp;<span id="total_amount">0</span>&nbsp;元。
                     </td>
                 </tr>
                 <tr id="charge_method_multiple" style="display:none;">
@@ -201,11 +221,12 @@ document.getElementById("select_pub_mode").onchange = function(){
   media.style.display = (this.selectedIndex == 1) ? "none" : "";
   multiple.style.display = (this.selectedIndex == 1) ? "" : "none";
 }
+/*
 //pick up the medias:
 document.getElementById("pick_media").onclick = function(){
     //alert("aaaaaa");
     window.open('/newspub/index','newwindow','width=200,height=200')
-}
+}*/
 //media picker
 $(function(){
     $("#sel_left,#sel_right").bind("change",checkBtn);
@@ -230,6 +251,9 @@ $(function(){
         }else if("btn_4" == e.target.id){
             jQuery("#sel_right>option").appendTo("#sel_left");
         }
+        var var_total_selected = document.getElementById("sel_right").options.length;
+        total_selected.innerHTML = var_total_selected;
+        total_amount.innerHTML = var_total_selected * 350;
         checkBtn();
     }
 </script>

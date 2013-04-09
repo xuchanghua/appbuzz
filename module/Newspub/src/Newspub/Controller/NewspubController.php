@@ -13,6 +13,8 @@ use Zend\Validator\File\Extension as FileExt;
 use Attachment\Model\Attachment;
 use Attachment\Model\Barcode;
 use DateTime;
+use Newspub\Model\Npmedia;
+use Newspub\Form\NpmediaForm;
 
 class NewspubController extends AbstractActionController
 {
@@ -21,6 +23,7 @@ class NewspubController extends AbstractActionController
     protected $productTable;
     protected $attachmentTable;
     protected $barcodeTable;
+    protected $npmediaTable;
 
     public function indexAction()
     {
@@ -57,12 +60,17 @@ class NewspubController extends AbstractActionController
         $form = new NewspubForm();
         $form->get('submit')->setValue('保存');
         $request = $this->getRequest();
-        if($request->isPost()){            
+        if($request->isPost()){
             $newspub = new Newspub();
             $form->setInputFilter($newspub->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
                 $newspub->exchangeArray($form->getData());
+                if(($newspub->fk_pub_mode == 1)&&($newspub->sel_right == null))
+                {
+                    echo "<a href='/newspub/add'>Back</a></br>";
+                    die("Please select at least one media!");
+                }
                 $newspub->created_by = $cur_user;
                 $newspub->created_at = $this->_getDateTime();
                 $newspub->updated_by = $cur_user;
@@ -126,6 +134,24 @@ class NewspubController extends AbstractActionController
                 $newspub2 = $this->getNewspubTable()->getNewspub($id_newspub);
                 $newspub2->barcode = $id_barcode;
                 $this->getNewspubTable()->saveNewspub($newspub2);
+
+                //save npmedia for single payment newspub
+                if($newspub->fk_pub_mode == 1)
+                {
+                    $arr_sel_media = $newspub->sel_right;
+                    foreach ($arr_sel_media as $s_m)
+                    {
+                        $npmedia = new Npmedia();
+                        $npmedia->fk_newspub = $id_newspub;
+                        $npmedia->fk_media_user = $s_m;
+                        $npmedia->fk_npmedia_status = 1;
+                        $npmedia->created_at = $this->_getDateTime();
+                        $npmedia->created_by = $cur_user;
+                        $npmedia->updated_at = $this->_getDateTime();
+                        $npmedia->updated_by = $cur_user;
+                        $this->getNpmediaTable()->saveNpmedia($npmedia);
+                    }
+                }
                 
                 return $this->redirect()->toRoute('newspub',array(
                     'action'=>'detail',
@@ -139,6 +165,7 @@ class NewspubController extends AbstractActionController
             'form' => $form,
             'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'medias' => $this->getUserTable()->fetchUserByFkType(2),
         ));        
     }
 
@@ -168,9 +195,12 @@ class NewspubController extends AbstractActionController
         return new ViewModel(array(
             'np' => $np,
             'user' => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
+            'all_users' => $this->getUserTable()->fetchAll(),
             'id' => $id,
             'product' => $this->getProductTable()->getProduct($np->fk_product),
             'barcode_path' => $barcode_path,
+            'npmedia' => $this->getNpmediaTable()->fetchNpmediaByFkNewspub($id),
         ));
     }
 
@@ -475,6 +505,127 @@ class NewspubController extends AbstractActionController
         ));
     }
 
+    public function mediaaccAction()
+    {
+        //管理员用户->媒体接受
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_npmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_npmedia) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'admin',
+            ));
+        }
+        $npmedia = $this->getNpmediaTable()->getNpmedia($id_npmedia);
+        $npmedia->fk_npmedia_status = 2;
+        $npmedia->updated_at = $this->_getDateTime();
+        $npmedia->updated_by = $cur_user;
+        $this->getNpmediaTable()->saveNpmedia($npmedia);
+
+        return $this->redirect()->toRoute('newspub', array(
+            'action' => 'detail',
+            'id'     => $npmedia->fk_newspub,
+        ));
+    }
+
+    public function mediarejAction()
+    {
+        //管理员用户->媒体拒绝
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_npmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_npmedia) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'admin',
+            ));
+        }
+        $npmedia = $this->getNpmediaTable()->getNpmedia($id_npmedia);
+        $npmedia->fk_npmedia_status = 3;
+        $npmedia->updated_at = $this->_getDateTime();
+        $npmedia->updated_by = $cur_user;
+        $this->getNpmediaTable()->saveNpmedia($npmedia);
+
+        return $this->redirect()->toRoute('newspub', array(
+            'action' => 'detail',
+            'id'     => $npmedia->fk_newspub,
+        ));
+    }
+
+    public function publishAction()
+    {
+        //管理员用户->发布
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_npmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_npmedia) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'admin',
+            ));
+        }
+        $npmedia = $this->getNpmediaTable()->getNpmedia($id_npmedia);
+        $np_fk_newspub = $npmedia->fk_newspub;
+        $np_fk_media_user = $npmedia->fk_media_user;
+        $np_created_at = $npmedia->created_at;
+        $np_created_by = $npmedia->created_by;        
+        $form = new NpmediaForm();
+        $form->bind($npmedia);
+        $form->get('submit')->setAttribute('value','保存并发布');
+
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $form->setInputFilter($npmedia->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $form->getData()->fk_newspub = $np_fk_newspub;
+                $form->getData()->fk_media_user = $np_fk_media_user;
+                $form->getData()->created_at = $np_created_at;
+                $form->getData()->created_by = $np_created_by;
+                $form->getData()->fk_npmedia_status = 4;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->updated_by = $cur_user;
+                $this->getNpmediaTable()->saveNpmedia($form->getData());
+
+                return $this->redirect()->toRoute('newspub', array(
+                    'action' => 'detail',
+                    'id'     => $npmedia->fk_newspub,
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'id'   => $id_npmedia,
+        ));
+    }
+
+    public function cancelAction()
+    {
+        //管理员用户->企业取消
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_npmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_npmedia) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'admin',
+            ));
+        }
+        $npmedia = $this->getNpmediaTable()->getNpmedia($id_npmedia);
+        $npmedia->fk_npmedia_status = 5;
+        $npmedia->updated_at = $this->_getDateTime();
+        $npmedia->updated_by = $cur_user;
+        $this->getNpmediaTable()->saveNpmedia($npmedia);
+
+        return $this->redirect()->toRoute('newspub', array(
+            'action' => 'detail',
+            'id'     => $npmedia->fk_newspub,
+        ));
+    }
+
     public function uploadAction()
     {
         if ($this->getRequest()->isPost()) 
@@ -490,6 +641,15 @@ class NewspubController extends AbstractActionController
 
     public function ajaxAction()
     {
+    }
+
+    public function getNpmediaTable()
+    {
+        if (!$this->npmediaTable) {
+        $sm = $this->getServiceLocator();
+        $this->npmediaTable = $sm->get('Newspub\Model\NpmediaTable');
+        }
+        return $this->npmediaTable;
     }
 
     public function getNewspubTable()
