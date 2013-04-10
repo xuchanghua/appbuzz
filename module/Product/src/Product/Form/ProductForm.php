@@ -36,12 +36,22 @@ class ProductForm extends Form
         ));
         $this->add(array(
             'name' => 'type',
-            'attributes' => array(
-                'type'  => 'text',
-                'placeholder' => '类型',
-            ),
+            'type' => 'Zend\Form\Element\Select',
             'options' => array(
-                'label' => '',
+                'value_options' => array(
+                    '' => '请选择APP产品类型',
+                    '通讯.聊天'       => '通讯.聊天',
+                    '网络.社区'       => '网络.社区',
+                    '影音.图像'       => '影音.图像',
+                    '办公.财经'       => '办公.财经',
+                    '资讯.词典'       => '资讯.词典',
+                    '旅行.地图'       => '旅行.地图',
+                    '输入法.系统工具' => '输入法.系统工具',
+                    '生活.购物'       => '生活.购物',
+                    '美化.壁纸'       => '美化.壁纸',
+                    '阅读.图书'       => '阅读.图书',
+                    '其他'            => '其他',
+                ),
             ),
         ));
         $this->add(array(

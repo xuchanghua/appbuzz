@@ -8,6 +8,7 @@ use Zend\Http\PhpEnvironment\Response;
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use User\Form\UserForm;
+use User\Form\changepasswordForm;
 
 class UserController extends AbstractActionController
 {
@@ -120,6 +121,53 @@ class UserController extends AbstractActionController
                 $user->exchangeArray($form->getData());
                 if($user->password == $user->confirmpassword)
                 {
+                    $user->fk_user_type = 1;//enterprise user
+                    $this->getUserTable()->saveUser($user);
+                }
+                else
+                {
+                    echo "<a href='/user/signup'>Back</a></br>";
+                    die("Password and confirm password must be corresponded!");
+                }
+                //Set Session for the authorized user:
+                $this->session = new SessionContainer('userinfo');
+                $this->session->username = $user->username;
+                $this->session->password = $user->password;
+                $this->session->usertype = $user->fk_user_type;
+                switch($user->fk_user_type)
+                {
+                    case 1:
+                        return $this->redirect()->toRoute('enterprise');
+                        break;
+                    case 2:
+                        return $this->redirect()->toRoute('media');
+                        break;
+                    case 3:
+                        return $this->redirect()->toRoute('admin');
+                        break;
+                    default:
+                        die("no such user type!");
+                }
+                //return $this->redirect()->toRoute('enterprise');
+            }
+        }
+        return array('form' => $form);
+    }
+
+    public function mediasignupAction()
+    {
+        $form = new UserForm();
+        $form->get('submit')->setValue('立即注册');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $user = new User();
+            $form->setInputFilter($user->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $user->exchangeArray($form->getData()); 
+                if($user->password == $user->confirmpassword)
+                {
+                    $user->fk_user_type = 2;//media user
                     $this->getUserTable()->saveUser($user);
                 }
                 else
@@ -261,6 +309,54 @@ class UserController extends AbstractActionController
                 ));
             }
         }
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'target_user' => $target_user,
+            'form' => $form,
+        ));
+    }
+
+    public function changepasswordAction()
+    {
+        $arr_type_allowed = array(1, 2, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id = (int)$this->params()->fromRoute('id', 0);
+        if(!$id) {
+            return $this->redirect()->toRoute('/');
+        }
+
+        $target_user = $this->getUserTable()->getUser($id);
+        $original_password = $target_user->password;
+        $form = new UserForm();
+        $form->bind($target_user);
+        $form->get('submit')->setAttribute('value','修改密码');        
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $form->setInputFilter($target_user->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                if($original_password != $form->getData()->originalpassword)
+                {
+                    echo "<a href='/'>Back</a></br>";
+                    die("INCORRECT original password!");
+                }
+                elseif($form->getData()->password != $form->getData()->confirmpassword)
+                {
+                    echo "<a href='/'>Back</a></br>";
+                    die("Password and confirm password must be corresponded!");
+                }
+                $this->getUserTable()->saveUser($form->getData());
+                //change the session
+                $this->session = new SessionContainer('userinfo');
+                $this->session->username = $form->getData()->username;
+                $this->session->password = $form->getData()->password;
+                $this->session->usertype = $form->getData()->fk_user_type;
+
+                return $this->redirect()->toRoute('home');
+            }
+        }
+
         return new ViewModel(array(
             'user' => $cur_user,
             'target_user' => $target_user,

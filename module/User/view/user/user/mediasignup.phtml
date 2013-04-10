@@ -1,26 +1,11 @@
 <?php
 
 $form = $this->form;
-$form->setAttribute('action', $this->url('user', array('action' => 'signup')));
-/*$form->add(array(
-    'name' => 'fk_user_type',
-    'type'  => 'Zend\Form\Element\Select',
-    'attributes' => array(
-        'id' => 'usertype',
-    ),
-    'options' => array(
-        'value_options' => array(
-			''  => '*用户类型',
-			'1' => '企业用户',
-			'2' => '媒体用户',
-        ),
-    ),
-));*/
+$form->setAttribute('action', $this->url('user', array('action' => 'mediasignup')));
 $form->prepare();
 ?>
-<h1>企业用户注册：</h1>
+<h1>媒体用户注册：</h1>
 <?php
-
 echo $this->form()->openTag($form);
 echo $this->formHidden($form->get('id'));
 echo $this->formHidden($form->get('fk_user_type'));

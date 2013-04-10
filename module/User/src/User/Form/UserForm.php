@@ -15,7 +15,7 @@ class UserForm extends Form
 				'type' => 'hidden',
 				),
 			));
-		$this->add(array(
+		/*$this->add(array(
 			'name' => 'fk_user_type',
 			'type' => 'Zend\Form\Element\Select',
 			'options' => array(
@@ -26,15 +26,13 @@ class UserForm extends Form
 					'3' => '管理员用户',
 					),
 				),
-			));
-		/*
+			));*/		
 		$this->add(array(
 			'name' => 'fk_user_type',
 			'attributes' => array(
 				'type' => 'hidden',
 				),
-			));
-			*/
+			));			
 		$this->add(array(
 			'name' => 'username',
 			'type' => 'text',
@@ -61,6 +59,12 @@ class UserForm extends Form
 			'attributes' => array(
 				'type' => 'password',
 				'placeholder' => '*确认密码',
+				),
+			));
+		$this->add(array(
+			'name' => 'originalpassword',
+			'attributes' => array(
+				'type' => 'hidden',
 				),
 			));
 		$this->add(array(

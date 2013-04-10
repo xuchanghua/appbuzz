@@ -50,6 +50,7 @@ class EnterpriseController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'id_user' => $this->getUserTable()->getUserByName($cur_user)->id,
             'email' => $email,
             'fk_enterprise' => $fk_enterprise,
             'enterprise' => (isset($fk_enterprise))? $this->getEnterpriseTable()->getEnterprise($fk_enterprise) : null,

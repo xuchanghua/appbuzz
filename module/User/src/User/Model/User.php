@@ -10,6 +10,7 @@ class User implements InputFilterAwareInterface
 {
 	public $id;
 	public $username;
+	public $originalpassword;
 	public $password;
 	public $confirmpassword;
 	public $password_salt;
@@ -32,6 +33,7 @@ class User implements InputFilterAwareInterface
 		$this->fk_enterprise = (isset($data['fk_enterprise'])) ? $data['fk_enterprise'] : null;
 		$this->fk_media      = (isset($data['fk_media']))      ? $data['fk_media']      : null;
 		$this->confirmpassword = (isset($data['confirmpassword'])) ? $data['confirmpassword'] : null;
+		$this->originalpassword = (isset($data['originalpassword'])) ? $data['originalpassword'] : null;
 	}
 
     public function getArrayCopy()
@@ -58,7 +60,7 @@ class User implements InputFilterAwareInterface
 					),
 				)));
 
-			$inputFilter->add($factory->createInput(array(
+			/*$inputFilter->add($factory->createInput(array(
 				'name' => 'fk_user_type',
 				'required' => true,
 				'filters'  => array(
@@ -70,7 +72,7 @@ class User implements InputFilterAwareInterface
 						'_min' => 0,
 						),
 					),
-				)));
+				)));*/
 
 			$inputFilter->add($factory->createInput(array(
 				'name'     => 'username',
