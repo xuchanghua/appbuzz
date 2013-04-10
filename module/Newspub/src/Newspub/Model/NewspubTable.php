@@ -84,6 +84,7 @@ class NewspubTable
             'updated_by'        => $newspub->updated_by,
             'fk_newspub_status' => $newspub->fk_newspub_status,
             'fk_product'        => $newspub->fk_product,
+            'order_no'          => $newspub->order_no,
         );
 
         $id = (int)$newspub->id_newspub;
@@ -169,7 +170,7 @@ class NewspubTable
                     }
                 };
         //$select->columns(array('id', 'title', 'artist'))->where($closure);
-        $select->columns(array('id_newspub', 'title', 'body', 'download_link', 'appstore_links', 'barcode', 'fk_pub_mode','fk_newspub_status'))
+        $select->columns(array('id_newspub', 'title', 'body', 'download_link', 'appstore_links', 'barcode', 'fk_pub_mode','fk_newspub_status','order_no'))
                 ->where($closure);
         if($created_by)
         {

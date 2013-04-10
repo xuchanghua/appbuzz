@@ -53,7 +53,7 @@
                     </tr>
                     <?php foreach($newspubs as $np): ?>
                     <tr>
-                        <td><?php echo $this->escapeHtml($np->id_newspub);?></td>
+                        <td><?php echo $this->escapeHtml($np->order_no);?></td>
                         <td><a href="<?php echo $this->url('newspub',array('action'=>'detail','id'=>$np->id_newspub));?>"><?php echo $this->escapeHtml($np->title);?></a></td>
                         <td>
                             <?php 

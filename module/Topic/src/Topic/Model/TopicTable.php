@@ -89,7 +89,7 @@ class TopicTable
             'updated_by'     => $topic->updated_by,
             'updated_at'     => $topic->updated_at,
             'due_date'       => $topic->due_date,
-            'fk_topic_table' => $topic->fk_topic_table,
+            'fk_topic_status' => $topic->fk_topic_status,
         );
 
         $id = (int)$topic->id_topic;

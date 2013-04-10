@@ -27,9 +27,14 @@
         </div>
 
         <div id="mid" class="span8 mid">            
+            <div class="linkbtns">
+                <form action="#">
+                    <input type="submit" class="btn btn-primary linkbtn" value="新闻发布">
+                </form>
+            </div>
             <div>
-                <form action="/newspub/index">
-                    <input type="submit" class="btn btn-primary linkbtn" value="订单管理">
+                <form action="#">
+                    <input type="submit" class="btn btn-primary linkbtn" value="新建订单">
                 </form>
             </div>
             <div id="pubedit">
@@ -55,7 +60,7 @@
                     'type'  => 'Zend\Form\Element\Select',
                     'attributes' => array(
                         'id' => 'appproduct',
-                        'onchange' => "alert();",
+                        //'onchange' => "alert();",
                         ),
                     'options' => array(
                         'value_options' => $arr_products,

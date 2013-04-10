@@ -1,3 +1,38 @@
+<h1>用户管理：</h1>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span2 left">          
+        <?php 
+        set_include_path("public/include");
+        
+        include 'sidebar_admin.phtml'; 
+        ?>
+        </div>
+        <div id="mid" class="span8 mid">
+            <div id="appinfo" class="widget-box">
+                <div class="widget-title">
+                    <h4>创建用户——</h4>
+                </div>
+                <div class="widget-content nopadding">
+                    
 <?php
 
 $form = $this->form;
@@ -10,9 +45,9 @@ $form->add(array(
     ),
     'options' => array(
         'value_options' => array(
-			''  => '*用户类型',
-			'1' => '企业用户',
-			'2' => '媒体用户',
+            ''  => '*用户类型',
+            '1' => '企业用户',
+            '2' => '媒体用户',
             '3' => '管理员用户',
         ),
     ),
@@ -37,4 +72,51 @@ echo $this->formSubmit($form->get('submit'));
 echo $this->form()->closeTag();
 
 ?>
+                </div>
+            </div>
+        </div>
+        <div id="right" class="span3 right">
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div.user,.mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+{
+    width: 70%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea, select, .password
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>
+
+
 

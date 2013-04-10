@@ -79,8 +79,8 @@ class ProductController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'form' => $form,
-
         ));
     }
 
@@ -99,6 +99,7 @@ class ProductController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'product' => $this->getProductTable()->getProduct($id),
             'id' => $id,
         ));
@@ -143,6 +144,7 @@ class ProductController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'form' => $form,
             'id' => $id,
         ));

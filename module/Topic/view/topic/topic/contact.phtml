@@ -109,10 +109,16 @@
                             <?php echo $this->formRow($form->get('fk_product')); ?>
                         </td>
                     </tr>
-                    <tr>
+                    <!--<tr>
                         <td class="tdlabel">产品匹配度：</td>
                         <td class="tdinput">
-                            <?php echo $this->formRow($form->get('matching_degree')); ?>
+                            <?php //echo $this->formRow($form->get('matching_degree')); ?>
+                        </td>
+                    </tr>-->
+                    <tr>
+                        <td class="tdlabel">上传附件：</td>
+                        <td class="tdinput">
+                            <?php echo $this->formRow($form->get('attachment')); ?>
                         </td>
                     </tr>
                     <tr>

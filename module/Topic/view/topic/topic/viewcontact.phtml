@@ -24,7 +24,14 @@
         <div id="left" class="span2 left">
         <?php 
         set_include_path("public/include");
-        include 'sidebar_enterprise.phtml'; 
+        if($user_type == 1)
+        {
+            include 'sidebar_enterprise.phtml'; 
+        }
+        elseif($user_type == 2)
+        {
+            include 'sidebar_media.phtml';
+        }
         ?>        
         </div>
         <div id="mid" class="span8 mid">
@@ -51,6 +58,12 @@
                         '2' => '已结束',
                     );
                     ?>
+                    <tr>
+                        <td class="tdlabel">订单号：</td>
+                        <td>
+                            <?php echo $tpcontact->order_no; ?>
+                        </td>
+                    </tr>
                     <tr>
                         <td class="tdlabel">媒体：</td>
                         <td>
@@ -93,6 +106,16 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="tdlabel">附件：</td>
+                        <td>
+                            <?php if(isset($attachment)): ?>
+                            <a href="<?php echo substr($attachment->path,6).$attachment->filename; ?>" title="点击下载">
+                                <?php echo $attachment->filename; ?>
+                            </a>
+                            <?php endif;?>
+                        </td>
+                    </tr>
+                    <!--<tr>
                         <td class="tdlabel">产品匹配度：</td>
                         <td>
                             <?php
@@ -102,7 +125,7 @@
                             }
                             ?>
                         </td>
-                    </tr>
+                    </tr>-->
                     <tr>
                         <td class="tdlabel">订单费用：</td>
                         <td class="tdinput">免费</td>
@@ -125,7 +148,9 @@
                     <tr>
                         <td></td>
                         <td>
-                            
+                            <form action="/topic/editcontact/<?php echo $tpcontact->id_tpcontact; ?>">
+                                <input type="submit" class="btn btn-primary" value="修改订单"/>
+                            </form>
                         </td>
                     </tr>
                 </table>

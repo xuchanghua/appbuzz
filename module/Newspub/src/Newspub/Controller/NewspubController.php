@@ -85,7 +85,7 @@ class NewspubController extends AbstractActionController
 
                 //upload start
                 $file = $this->params()->fromFiles('barcode');
-                $max = 400000;//单位比特
+                $max = 4000000;//单位比特
                 $sizeObj = new FileSize(array("max"=>$max));
                 $extObj = new FileExt(array("jpg","gif","png"));
                 $adapter = new FileHttp();
@@ -133,6 +133,7 @@ class NewspubController extends AbstractActionController
 
                 $newspub2 = $this->getNewspubTable()->getNewspub($id_newspub);
                 $newspub2->barcode = $id_barcode;
+                $newspub2->order_no = 10000000 + $newspub2->id_newspub;
                 $this->getNewspubTable()->saveNewspub($newspub2);
 
                 //save npmedia for single payment newspub
@@ -229,6 +230,8 @@ class NewspubController extends AbstractActionController
         $product = $this->getProductTable()->getProduct($newspub->fk_product);
         $np_created_by = $newspub->created_by;
         $np_created_at = $newspub->created_at;
+        $np_fk_newspub_status = $newspub->fk_newspub_status;
+        $np_order_no = $newspub->order_no;
         $np_barcode = $newspub->barcode;
         $form = new NewspubForm();
         $form->bind($newspub);
@@ -297,9 +300,10 @@ class NewspubController extends AbstractActionController
             if($form->isValid()){
                 $form->getData()->created_by = $np_created_by;
                 $form->getData()->created_at = $np_created_at;
+                $form->getData()->fk_newspub_status = $np_fk_newspub_status;
+                $form->getData()->order_no = $np_order_no;
                 $form->getData()->updated_by = $cur_user;
                 $form->getData()->updated_at = $this->_getDateTime();
-                $form->getData()->fk_newspub_status = 1;
                 if(isset($id_barcode))
                 {
                     $form->getData()->barcode = $id_barcode;
@@ -315,8 +319,11 @@ class NewspubController extends AbstractActionController
                     'id'    => $id_newspub,
                 ));
             }
+            else
+            {
+                die(var_dump($form->getMessages()));
+            }
         }
-
         return new ViewModel(array(
             'np'      => $this->getNewspubTable()->getNewspub($id_newspub),
             'user'    => $cur_user,

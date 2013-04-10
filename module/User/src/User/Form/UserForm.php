@@ -52,6 +52,7 @@ class UserForm extends Form
 			'attributes' => array(
 				'type' => 'password',
 				'placeholder' => '*密码',
+				'class' => 'password',
 				),
 			));
 		$this->add(array(
@@ -59,6 +60,7 @@ class UserForm extends Form
 			'attributes' => array(
 				'type' => 'password',
 				'placeholder' => '*确认密码',
+				'class' => 'password',
 				),
 			));
 		$this->add(array(

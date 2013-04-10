@@ -26,13 +26,18 @@
         ?>
         </div>
 
-        <div id="mid" class="span6 mid">            
+        <div id="mid" class="span8 mid">            
             <div>
-                <!--
-                <form action="/newspub">
-                    <input type="submit" class="btn btn-primary" value="订单管理">
-                </form>
-            -->
+                <div class="linkbtns">
+                    <form action="#">
+                        <input type="submit" class="btn btn-primary linkbtn" value="新闻发布">
+                    </form>
+                </div>
+                <div>
+                    <form action="#">
+                        <input type="submit" class="btn btn-primary linkbtn" value="修改订单">
+                    </form>
+                </div>
             </div>
             </br>
             <div id="pubedit">
@@ -98,22 +103,36 @@
                 <tr>
                     <td class="tdlabel">下载二维码</td>
                     <td>
-                        <?php echo $this->escapeHtml($np->fk_pub_mode);?>
+                        <img src="<?php echo $barcode_path;?>" height="200" width="200">
                         </br>
                         <?php echo $this->formRow($form->get('barcode')); ?>
                     </td>
                 </tr>
                 <tr>
-                    <td class="tdlabel">发布方式及费用</td>
+                    <td class="tdlabel">发布方式</td>
                     <td>
-                        <?php echo $this->formRow($form->get('fk_pub_mode')); ?>
+                        <?php
+                            $arr_pub_mode = array(
+                                '1' => '单篇发布',
+                                '2' => '打包发布',
+                                );
+                            echo $this->escapeHtml($arr_pub_mode[$np->fk_pub_mode]);
+                            echo $this->formHidden($form->get('fk_pub_mode'));
+                        ?>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
+                        <div class="linkbtns">
                         <?php echo $this->formSubmit($form->get('submit')); ?>
+                        </div>
                         <?php echo $this->form()->closeTag(); ?>
+                        <div>
+                            <form action="/newspub/detail/<?php echo $id;?>">
+                                <input type="submit" class="btn btn-primary" value="取消">
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 </table>

@@ -26,12 +26,15 @@
         </div>
 
         <div id="mid" class="span8 mid">            
-            <div>
-                <form action="/newspub/add">
-                    <input type="submit" class="btn btn-primary linkbtn" value="我要发布">
+            <div class="linkbtns">
+                <form action="#">
+                    <input type="submit" class="btn btn-primary linkbtn" value="新闻发布">
                 </form>
-                <!--<button id="pubedit" class="btn btn-primary">我要发布</button>  
-                <button id="pubmgmt" class="btn btn-primary">订单管理</button>-->
+            </div>          
+            <div>
+                <form action="#">
+                    <input type="submit" class="btn btn-primary linkbtn" value="发布管理">
+                </form>
             </div>
             </br>
             <div id="pubmgmt" class="widget-box">
@@ -59,7 +62,7 @@
                     </tr>
                     <?php foreach($paginator as $np): ?>
                     <tr>
-                        <td><?php echo $this->escapeHtml($np->id_newspub);?></td>
+                        <td><?php echo $this->escapeHtml($np->order_no);?></td>
                         <td><a href="<?php echo $this->url('newspub',array('action'=>'detail','id'=>$np->id_newspub));?>"><?php echo $this->escapeHtml($np->title);?></a></td>
                         <td><?php echo $this->escapeHtml($arr_pub_mode[$np->fk_pub_mode]);?></td>
                         <td><?php echo $this->escapeHtml($arr_newspub_status[$np->fk_newspub_status]);?></td>

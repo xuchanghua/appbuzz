@@ -22,7 +22,14 @@
         <div id="left" class="span2 left">
         <?php 
         set_include_path("public/include");        
-        include 'sidebar_enterprise.phtml'; 
+        if($user_type == 1)
+        {   
+            include 'sidebar_enterprise.phtml'; 
+        }
+        elseif($user_type == 3)
+        {
+            include 'sidebar_admin.phtml';
+        }
         ?>
         </div>
         <div id="mid" class="span8 mid">            

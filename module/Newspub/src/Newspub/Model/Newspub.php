@@ -18,6 +18,7 @@ class Newspub implements InputFilterAwareInterface
     public $fk_product;
     public $androidmkt_link;
     public $sel_right;
+    public $order_no;
 
     protected $inputFilter;                       // <-- Add this variable
 
@@ -38,6 +39,7 @@ class Newspub implements InputFilterAwareInterface
         $this->androidmkt_link   = (isset($data['androidmkt_link']))   ? $data['androidmkt_link']   : null;
         $this->fk_product        = (isset($data['fk_product']))        ? $data['fk_product']        : null;
         $this->sel_right         = (isset($data['sel_right']))         ? $data['sel_right']         : null;
+        $this->order_no          = (isset($data['order_no']))          ? $data['order_no']          : null;
     }
 
     public function getArrayCopy()

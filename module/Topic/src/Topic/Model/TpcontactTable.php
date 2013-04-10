@@ -76,8 +76,9 @@ class TpcontactTable
             'updated_by'          => $tpcontact->updated_by,
             'updated_at'          => $tpcontact->updated_at,
             'order_no'            => $tpcontact->order_no,
-            'matching_degree'     => $tpcontact->matching_degree,
+            //'matching_degree'     => $tpcontact->matching_degree,
             'fk_tpcontact_status' => $tpcontact->fk_tpcontact_status,
+            'attachment'          => $tpcontact->attachment,
         );
 
         $id = (int)$tpcontact->id_tpcontact;

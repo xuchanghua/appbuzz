@@ -1,0 +1,185 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <h1>媒体选题</h1>  
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+        CONTAINER
+    <div id="row" class="row">
+        ROW
+        <div id="left" class="span2 left">
+        <?php 
+        set_include_path("public/include");
+        include 'sidebar_enterprise.phtml'; 
+        ?>        
+        </div>
+        <div id="mid" class="span8 mid">
+            <div>
+                <div class="linkbtns">
+                    <form action="#">
+                        <input type="submit" class="btn btn-primary linkbtn" value="媒体选题">
+                    </form>
+                </div>
+                <div>
+                    <form action="#">
+                        <input type="submit" class="btn btn-primary linkbtn" value="我要联系">
+                    </form>
+                </div>
+            </div>
+            <div id="addtopic">
+                <div>
+                    <h4>修改订单：</h4>
+                </div>
+                <table>
+                    <?php
+                    $form = $this->form;
+                    $form->setAttribute('action',$this->url(
+                        'topic',
+                        array(
+                            'action' => 'editcontact',
+                            'id'     => $tc->id_tpcontact,
+                        )
+                    ));
+                    $arr_products = array();
+                    foreach ($products as $p)
+                    {
+                        $arr_products[$p->id_product] = $p->name;
+                    }
+                    $form->add(array(
+                        'name' => 'fk_product',
+                        'type'  => 'Zend\Form\Element\Select',
+                        'attributes' => array(
+                            'id' => 'appproduct',
+                            ),
+                        'options' => array(
+                            'value_options' => $arr_products,
+                            ),
+                    ));
+                    $form->prepare();
+                    echo $this->form()->openTag($form);
+                    echo $this->formHidden($form->get('id_tpcontact'));
+                    ?>
+                    <tr>
+                        <td class="tdlabel">媒体：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->created_by; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">选题类型：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->topic_type; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">选题概要：</td>
+                        <td class="tdtextarea">
+                            <?php echo $topic->abstract; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">征集APP产品类型：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->app_type; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">有效日期：</td>
+                        <td class="tdinput">
+                            <?php echo $topic->due_date; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">我的APP产品：</td>
+                        <td class="tdinput">
+                            <?php echo $this->formRow($form->get('fk_product')); ?>
+                        </td>
+                    </tr>
+                    <!--<tr>
+                        <td class="tdlabel">产品匹配度：</td>
+                        <td class="tdinput">
+                            <?php //echo $this->formRow($form->get('matching_degree')); ?>
+                        </td>
+                    </tr>-->
+                    <tr>
+                        <td class="tdlabel">上传附件：</td>
+                        <td class="tdinput">
+                            <a href="<?php echo $attachment_path;?>" title="点击下载">
+                                <?php echo $attachment_name;?>
+                            </a>
+                            </br>
+                            <?php echo $this->formRow($form->get('attachment')); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">订单费用：</td>
+                        <td class="tdinput">免费</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <?php echo $this->formSubmit($form->get('submit')); ?>
+                            <?php echo $this->form()->closeTag(); ?>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>        
+        <div id="right" class="span4 right">
+            SPAN4 RIGHT
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div.user, .mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 70%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>

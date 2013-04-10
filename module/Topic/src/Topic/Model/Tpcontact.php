@@ -18,8 +18,9 @@ class Tpcontact implements InputFilterAwareInterface
     public $updated_by;
     public $updated_at;
     public $order_no;
-    public $matching_degree;
+    //public $matching_degree;
     public $fk_tpcontact_status;
+    public $attachment;
     protected $inputFilter;                       // <-- Add this variable
 
     public function exchangeArray($data)
@@ -34,8 +35,9 @@ class Tpcontact implements InputFilterAwareInterface
         $this->updated_by          = (isset($data['updated_by']))          ? $data['updated_by']          : null;
         $this->updated_at          = (isset($data['updated_at']))          ? $data['updated_at']          : null;
         $this->order_no            = (isset($data['order_no']))            ? $data['order_no']            : null;
-        $this->matching_degree     = (isset($data['matching_degree']))     ? $data['matching_degree']     : null;
+        //$this->matching_degree     = (isset($data['matching_degree']))     ? $data['matching_degree']     : null;
         $this->fk_tpcontact_status = (isset($data['fk_tpcontact_status'])) ? $data['fk_tpcontact_status'] : null;
+        $this->attachment          = (isset($data['attachment']))          ? $data['attachment']          : null;
     }
 
     // Add the following method:
@@ -63,13 +65,13 @@ class Tpcontact implements InputFilterAwareInterface
                     array('name' => 'Int'),
                 ),
             )));
-            $inputFilter->add($factory->createInput(array(
+            /*$inputFilter->add($factory->createInput(array(
                 'name'     => 'matching_degree',
                 'required' => true,
                 'filters'  => array(
                     //array('name' => 'Int'),
                 ),
-            )));
+            )));*/
 
             $this->inputFilter = $inputFilter;
         }

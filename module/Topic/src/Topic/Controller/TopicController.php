@@ -10,6 +10,10 @@ use Topic\Model\Tpcontact;
 use Topic\Form\TpcontactForm;
 use User\Model\User;
 use DateTime;
+use Zend\File\Transfer\Adapter\Http as FileHttp;
+use Zend\Validator\File\Size as FileSize;
+use Zend\Validator\File\Extension as FileExt;
+use Attachment\Model\Attachment;
 
 class TopicController extends AbstractActionController
 {
@@ -17,6 +21,7 @@ class TopicController extends AbstractActionController
     protected $topicTable;
     protected $tpcontactTable;
     protected $productTable;
+    protected $attachmentTable;
 
     public function indexAction()
     {
@@ -156,7 +161,7 @@ class TopicController extends AbstractActionController
         return new ViewModel(array(
             'user' => $cur_user,
             'topics' => $this->getTopicTable()->fetchAll(),
-            'mytpcontact' => $this->getTpcontactTable()->fetchTpcontactByUser($cur_user),
+            'tpcontacts' => $this->getTpcontactTable()->fetchTpcontactByUser($cur_user),
         ));
     }
 
@@ -202,13 +207,62 @@ class TopicController extends AbstractActionController
                     $tpcontact->created_at,
                     $tpcontact->created_by
                 );
+
+                //upload start
+                $file = $this->params()->fromFiles('attachment');
+                $max = 50000000;
+                $sizeObj = new FileSize(array("max"=>$max));
+                $adapter = new FileHttp();
+                $adapter->setValidators(array($sizeObj),$file['name']);
+                if(!$adapter->isValid()){
+                    echo implode("\n", $dataError = $adapter->getMessages());
+                }else{
+                    $path_0    = 'public/upload/';
+                    $path_1    = $path_0.$cur_user.'/';
+                    $path_2    = $path_1.'tpcontact/';
+                    $path_full = $path_2.$id_tpcontact.'/';
+                    if(!is_dir($path_1))
+                    {
+                        mkdir($path_1);
+                    }
+                    if(!is_dir($path_2))
+                    {
+                        mkdir($path_2);
+                    }
+                    if(!is_dir($path_full))
+                    {
+                        mkdir($path_full);
+                    }
+                    $adapter->setDestination($path_full);
+                    if(!$adapter->receive($file['name'])){
+                        echo implode("\n", $adapter->getMessages());
+                    }
+                    else
+                    {
+                        //create a record in the table 'attachment'
+                        $attachment = new Attachment();
+                        $attachment->filename = $file['name'];
+                        $attachment->path = $path_full;
+                        $attachment->created_by = $cur_user;
+                        $attachment->created_at = $this->_getDateTime();
+                        $this->getAttachmentTable()->saveAttachment($attachment);
+                        $id_attachment = $this->getAttachmentTable()->getId($attachment->created_at, $attachment->created_by);
+                    }
+                }
+                //upload end
+
                 $tpcontact2 = $this->getTpcontactTable()->getTpcontact($id_tpcontact);
+                $tpcontact2->attachment = $id_attachment;
                 $tpcontact2->order_no = 40000000 + $id_tpcontact;
                 $this->getTpcontactTable()->saveTpcontact($tpcontact2);
 
                 return $this->redirect()->toRoute('topic', array(
                     'action' => 'current',
                 ));   
+            }
+            else
+            {
+                die(var_dump($form->getMessages()));
             }
         }
 
@@ -220,9 +274,141 @@ class TopicController extends AbstractActionController
         ));        
     }
 
-    public function viewcontactAction()
+    public function editcontactAction()
     {
         $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_tpcontact = (int)$this->params()->fromRoute('id', 0);
+        if (!$id_tpcontact) {
+            return $this->redirect()->toRoute('topic', array(
+                'action' => 'current',
+            ));
+        }
+
+        $tpcontact = $this->getTpcontactTable()->getTpcontact($id_tpcontact);
+        if($tpcontact->attachment)
+        {
+            $attachment = $this->getAttachmentTable()->getAttachment($tpcontact->attachment);
+            $attachment_path = '/upload/'.$cur_user.'/tpcontact/'.$id_tpcontact.'/'.$attachment->filename;
+            $attachment_name = $attachment->filename;
+        }
+        else
+        {
+            $attachment_path = '#';
+            $attachment_name = '未上传附件';
+        }
+        $id_topic = $tpcontact->fk_topic;
+        $tc_fk_topic            = $tpcontact->fk_topic;
+        $tc_fk_enterprise_user  = $tpcontact->fk_enterprise_user;
+        $tc_fk_media_user       = $tpcontact->fk_media_user;
+        $tc_created_at          = $tpcontact->created_at;
+        $tc_created_by          = $tpcontact->created_by;
+        $tc_order_no            = $tpcontact->order_no;
+        $tc_fk_tpcontact_status = $tpcontact->fk_tpcontact_status;
+        $tc_attachment          = $tpcontact->attachment;
+        $form = new TpcontactForm();
+        $form->bind($tpcontact);
+        $form->get('submit')->setAttribute('value', '保存');
+
+        $request = $this->getRequest();
+        if($request->isPost()){
+            //upload start
+            $file = $this->params()->fromFiles('attachment');
+            if(!$file['name'])
+            {
+                //if the attachment is not pick up:
+                //skip the upload section
+            }
+            else
+            {
+                $max = 50000000;
+                $sizeObj = new FileSize(array("max"=>$max));
+                $adapter = new FileHttp();
+                $adapter->setValidators(array($sizeObj), $file['name']);
+                if(!$adapter->isValid()){
+                    echo implode("\n", $dataError = $adapter->getMessages());
+                }else{
+                    $path_0    = 'public/upload/';
+                    $path_1    = $path_0.$cur_user.'/';
+                    $path_2    = $path_1.'tpcontact/';
+                    $path_full = $path_2.$id_tpcontact.'/';
+                    if(!is_dir($path_1))
+                    {
+                        mkdir($path_1);
+                    }
+                    if(!is_dir($path_2))
+                    {
+                        mkdir($path_2);
+                    }
+                    if(!is_dir($path_full))
+                    {
+                        mkdir($path_full);
+                    }
+                    $adapter->setDestination($path_full);
+                    if(!$adapter->receive($file['name'])){
+                        echo implode("\n", $adapter->getMessages());
+                    }
+                    else
+                    {
+                        $attachment = new Attachment();
+                        $attachment->filename = $file['name'];
+                        $attachment->path = $path_full;
+                        $attachment->created_by = $cur_user;
+                        $attachment->created_at = $this->_getDateTime();
+                        $this->getAttachmentTable()->saveAttachment($attachment);
+                        $id_attachment = $this->getAttachmentTable()->getId($attachment->created_at, $attachment->created_by);
+                    }
+                }
+            }
+            //upload end
+
+            $form->setInputFilter($tpcontact->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $form->getData()->fk_topic = $tc_fk_topic;
+                $form->getData()->fk_enterprise_user = $tc_fk_enterprise_user;
+                $form->getData()->fk_media_user = $tc_fk_media_user;
+                $form->getData()->created_at = $tc_created_at;
+                $form->getData()->created_by = $tc_created_by;
+                $form->getData()->order_no = $tc_order_no;
+                $form->getData()->fk_tpcontact_status = $tc_fk_tpcontact_status;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->updated_by = $cur_user;
+                if(isset($id_attachment))
+                {
+                    $form->getData()->attachment = $id_attachment;
+                }
+                else
+                {
+                    $form->getData()->attachment = $tc_attachment;
+                }
+                $this->getTpcontactTable()->saveTpcontact($form->getData());
+
+                return $this->redirect()->toRoute('topic', array(
+                    'action' => 'viewcontact',
+                    'id'     => $id_topic,
+                ));
+            }
+            else
+            {
+                die(var_dump($form->getMessages()));
+            }
+        }
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'topic' => $this->getTopicTable()->getTopic($id_topic),
+            'tc' => $this->getTpcontactTable()->getTpcontact($id_tpcontact),
+            'form' => $form,
+            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'attachment_path' => $attachment_path,
+            'attachment_name' => $attachment_name,
+        ));
+    }
+
+    public function viewcontactAction()
+    {
+        $arr_type_allowed = array(1, 2);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_topic = (int)$this->params()->fromRoute('id', 0);
@@ -236,8 +422,10 @@ class TopicController extends AbstractActionController
         
         $view = array(
             'user' => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'topic' => $topic,
             'tpcontact' => $tpcontact,
+            'attachment' => $this->getAttachmentTable()->getAttachment($tpcontact->attachment),
         );
 
         if($tpcontact)
@@ -317,6 +505,15 @@ $document->save('Solarsystem.docx');
 	    $this->topicTable = $sm->get('Topic\Model\TopicTable');
         }
         return $this->topicTable;
+    }
+
+    public function getAttachmentTable()
+    {
+        if (!$this->attachmentTable) {
+            $sm = $this->getServiceLocator();
+            $this->attachmentTable = $sm->get('Attachment\Model\AttachmentTable');
+        }
+        return $this->attachmentTable;
     }
 
     public function getTpcontactTable()

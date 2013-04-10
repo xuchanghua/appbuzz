@@ -10,6 +10,8 @@ class TpcontactForm extends Form
         // we want to ignore the name passed
         parent::__construct('tpcontact');
         $this->setAttribute('method', 'post');
+        $this->setAttribute('enctype', 'multipart/form-data');
+        
         $this->add(array(
             'name' => 'id_tpcontact',
             'attributes' => array(
@@ -22,7 +24,7 @@ class TpcontactForm extends Form
                 'type'  => 'hidden',
             ),
         ));
-        $this->add(array(
+        /*$this->add(array(
             'name' => 'matching_degree',
             'type' => 'Zend\Form\Element\Select',
             'options' => array(
@@ -31,6 +33,23 @@ class TpcontactForm extends Form
                     '高关联度' => '高关联度',
                     '低关联度' => '低关联度',
                 ),
+            ),
+        ));*/
+        $this->add(array(
+            'name' => 'MAX_FILE_SIZE',
+            'attributes' => array(
+                'type' => 'hidden',
+                'value' => '100000000'
+            ),
+        ));
+        $this->add(array(
+            'name' => 'attachment',
+            'attributes' => array(
+                'type'  => 'file',
+                'placeholder' => '上传附件',
+            ),
+            'options' => array(
+                'label' => '',
             ),
         ));
         $this->add(array(
