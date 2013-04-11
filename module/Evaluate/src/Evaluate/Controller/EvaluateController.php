@@ -466,7 +466,11 @@ class EvaluateController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
-        ));
+          //'evaluate' => $this->getEvaluateTable()->fetchAllDesc(),
+            'evaluate' => $this->getEvaluateTable()->fetchPastEvaluate(),
+            'products' => $this->getProductTable()->fetchAll(),
+            'evamedia' => $this->getEvamediaTable()->fetchEvamediaByUser($cur_user),
+        ));    
     }
 
     public function invitationAction()
@@ -477,7 +481,8 @@ class EvaluateController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
-            'evaluate' => $this->getEvaluateTable()->fetchAllDesc(),
+          //'evaluate' => $this->getEvaluateTable()->fetchAllDesc(),
+            'evaluate' => $this->getEvaluateTable()->fetchCurrentEvaluate(),
             'products' => $this->getProductTable()->fetchAll(),
             'evamedia' => $this->getEvamediaTable()->fetchEvamediaByUser($cur_user),
         ));        

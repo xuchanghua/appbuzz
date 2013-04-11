@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>产品评测</h1>  
+    <h1>评测APP</h1>  
     <div id="header" class="container" style="width:1170px;"> 
         CONTAINER
         <div class="row">
@@ -22,7 +22,7 @@
         <div id="left" class="span2 left">
         <?php 
         set_include_path("public/include");        
-        include 'sidebar_enterprise.phtml'; 
+        include 'sidebar_media.phtml'; 
         ?>
         </div>
         <div id="mid" class="span8 mid"> 
@@ -38,40 +38,118 @@
             </div>
             <div id="pubmgmt" class="widget-box">
                 <div class="widget-title">
-                    <h4>评测邀约列表</h4>
+                    <h4>已过期的评测：</h4>
                 </div>
                 <div class="widget-content nopadding">
                 <table class="table table-bordered table-striped">
                     <?php
-                    /*$arr_products = array();
+                    $arr_product_name = array();
                     foreach ($products as $p)
                     {
-                        $arr_products[$p->id_product] = $p->name;
-                    }*/
+                        $arr_product_name[$p->id_product] = $p->name;
+                    }
+                    $arr_eva_em = array();  //array[id_evaluate] = fk_evamedia
+                    $arr_em_req = array();  //array[fk_evaluate] = requirement
+                    $arr_em_due = array();  //array[fk_evaluate] = due_date
+                    $arr_em_link = array(); //array[fk_evaluate] = news_link
+                    $arr_em_stat = array(); //array[fk_evaluate] = fk_evaluate_status
+                    $arr_eva_order = array(); //array[fk_evaluate] = order_no
+                    foreach ($evamedia as $em)
+                    {
+                        $arr_eva_em[$em->fk_evaluate]  = $em->id_evamedia;
+                        //$arr_em_req[$em->fk_evaluate]  = $em->requirement;
+                        //$arr_em_due[$em->fk_evaluate]  = $em->due_date;
+                        $arr_em_link[$em->fk_evaluate] = $em->news_link;
+                        $arr_em_stat[$em->fk_evaluate] = $em->fk_evaluate_status;
+                        $arr_eva_order[$em->fk_evaluate] = $em->order_no;
+                    }
+                    $arr_evaluate_status = array(
+                        1 => '新订单',
+                        2 => '媒体拒绝',
+                        3 => '媒体接受，等待企业回复',
+                        4 => '企业拒绝',
+                        5 => '企业接受',
+                    );
                     ?>
+
                     <tr>
                         <th>订单号</th>
                         <th>App产品</th>
                         <th>评测要求</th>
                         <th>有效时间</th>
-                        <th>订单状态</th>
-                        <th>评测链接</th>
                         <th>创建者</th>
+                        <th>评测稿费</th>
+                        <th>状态</th>
+                        <th>评论链接</th>
+                        <th>操作</th>
                     </tr>
-                    <?php foreach($paginator as $np): ?>
+                    <?php foreach($evaluate as $eva): ?>
                     <tr>
-                        <td><?php echo $this->escapeHtml($arr_products[$np->fk_product]);?></td>
-                        <td><a href="<?php echo $this->url('evaluate',array('action'=>'detail','id'=>$np->id_evaluate));?>"><?php echo $this->escapeHtml($np->highlight);?></a></td>
-                        <td><?php echo $this->escapeHtml($np->created_at);?></td>
-                        <td><?php echo $this->escapeHtml($np->created_by);?></td>
+                        <td>
+                            <?php 
+                            if(array_key_exists($eva->id_evaluate, $arr_eva_order))
+                            {
+                                echo $this->escapeHtml($arr_eva_order[$eva->id_evaluate]);
+                            }
+                            ?>
+                        </td>
+                        <td><?php echo $this->escapeHtml($arr_product_name[$eva->fk_product]);?></td>
+                        <td>
+                            <a href="<?php echo $this->url('evaluate', 
+                            array('action' => 'evainfo', 'id' => $eva->id_evaluate)) ;?>">
+                                <?php echo $this->escapeHtml($eva->requirement);?>
+                            </a>
+                        </td>
+                        <td><?php echo $this->escapeHtml($eva->due_date);?></td>
+                        <td><?php echo $this->escapeHtml($eva->created_by);?></td>
+                        <td>500元</td>
+                        <td>     
+                            <div id="btns" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_eva_em)?"none":"inline";?>">                      
+                                已过期
+                            </div>
+                            <div id="status" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_eva_em)?"inline":"none";?>"> 
+                                <?php echo $this->escapeHtml($arr_evaluate_status[$arr_em_stat[$eva->id_evaluate]]);?>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="status" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_em_link)?"inline":"none";?>"> 
+                                <a href="<?php echo $this->escapeHtml($arr_em_link[$eva->id_evaluate]);?>">
+                                    <?php echo $this->escapeHtml($arr_em_link[$eva->id_evaluate]);?>
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <form action="<?php echo $this->url('evaluate', array('action' => 'evainfo', 'id' => $eva->id_evaluate)) ;?>">
+                                    <input type="submit" class="btn btn-primary btn-mini" value="查看">
+                                </form>
+                            </div>
+                            <!--<div id="btns" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_eva_em)?"none":"inline";?>">                      
+                                <div class="linkbtns">
+                                    <form action="<?php echo $this->url('evaluate',
+                                    array('action' => 'mediaacc', 'id' => $eva->id_evaluate)) ;?>">
+                                        <input type="submit" class="btn btn-primary btn-mini" value="接受">
+                                    </form>
+                                </div>
+                                <div>
+                                    <form action="<?php echo $this->url('evaluate',
+                                    array('action' => 'mediarej', 'id' => $eva->id_evaluate)) ;?>">
+                                        <input type="submit" class="btn btn-primary btn-mini" value="拒绝">
+                                    </form>
+                                </div>
+                            </div>
+                            <div id="details" style="display:<?php echo (array_key_exists($eva->id_evaluate, $arr_eva_em)&&($arr_em_stat[$eva->id_evaluate]==5))?"inline":"none";?>">
+                                <div>
+                                    <form action="<?php echo $this->url('evaluate',
+                                    array('action' => 'editnewslink', 'id' => $eva->id_evaluate)) ;?>">
+                                        <input type="submit" class="btn btn-primary btn-mini" value="添加评论链接">
+                                    </form>
+                                </div>
+                            </div>-->
+                        </td>
                     </tr>
                     <?php endforeach; ?>
-
                 </table>
-
-<?php
-echo $this->paginationControl($this->paginator, 'Sliding', 'pagination/search.phtml');
-?>
                 </div>
             </div>
             

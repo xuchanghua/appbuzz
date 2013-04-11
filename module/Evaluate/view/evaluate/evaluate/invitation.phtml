@@ -113,7 +113,9 @@
                         </td>
                         <td>
                             <div id="status" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_em_link)?"inline":"none";?>"> 
-                                <?php echo $this->escapeHtml($arr_em_link[$eva->id_evaluate]);?>
+                                <a href="<?php echo $this->escapeHtml($arr_em_link[$eva->id_evaluate]);?>">
+                                    <?php echo $this->escapeHtml($arr_em_link[$eva->id_evaluate]);?>
+                                </a>
                             </div>
                         </td>
                         <td>

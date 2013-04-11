@@ -7,6 +7,7 @@ use Zend\Db\Sql\Where;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Db\ResultSet\ResultSet;
+use DateTime;
 
 class EvaluateTable
 {
@@ -32,6 +33,40 @@ class EvaluateTable
             $select->order('id_evaluate DESC');
         });
         return $resultSet;
+    }
+
+    public function fetchCurrentEvaluate($created_by = null)
+    {
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $strdatetime = $datetime->format(DATE_ATOM);
+        $now = substr($strdatetime,0,10);
+        $rowset = $this->tableGateway->select(function(Select $select) use ($now, $created_by){
+            $select->where->greaterThanOrEqualTo('due_date', $now);
+            if($created_by)
+            {
+                $select->where->equalTo('created_by', $created_by);
+            }
+            $select->order('id_evaluate DESC');
+        });
+        return $rowset;
+    }
+
+    public function fetchPastEvaluate($created_by = null)
+    {
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $strdatetime = $datetime->format(DATE_ATOM);
+        $now = substr($strdatetime,0,10);
+        $rowset = $this->tableGateway->select(function(Select $select) use ($now, $created_by){
+            $select->where->lessThan('due_date', $now);
+            if($created_by)
+            {
+                $select->where->equalTo('created_by', $created_by);
+            }
+            $select->order('id_evaluate DESC');
+        });
+        return $rowset;
     }
 
     public function fetchEvaluateByUser($created_by)

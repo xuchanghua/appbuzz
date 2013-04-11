@@ -126,12 +126,11 @@
                     <tr>
                         <td class="tdlabel">评测链接</td>
                         <td>
-                            <?php 
-                            if($evamedia)
-                            {
-                                echo $this->escapeHtml($evamedia->news_link);
-                            } 
-                            ?>
+                            <?php if($evamedia){ ?>
+                                <a href="<?php echo $this->escapeHtml($evamedia->news_link);?>">
+                                    <?php echo $this->escapeHtml($evamedia->news_link);?>
+                                </a>
+                            <?php } ?>
                         </td>
                     </tr>
                     <tr>
