@@ -11,27 +11,65 @@ class InterviewForm extends Form
         parent::__construct('interview');
         $this->setAttribute('method', 'post');
         $this->add(array(
-            'name' => 'id',
+            'name' => 'id_interview',
             'attributes' => array(
                 'type'  => 'hidden',
             ),
         ));
         $this->add(array(
-            'name' => 'artist',
+            'name' => 'fk_product',
             'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Artist',
+                'type'  => 'hidden',
             ),
         ));
         $this->add(array(
-            'name' => 'title',
+            'name' => 'fk_enterprise_user',
             'attributes' => array(
-                'type'  => 'text',
+                'type'  => 'hidden',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'fk_media_user',
+            'attributes' => array(
+                'type'  => 'hidden',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'date_time',
+            'attributes' => array(
+                'type' => 'text',
+                'placeholder' => 'YYYY-MM-DD',
             ),
             'options' => array(
-                'label' => 'Title',
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'purpose',
+            'attributes' => array(
+                'type'  => 'textarea',
+                'placeholder' => '采访目的',
+                'rows'        => 5,
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'outline',
+            'attributes' => array(
+                'type'  => 'textarea',
+                'placeholder' => '采访纲要',
+                'rows'        => 5,
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'fk_interview_status',
+            'attributes' => array(
+                'type'  => 'hidden',
             ),
         ));
         $this->add(array(
@@ -40,6 +78,7 @@ class InterviewForm extends Form
                 'type'  => 'submit',
                 'value' => 'Go',
                 'id' => 'submitbutton',
+                'class' => 'btn btn-primary'
             ),
         ));
     }
