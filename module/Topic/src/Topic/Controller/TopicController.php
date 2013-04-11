@@ -91,6 +91,7 @@ class TopicController extends AbstractActionController
             'id'    => $id,
             'tpcontact' => $tpcontact,
             'all_users' => $all_users,
+            'products' => $this->getProductTable()->fetchAll(),
         ));
     }
 
@@ -161,6 +162,7 @@ class TopicController extends AbstractActionController
         return new ViewModel(array(
             'user' => $cur_user,
             'topics' => $this->getTopicTable()->fetchAll(),
+            'users' => $this->getUserTable()->fetchAll(),
             'tpcontacts' => $this->getTpcontactTable()->fetchTpcontactByUser($cur_user),
         ));
     }
@@ -439,7 +441,102 @@ class TopicController extends AbstractActionController
 
     public function contactinfoAction()
     {
+        //媒体->选题管理->查看(单个企业提交的“我要联系”订单)
+        $arr_type_allowed = array(2);
+        $cur_user = $this->_auth($arr_type_allowed);
 
+        $id_tpcontact = (int)$this->params()->fromRoute('id', 0);
+        if (!$id_tpcontact) {
+            return $this->redirect()->toRoute('topic', array(
+                'action' => 'index',
+            ));
+        }
+        $tpcontact = $this->getTpcontactTable()->getTpcontact($id_tpcontact);
+        $id_topic = $tpcontact->fk_topic;
+        $topic = $this->getTopicTable()->getTopic($id_topic);
+        $product = null;
+        if($tpcontact->fk_product)
+        {
+            $id_product = $tpcontact->fk_product;
+            $product = $this->getProductTable()->getProduct($id_product);
+        }
+        $attachment = null;
+        if($tpcontact->attachment)
+        {
+            $attachment = $this->getAttachmentTable()->getAttachment($tpcontact->attachment);
+        }
+
+        return new ViewModel(array(
+            'user'       => $cur_user,
+            'tpcontact'  => $tpcontact,
+            'topic'      => $topic,
+            'product'    => $product,
+            'attachment' => $attachment,
+        ));
+    }
+
+    public function contactlinkAction()
+    {
+        $arr_type_allowed = array(2);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_tpcontact = (int)$this->params()->fromRoute('id', 0);
+        if (!$id_tpcontact) {
+            return $this->redirect()->toRoute('topic', array(
+                'action' => 'index',
+            ));
+        }
+        $tpcontact = $this->getTpcontactTable()->getTpcontact($id_tpcontact);
+        $tc_fk_topic           = $tpcontact->fk_topic;
+        $tc_fk_enterprise_user = $tpcontact->fk_enterprise_user;
+        $tc_fk_media_user      = $tpcontact->fk_media_user;
+        $tc_fk_product         = $tpcontact->fk_product;
+        $tc_created_at         = $tpcontact->created_at;
+        $tc_created_by         = $tpcontact->created_by;
+        $tc_order_no           = $tpcontact->order_no;
+        $tc_attachment         = $tpcontact->attachment;
+
+        $form = new TpcontactForm();
+        $form->bind($tpcontact);
+        if($tpcontact->fk_tpcontact_status ==1){
+            $form->get('submit')->setAttribute('value', '完成选题');
+        }else{
+            $form->get('submit')->setAttribute('value', '提交');
+        }
+        
+
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $form->setInputFilter($tpcontact->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $form->getData()->fk_topic = $tc_fk_topic;
+                $form->getData()->fk_enterprise_user = $tc_fk_enterprise_user;
+                $form->getData()->fk_media_user = $tc_fk_media_user;
+                $form->getData()->fk_product = $tc_fk_product;
+                $form->getData()->created_at = $tc_created_at;
+                $form->getData()->created_by = $tc_created_by;
+                $form->getData()->order_no = $tc_order_no;
+                $form->getData()->attachment = $tc_attachment;
+                $form->getData()->fk_tpcontact_status = 2;//finished
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->updated_by = $cur_user;
+                $this->getTpcontactTable()->saveTpcontact($form->getData());
+
+                return $this->redirect()->toRoute('topic', array(
+                    'action' => 'detail',
+                    'id'     => $tpcontact->fk_topic,
+                ));
+            }else{
+                die(var_dump($form->getMessages()));
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'tpcontact' => $tpcontact,
+            'form' => $form,
+        ));
     }
 
     public function testwordchsAction()

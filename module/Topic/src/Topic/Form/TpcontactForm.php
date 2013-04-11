@@ -53,6 +53,13 @@ class TpcontactForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'topic_link',
+            'attributes' => array(
+                'type' => 'text',
+                'placeholder' => '请填写选题链接'
+            ),
+        ));
+        $this->add(array(
             'name' => 'submit',
             'attributes' => array(
                 'type'  => 'submit',

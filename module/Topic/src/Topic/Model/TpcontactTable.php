@@ -79,6 +79,7 @@ class TpcontactTable
             //'matching_degree'     => $tpcontact->matching_degree,
             'fk_tpcontact_status' => $tpcontact->fk_tpcontact_status,
             'attachment'          => $tpcontact->attachment,
+            'topic_link'          => $tpcontact->topic_link,
         );
 
         $id = (int)$tpcontact->id_tpcontact;

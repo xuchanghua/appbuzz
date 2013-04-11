@@ -21,6 +21,7 @@ class Tpcontact implements InputFilterAwareInterface
     //public $matching_degree;
     public $fk_tpcontact_status;
     public $attachment;
+    public $topic_link;
     protected $inputFilter;                       // <-- Add this variable
 
     public function exchangeArray($data)
@@ -35,9 +36,10 @@ class Tpcontact implements InputFilterAwareInterface
         $this->updated_by          = (isset($data['updated_by']))          ? $data['updated_by']          : null;
         $this->updated_at          = (isset($data['updated_at']))          ? $data['updated_at']          : null;
         $this->order_no            = (isset($data['order_no']))            ? $data['order_no']            : null;
-        //$this->matching_degree     = (isset($data['matching_degree']))     ? $data['matching_degree']     : null;
+      //$this->matching_degree     = (isset($data['matching_degree']))     ? $data['matching_degree']     : null;
         $this->fk_tpcontact_status = (isset($data['fk_tpcontact_status'])) ? $data['fk_tpcontact_status'] : null;
         $this->attachment          = (isset($data['attachment']))          ? $data['attachment']          : null;
+        $this->topic_link          = (isset($data['topic_link']))          ? $data['topic_link']          : null;
     }
 
     // Add the following method:

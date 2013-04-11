@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>媒体选题</h1>  
+    <h1>选题信息</h1>  
     <div id="header" class="container" style="width:1170px;"> 
     CONTAINER
     <div class="row">
@@ -23,125 +23,88 @@
         ROW
         <div id="left" class="span2 left">
         <?php 
-        set_include_path("public/include");
-        if($user_type == 1)
-        {
-            include 'sidebar_enterprise.phtml'; 
-        }
-        elseif($user_type == 2)
-        {
-            include 'sidebar_media.phtml';
-        }
-        ?>        
+        set_include_path("public/include");  
+        include 'sidebar_media.phtml'; 
+        ?>
         </div>
         <div id="mid" class="span8 mid">
             <div>
                 <div class="linkbtns">
                     <form action="#">
-                        <input type="submit" class="btn btn-primary linkbtn" value="媒体选题">
+                        <input type="submit" class="btn btn-primary linkbtn" value="媒体选题"/>
                     </form>
                 </div>
                 <div>
                     <form action="#">
-                        <input type="submit" class="btn btn-primary linkbtn" value="我要联系">
+                        <input type="submit" class="btn btn-primary linkbtn" value="选题信息"/>
                     </form>
                 </div>
             </div>
             <div id="addtopic">
                 <div>
-                    <h4>我要联系：</h4>
+                    <h4>订单号：<?php echo $tpcontact->order_no;?></h4>
                 </div>
                 <table>
-                    <?php
-                    $arr_tpcontact_status = array(
-                        '1' => '联系中',
-                        '2' => '已结束',
-                    );
-                    ?>
-                    <tr>
-                        <td class="tdlabel">订单号：</td>
-                        <td>
-                            <?php echo $tpcontact->order_no; ?>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="tdlabel">媒体：</td>
-                        <td>
-                            <?php echo $topic->created_by; ?>
-                        </td>
-                    </tr>
                     <tr>
                         <td class="tdlabel">选题类型：</td>
-                        <td>
+                        <td class="tdinput">
                             <?php echo $topic->topic_type; ?>
                         </td>
                     </tr>
                     <tr>
                         <td class="tdlabel">选题概要：</td>
-                        <td>
+                        <td class="tdtextarea">
                             <?php echo $topic->abstract; ?>
                         </td>
                     </tr>
                     <tr>
                         <td class="tdlabel">征集APP产品类型：</td>
-                        <td>
+                        <td class="tdinput">
                             <?php echo $topic->app_type; ?>
                         </td>
                     </tr>
                     <tr>
                         <td class="tdlabel">有效日期：</td>
-                        <td>
+                        <td class="tdinput">
                             <?php echo $topic->due_date; ?>
                         </td>
                     </tr>
+                    </br>
                     <tr>
-                        <td class="tdlabel">我的APP产品：</td>
+                        <td class="tdlabel">产品名称：</td>
+                        <td class="tdinput">
+                            <?php echo isset($product)?$product->name:"未选择产品"; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">产品类型：</td>
                         <td>
-                            <?php 
-                            if(isset($product))
-                            {
-                                echo $product->name; 
-                            }
-                            ?>
+                            <?php echo isset($product)?$product->type:"未选择产品"; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">产品描述：</td>
+                        <td>
+                            <?php echo isset($product)?$product->description:"未选择产品"; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">企业：</td>
+                        <td class="tdinput">
+                            <?php echo $tpcontact->created_by; ?>
                         </td>
                     </tr>
                     <tr>
                         <td class="tdlabel">附件：</td>
-                        <td>
-                            <?php if(isset($attachment)): ?>
+                        <td class="tdinput">
+                            <?php if(isset($attachment)){ ?>
                             <a href="<?php echo substr($attachment->path,6).$attachment->filename; ?>" title="点击下载">
                                 <?php echo $attachment->filename; ?>
                             </a>
-                            <?php endif;?>
-                        </td>
-                    </tr>
-                    <!--<tr>
-                        <td class="tdlabel">产品匹配度：</td>
-                        <td>
-                            <?php
-                            if($tpcontact)
-                            {
-                                echo $tpcontact->matching_degree; 
-                            }
-                            ?>
-                        </td>
-                    </tr>-->
-                    <tr>
-                        <td class="tdlabel">订单费用：</td>
-                        <td class="tdinput">免费</td>
-                    </tr>
-                    <tr>
-                        <td class="tdlabel">订单状态：</td>
-                        <td>
-                            <?php
-                            if($tpcontact)
-                            {
-                                echo $arr_tpcontact_status[$tpcontact->fk_tpcontact_status];
-                            }
-                            else
-                            {
-                                echo "未联系";
-                            }
+                            <?php 
+                            }else{
+                                echo "未上传附件";
+                            } 
                             ?>
                         </td>
                     </tr>
@@ -154,11 +117,32 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="tdlabel">订单状态：</td>
+                        <td>
+                            <?php
+                            $arr_tpcontact_status = array(
+                                '1' => '联系中',
+                                '2' => '已完成',
+                            );
+                            echo $arr_tpcontact_status[$tpcontact->fk_tpcontact_status]; ?>
+                        </td>
+                    </tr>
+                    <tr>
                         <td></td>
                         <td>
-                            <form action="/topic/editcontact/<?php echo $tpcontact->id_tpcontact; ?>">
-                                <input type="submit" class="btn btn-primary" value="修改订单"/>
-                            </form>
+                            <div class="linkbtns">
+                                <?php 
+                                $btn_label = ($tpcontact->fk_tpcontact_status==1)?"完成选题":"修改选题链接";
+                                ?>
+                                <form action="/topic/contactlink/<?php echo $tpcontact->id_tpcontact; ?>">
+                                    <input type="submit" class="btn btn-primary" value="<?php echo $btn_label;?>"/>
+                                </form>
+                            </div>
+                            <div>
+                                <form action="/topic/detail/<?php echo $topic->id_topic; ?>">
+                                    <input type="submit" class="btn btn-primary" value="返回"/>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 </table>

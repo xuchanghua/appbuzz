@@ -115,6 +115,11 @@
                         {
                             $arr_id_user[$a_u->id] = $a_u->username;
                         }
+                        $arr_id_product = array();
+                        foreach($products as $p)
+                        {
+                            $arr_id_product[$p->id_product] = $p->name;
+                        }
                         ?>
                         <td class="tdlabel">有意联系的企业：</td>
                         <td>
@@ -123,6 +128,7 @@
                                     <table class="table table-bordered table-striped">
                                         <tr>
                                             <th>订单号</th>
+                                            <th>产品名称</th>
                                             <th>企业名称</th>
                                             <th>订单状态</th>
                                             <th>操作</th>
@@ -130,6 +136,14 @@
                                         <?php foreach ($tpcontact as $tc): ?>
                                         <tr>
                                             <td><?php echo $tc->order_no; ?></td>
+                                            <td>
+                                            <?php
+                                                if(array_key_exists($tc->fk_product, $arr_id_product))
+                                                {
+                                                    echo $arr_id_product[$tc->fk_product];
+                                                }
+                                            ?>
+                                            </td>
                                             <td><?php echo $arr_id_user[$tc->fk_enterprise_user]; ?></td>
                                             <td>
                                                 <div class="linkbtns">
@@ -137,10 +151,10 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <div id="btns" style="display:<?php echo ($tc->fk_tpcontact_status==1)?"inline":"none";?>">
+                                                <div id="btns" style="display:<?php echo ($tc->fk_tpcontact_status<3)?"inline":"none";?>">
                                                     <div>
                                                         <form action="<?php echo $this->url('topic',
-                                                        array('action' => 'viewcontact', 'id' => $tc->id_tpcontact)) ;?>">
+                                                        array('action' => 'contactinfo', 'id' => $tc->id_tpcontact)) ;?>">
                                                             <input type="submit" class="btn btn-primary btn-mini" value="查看">
                                                         </form>
                                                     </div>

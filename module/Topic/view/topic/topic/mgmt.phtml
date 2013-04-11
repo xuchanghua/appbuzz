@@ -41,22 +41,39 @@
                 </div>
             </div>
             <?php
-            $arr_tp_tc = array(); //$array[id_topic] = id_tpcontact
-            $arr_tc_status = array(); //$array[id_tpcontact] = fk_tpcontact_status
+            $arr_contacting = array();
+            $arr_finished = array();
             foreach($tpcontacts as $tc)
             {
-                $arr_tp_tc[$tc->fk_topic] = $tc->id_tpcontact;
-                $arr_tc_status[$tc->id_tpcontact] = $tc->fk_tpcontact_status;
+                if($tc->fk_tpcontact_status == 1)
+                {
+                    $arr_contacting[$tc->id_tpcontact] = $tc;
+                }
+                elseif($tc->fk_tpcontact_status == 2)
+                {
+                    $arr_finished[$tc->id_tpcontact] = $tc;
+                }
+            }
+            $arr_id_user = array();
+            foreach($users as $u)
+            {
+                $arr_id_user[$u->id] = $u->username;
+            }
+            $arr_id_abstract = array();
+            $arr_id_due = array();
+            foreach($topics as $tp)
+            {
+                $arr_id_abstract[$tp->id_topic] = $tp->abstract;
+                $arr_id_due[$tp->id_topic] = $tp->due_date;
             }
             $arr_tpcontact_status = array(
                 '1' => '联系中',
                 '2' => '已结束',
             );
-            
             ?>
             <div class="widget-box">
                 <div class="widget-title">
-                    <h4>已投递素材的选题:</h4>
+                    <h4>联系中的选题:</h4>
                 </div>
                 <div class="widget-content nopadding">
                     <table class="table table-bordered table-striped">
@@ -67,41 +84,24 @@
                             <th>状态</th>
                             <th>媒体互动</th>
                         </tr>
-                        <?php foreach($mytpcontact as $my_tc): ?>
-                        <!--<tr onclick="document.location = '/topic/detail/<?php echo $this->escapeHtml($ct->id_topic);?>';">-->
+                        <?php foreach($arr_contacting as $tc_contacting): ?>                        
                         <tr>
                             <td>
-                                <?php echo $this->escapeHtml($ct->created_by);?>
+                                <?php echo $this->escapeHtml($arr_id_user[$tc_contacting->fk_media_user]);?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($ct->abstract);?>
+                                <?php echo $this->escapeHtml($arr_id_abstract[$tc_contacting->fk_topic]);?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($ct->due_date);?>
+                                <?php echo $this->escapeHtml($arr_id_due[$tc_contacting->fk_topic]);?>
                             </td>
                             <td>
-                                <?php 
-                                if(array_key_exists($ct->id_topic, $arr_tp_tc))
-                                {
-                                    echo $arr_tpcontact_status[$arr_tc_status[$arr_tp_tc[$ct->id_topic]]];
-                                }
-                                else
-                                {
-                                    echo "未联系";
-                                }
-                                ?>
+                                <?php echo $this->escapeHtml($arr_tpcontact_status[$tc_contacting->fk_tpcontact_status]);?>
                             </td>
                             <td>
-                                <div style="display:<?php echo (array_key_exists($ct->id_topic, $arr_tp_tc))?'inline':'none'?>;">
-                                    <form action="<?php echo $this->url('topic', array('action' => 'viewcontact', 'id' => $ct->id_topic)) ;?>">
-                                        <input type="submit" class="btn btn-primary btn-mini" value="查看">
-                                    </form>
-                                </div>
-                                <div style="display:<?php echo (array_key_exists($ct->id_topic, $arr_tp_tc))?'none':'inline'?>;">
-                                    <form action="<?php echo $this->url('topic', array('action' => 'contact', 'id' => $ct->id_topic)) ;?>">
-                                        <input type="submit" class="btn btn-primary btn-mini" value="我要联系">
-                                    </form>
-                                </div>
+                                <form action="<?php echo $this->url('topic', array('action' => 'viewcontact', 'id' => $tc_contacting->fk_topic)) ;?>">
+                                    <input type="submit" class="btn btn-primary btn-mini" value="查看">
+                                </form>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -110,7 +110,7 @@
             </div>
             <div class="widget-box">
                 <div class="widget-title">
-                    <h4>已经发布的往期选题:</h4>
+                    <h4>已经发布的选题:</h4>
                 </div>
                 <div class="widget-content nopadding">
                     <table class="table table-bordered table-striped">
@@ -121,36 +121,24 @@
                             <th>状态</th>
                             <th>原文地址</th>
                         </tr>
-                        <?php foreach($past_topics as $pt): ?>
-                        <!--<tr onclick="document.location = '/topic/detail/<?php echo $this->escapeHtml($ct->id_topic);?>';">-->
+                        <?php foreach($arr_finished as $tc_finished): ?>                        
                         <tr>
                             <td>
-                                <?php echo $this->escapeHtml($pt->created_by);?>
+                                <?php echo $this->escapeHtml($arr_id_user[$tc_finished->fk_media_user]);?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($pt->abstract);?>
+                                <?php echo $this->escapeHtml($arr_id_abstract[$tc_finished->fk_topic]);?>
                             </td>
                             <td>
-                                <?php echo $this->escapeHtml($pt->due_date);?>
+                                <?php echo $this->escapeHtml($arr_id_due[$tc_finished->fk_topic]);?>
                             </td>
                             <td>
-                                <?php 
-                                if(array_key_exists($ct->id_topic, $arr_tp_tc))
-                                {
-                                    echo $arr_tpcontact_status[$arr_tc_status[$arr_tp_tc[$ct->id_topic]]];
-                                }
-                                else
-                                {
-                                    echo "未联系";
-                                }
-                                ?>
+                                <?php echo $this->escapeHtml($arr_tpcontact_status[$tc_finished->fk_tpcontact_status]);?>
                             </td>
                             <td>
-                                <div>
-                                    <form action="<?php echo $this->url('topic', array('action' => 'viewcontact', 'id' => $ct->id_topic)) ;?>">
-                                        <input type="submit" class="btn btn-primary btn-mini" value="查看">
-                                    </form>
-                                </div>
+                                <a href="<?php echo $tc_finished->topic_link;?>">
+                                    <?php echo $tc_finished->topic_link;?>
+                                </a>
                             </td>
                         </tr>
                         <?php endforeach; ?>
