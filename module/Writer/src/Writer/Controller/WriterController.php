@@ -427,6 +427,20 @@ class WriterController extends AbstractActionController
         ));
     }
 
+    public function mgmtAction()
+    {
+        //媒体->自由撰稿人->撰稿管理
+        $arr_type_allowed = array(2, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'writer' => $this->getWriterTable()->fetchAllDesc(),
+            'products' => $this->getProductTable()->fetchAll(),
+            'wrtmedia' => $this->getWrtmediaTable()->fetchWrtmediaByUser($cur_user),
+        ));
+    }
+
     public function mediaaccAction()
     {
         //媒体->自由撰稿人->需求列表->接受订单
