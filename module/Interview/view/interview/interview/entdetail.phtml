@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>我要采访</h1>  
+    <h1>媒体采访</h1>  
     <div id="header" class="container" style="width:1170px;"> 
         CONTAINER
         <div class="row">
@@ -22,14 +22,14 @@
         <div id="left" class="span2 left">
         <?php 
         set_include_path("public/include");        
-        include 'sidebar_media.phtml'; 
+        include 'sidebar_enterprise.phtml'; 
         ?>
         </div>
 
         <div id="mid" class="span8 mid">  
             <div class="linkbtns">
                 <form action="#">
-                    <input type="submit" class="btn btn-primary linkbtn" value="我要采访">
+                    <input type="submit" class="btn btn-primary linkbtn" value="媒体采访">
                 </form>
             </div>
             <div>
@@ -85,17 +85,19 @@
                     <tr>
                         <td></td>
                         <td>
-                            <div class="linkbtns">
-                                <form action="<?php echo $this->url('interview', 
-                                array('action' => 'edit', 'id' => $interview->id_interview)); ?>">
-                                    <input type="submit" class="btn btn-primary" value="修改邀约">
-                                </form>
-                            </div>
-                            <div>
-                                <form action="<?php echo $this->url('interview',
-                                array('action' => 'index')); ?>">
-                                    <input type="submit" class="btn btn-primary" value="返回列表">
-                                </form>
+                            <div style="display:<?php echo ($interview->fk_interview_status!=1)?'none':'';?>;">
+                                <div class="linkbtns">
+                                    <form action="<?php echo $this->url('interview', 
+                                    array('action' => 'entacc', 'id' => $interview->id_interview)); ?>">
+                                        <input type="submit" class="btn btn-primary" value="接受邀请">
+                                    </form>
+                                </div>
+                                <div>
+                                    <form action="<?php echo $this->url('interview',
+                                    array('action' => 'entrej', 'id' => $interview->id_interview)); ?>">
+                                        <input type="submit" class="btn btn-danger" value="拒绝邀请">
+                                    </form>
+                                </div>
                             </div>
                         </td>
                     </tr>

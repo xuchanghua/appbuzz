@@ -19,21 +19,29 @@ class User implements InputFilterAwareInterface
 	public $email;
 	public $fk_enterprise;
 	public $fk_media;
+	public $created_at;
+	public $created_by;
+	public $updated_at;
+	public $updated_by;
 	protected $inputFilter;
 
 	public function exchangeArray($data)
 	{
-		$this->id            = (isset($data['id']))            ? $data['id']            : null;
-		$this->username      = (isset($data['username']))      ? $data['username']      : null;
-		$this->password      = (isset($data['password']))      ? $data['password']      : null;
-		$this->password_salt = (isset($data['password_salt'])) ? $data['password_salt'] : null;
-		$this->real_name     = (isset($data['real_name']))     ? $data['real_name']     : null;
-		$this->fk_user_type  = (isset($data['fk_user_type']))  ? $data['fk_user_type']  : null;
-		$this->email         = (isset($data['email']))         ? $data['email']         : null;
-		$this->fk_enterprise = (isset($data['fk_enterprise'])) ? $data['fk_enterprise'] : null;
-		$this->fk_media      = (isset($data['fk_media']))      ? $data['fk_media']      : null;
-		$this->confirmpassword = (isset($data['confirmpassword'])) ? $data['confirmpassword'] : null;
+		$this->id               = (isset($data['id']))               ? $data['id']               : null;
+		$this->username         = (isset($data['username']))         ? $data['username']         : null;
+		$this->password         = (isset($data['password']))         ? $data['password']         : null;
+		$this->password_salt    = (isset($data['password_salt']))    ? $data['password_salt']    : null;
+		$this->real_name        = (isset($data['real_name']))        ? $data['real_name']        : null;
+		$this->fk_user_type     = (isset($data['fk_user_type']))     ? $data['fk_user_type']     : null;
+		$this->email            = (isset($data['email']))            ? $data['email']            : null;
+		$this->fk_enterprise    = (isset($data['fk_enterprise']))    ? $data['fk_enterprise']    : null;
+		$this->fk_media         = (isset($data['fk_media']))         ? $data['fk_media']         : null;
+		$this->confirmpassword  = (isset($data['confirmpassword']))  ? $data['confirmpassword']  : null;
 		$this->originalpassword = (isset($data['originalpassword'])) ? $data['originalpassword'] : null;
+		$this->created_at       = (isset($data['created_at']))       ? $data['created_at']       : null;
+		$this->created_by       = (isset($data['created_by']))       ? $data['created_by']       : null;
+		$this->updated_at       = (isset($data['updated_at']))       ? $data['updated_at']       : null;
+		$this->updated_by       = (isset($data['updated_by']))       ? $data['updated_by']       : null;		
 	}
 
     public function getArrayCopy()

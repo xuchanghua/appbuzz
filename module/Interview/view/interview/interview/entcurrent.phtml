@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>我要采访</h1>  
+    <h1>媒体采访</h1>  
     <div id="header" class="container" style="width:1170px;"> 
         CONTAINER
         <div class="row">
@@ -22,19 +22,19 @@
         <div id="left" class="span2 left">
         <?php 
         set_include_path("public/include");        
-        include 'sidebar_media.phtml'; 
+        include 'sidebar_enterprise.phtml'; 
         ?>
         </div>
 
         <div id="mid" class="span8 mid">  
             <div class="linkbtns">
                 <form action="#">
-                    <input type="submit" class="btn btn-primary linkbtn" value="我要采访">
+                    <input type="submit" class="btn btn-primary linkbtn" value="媒体采访">
                 </form>
             </div>
             <div>
                 <form action="#">
-                    <input type="submit" class="btn btn-primary linkbtn" value="采访管理">
+                    <input type="submit" class="btn btn-primary linkbtn" value="当前邀约">
                 </form>
             </div>
             <div id="current_interview" class="widget-box">
@@ -58,6 +58,7 @@
                     <table class="table table-bordered table-striped">
                         <tr>
                             <th>订单号</th>
+                            <th>媒体</th>
                             <th>APP</th>
                             <th>采访日期</th>
                             <th>状态</th>
@@ -67,6 +68,9 @@
                         <tr>
                             <td>
                                 <?php echo $c_i->order_no; ?>
+                            </td>
+                            <td>
+                                <?php echo $c_i->created_by; ?>
                             </td>
                             <td>
                                 <?php echo $arr_products[$c_i->fk_product]; ?>
@@ -80,14 +84,8 @@
                             <td>
                                 <div class="linkbtns">
                                     <form action="<?php echo $this->url('interview', 
-                                        array('action' => 'detail', 'id' => $c_i->id_interview)); ?>">
+                                        array('action' => 'entdetail', 'id' => $c_i->id_interview)); ?>">
                                         <input type="submit" class="btn btn-primary btn-mini" value="查看">
-                                    </form>
-                                </div>
-                                <div style="display:<?php echo ($c_i->fk_interview_status==4)?'none':'';?>">
-                                    <form action="<?php echo $this->url('interview',
-                                        array('action' => 'cancel', 'id' => $c_i->id_interview)); ?>">
-                                        <input type="submit" class="btn btn-danger btn-mini" value="撤销">
                                     </form>
                                 </div>
                             </td>
@@ -95,53 +93,7 @@
                         <?php endforeach; ?>
                     </table>
                 </div>
-            </div>
-            <div id="past_interview" class="widget-box">
-                <div class="widget-title">
-                    <h4>已结束的采访</h4>
-                </div>
-                <div class="widget-content nopadding">
-                    <table class="table table-bordered table-striped">
-                        <tr>
-                            <th>订单号</th>
-                            <th>APP</th>
-                            <th>采访时间</th>
-                            <th>状态</th>
-                            <th>操作</th>
-                        </tr>
-                        <?php foreach($past_interview as $p_i): ?>
-                        <tr>
-                            <td>
-                                <?php echo $p_i->order_no; ?>
-                            </td>
-                            <td>
-                                <?php echo $arr_products[$p_i->fk_product]; ?>
-                            </td>
-                            <td>
-                                <?php echo substr($p_i->date_time,0,10); ?>
-                            </td>
-                            <td>
-                                <?php echo $arr_interview_status[$p_i->fk_interview_status]; ?>
-                            </td>
-                            <td>
-                                <div class="linkbtns">
-                                    <form action="<?php echo $this->url('interview', 
-                                        array('action' => 'detail', 'id' => $p_i->id_interview)); ?>">
-                                        <input type="submit" class="btn btn-primary btn-mini" value="查看">
-                                    </form>
-                                </div>
-                                <div style="display:<?php echo ($p_i->fk_interview_status==4)?'none':'';?>">
-                                    <form action="<?php echo $this->url('interview',
-                                        array('action' => 'cancel', 'id' => $p_i->id_interview)); ?>">
-                                        <input type="submit" class="btn btn-danger btn-mini" value="撤销">
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
-                </div>
-            </div>
+            </div>            
         </div>
 
         <div id="right" class="span3 right">

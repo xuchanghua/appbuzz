@@ -72,6 +72,10 @@ class UserTable
 			'fk_enterprise' => $user->fk_enterprise,
 			'fk_media'      => $user->fk_media,
 			'real_name'     => $user->real_name,
+			'created_at'    => $user->created_at,
+			'created_by'    => $user->created_by,
+			'updated_at'    => $user->updated_at,
+			'updated_by'    => $user->updated_by,
 		);
 		$id = (int)$user->id;
 		if($id == 0){

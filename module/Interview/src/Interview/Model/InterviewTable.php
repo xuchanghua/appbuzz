@@ -65,6 +65,38 @@ class InterviewTable
         return $rowset;
     }
 
+    public function fetchCurrentEntInterview($fk_enterprise_user = null)
+    {
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $now = $datetime->format('Y-m-d H:i:s');
+        $rowset = $this->tableGateway->select(function(Select $select) use ($now, $fk_enterprise_user){
+            $select->where->greaterThanOrEqualTo('date_time', $now);
+            if($fk_enterprise_user)
+            {
+                $select->where->equalTo('fk_enterprise_user', $fk_enterprise_user);
+            }
+            $select->order('id_interview DESC');
+        });
+        return $rowset;
+    }
+
+    public function fetchPastEntInterview($fk_enterprise_user = null)
+    {
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $now = $datetime->format('Y-m-d H:i:s');
+        $rowset = $this->tableGateway->select(function(Select $select) use ($now, $fk_enterprise_user){
+            $select->where->lessThan('date_time', $now);
+            if($fk_enterprise_user)
+            {
+                $select->where->equalTo('fk_enterprise_user', $fk_enterprise_user);
+            }
+            $select->order('id_interview DESC');
+        });
+        return $rowset;
+    }
+
     public function getInterview($id)
     {
         $id  = (int) $id;

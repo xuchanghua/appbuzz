@@ -5,6 +5,7 @@ return array(
         'Album',
         'Application',
         'Attachment',
+        'Credit',
 	    'Enterprise',
         'Evaluate',
         'Interview',

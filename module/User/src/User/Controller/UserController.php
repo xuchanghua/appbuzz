@@ -9,10 +9,13 @@ use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use User\Form\UserForm;
 use User\Form\changepasswordForm;
+use Credit\Model\Credit;
+use DateTime;
 
 class UserController extends AbstractActionController
 {
     protected $userTable;
+    protected $creditTable;
 
     public function indexAction()
     {
@@ -122,7 +125,20 @@ class UserController extends AbstractActionController
                 if($user->password == $user->confirmpassword)
                 {
                     $user->fk_user_type = 1;//enterprise user
+                    $user->created_at = $this->_getDateTime();
+                    $user->created_by = $user->username;
+                    $user->updated_at = $this->_getDateTime();
+                    $user->updated_by = $user->username;
                     $this->getUserTable()->saveUser($user);
+                    //create credit for the user
+                    $user2 = $this->getUserTable()->getUserByName($user->username);
+                    $credit = new Credit();
+                    $credit->fk_user = $user2->id;
+                    $credit->fk_user_type = $user2->fk_user_type;
+                    $credit->amount = 0;
+                    $credit->created_at = $this->_getDateTime();
+                    $credit->created_by = $user2->username;
+                    $this->getCreditTable()->saveCredit($credit);
                 }
                 else
                 {
@@ -391,6 +407,15 @@ class UserController extends AbstractActionController
         return $this->userTable;
     }
 
+    public function getCreditTable()
+    {
+        if(!$this->creditTable){
+            $sm = $this->getServiceLocator();
+            $this->creditTable = $sm->get('Credit\Model\CreditTable');
+        }
+        return $this->creditTable;
+    }
+
     protected function _authorizeUser($type, $user, $pass)
     {        
          //check if the username or password is empty
@@ -476,5 +501,20 @@ class UserController extends AbstractActionController
         }
         echo "<a href='/'>Back</a></br>";
         die("Insufficient privilege!");
+    }
+
+    /**
+     * Get the current time with the format which could be accepted by MySQL datetime.
+     * @return YYYY-MM-DD HH:MM:SS
+     */
+    protected function _getDateTime()
+    {        
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $strdatetime = $datetime->format(DATE_ATOM);
+        $date = substr($strdatetime,0,10);
+        $time = substr($strdatetime,11,8);
+        $result = $date.' '.$time;
+        return $result;
     }
 }

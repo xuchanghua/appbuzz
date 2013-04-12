@@ -102,7 +102,7 @@ class InterviewController extends AbstractActionController
 
     public function editAction()
     {        
-        //媒体->采访邀约->修改订单
+        //媒体->采访管理->修改订单
         $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
@@ -159,7 +159,119 @@ class InterviewController extends AbstractActionController
 
     public function cancelAction()
     {
-        
+        //媒体->采访管理->撤销订单
+        $arr_type_allowed = array(2);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_interview = (int)$this->params()->fromRoute('id', 0);
+        if(!$id_interview){
+            return $this->redirect()->toRoute('interview', array(
+                'action' => 'index'
+            ));
+        }
+        $interview = $this->getInterviewTable()->getInterview($id_interview);
+        $interview->fk_interview_status = 4;//canceled
+        $this->getInterviewTable()->saveInterview($interview);
+
+        return $this->redirect()->toRoute('interview', array(
+            'action' => 'index',
+        )); 
+    }
+
+    public function entcurrentAction()
+    {
+        //企业->媒体采访->当前邀约
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+        $fk_enterprise_user = $this->getUserTable()->getUserByName($cur_user)->id;
+
+        return new ViewModel(array(
+            'user' => $cur_user,    
+            'current_interview' => $this->getInterviewTable()->fetchCurrentEntInterview($fk_enterprise_user),
+            'products' => $this->getProductTable()->fetchAll(),    
+        ));
+    }
+
+    public function entpastAction()
+    {
+        //企业->媒体采访->过往邀约
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+        $fk_enterprise_user = $this->getUserTable()->getUserByName($cur_user)->id;
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'past_interview' => $this->getInterviewTable()->fetchPastEntInterview($fk_enterprise_user),
+            'products' => $this->getProductTable()->fetchAll(),    
+        ));
+    }
+
+    public function entdetailAction()
+    {
+        //企业->媒体采访->邀约详情
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_interview = (int)$this->params()->fromRoute('id', 0);
+        if(!$id_interview){
+            return $this->redirect()->toRoute('enterprise', array(
+                'action' => 'index'
+            ));
+        }
+        $interview = $this->getInterviewTable()->getInterview($id_interview);
+        $product = $this->getProductTable()->getProduct($interview->fk_product);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'interview' => $interview,
+            'product' => $product,
+        ));
+    }
+
+    public function entaccAction()
+    {
+        //企业->媒体采访->接受邀请
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_interview = (int)$this->params()->fromRoute('id', 0);
+        if(!$id_interview){
+            return $this->redirect()->toRoute('interview', array(
+                'action' => 'entdetail',
+                'id'     => $id_interview,
+            ));
+        }
+        $interview = $this->getInterviewTable()->getInterview($id_interview);
+        $interview->fk_interview_status = 2;//accepted
+        $this->getInterviewTable()->saveInterview($interview);
+
+        return $this->redirect()->toRoute('interview', array(
+            'action' => 'entdetail',
+            'id'     => $id_interview,
+        ));
+    }
+
+    public function entrejAction()
+    {
+        //企业->媒体采访->拒绝邀请
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_interview = (int)$this->params()->fromRoute('id', 0);
+        if(!$id_interview){
+            return $this->redirect()->toRoute('interview', array(
+                'action' => 'entdetail',
+                'id'     => $id_interview,
+            ));
+        }
+        $interview = $this->getInterviewTable()->getInterview($id_interview);
+        $interview->fk_interview_status = 3;//rejected
+        $this->getInterviewTable()->saveInterview($interview);
+
+        return $this->redirect()->toRoute('interview', array(
+            'action' => 'entdetail',
+            'id'     => $id_interview,
+        ));
     }
 
     public function deleteAction()
