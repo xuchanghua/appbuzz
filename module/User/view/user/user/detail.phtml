@@ -26,7 +26,8 @@
         ?>
         </div>
         <div id="mid" class="span8 mid">
-            <div>
+            <div id="userinfo">
+                <h3>用户信息：</h3>
                 <?php
                 $arr_user_type = array(
                     '1' => '企业用户',
@@ -38,16 +39,12 @@
                     <tr>
                         <td>id：</td>
                         <td><?php echo $target_user->id;?></td>
-                    </tr>
-                    <tr>
                         <td>用户名：</td>
                         <td><?php echo $target_user->username;?></td>
                     </tr>
                     <tr>
                         <td>密码：</td>
                         <td><?php echo $target_user->password;?></td>
-                    </tr>
-                    <tr>
                         <td>真实姓名：</td>
                         <td><?php echo $target_user->real_name;?></td>
                     </tr>
@@ -65,11 +62,21 @@
                             }
                             ?>
                         </td>
-                    </tr>
-                    <tr>
                         <td>电子邮箱：</td>
                         <td><?php echo $target_user->email;?></td>
                     </tr>
+                    <tr>
+                        <td>创建人：</td>
+                        <td><?php echo $target_user->created_by; ?></td>
+                        <td>创建日期：</td>
+                        <td><?php echo $target_user->created_at; ?></td>
+                    </tr>
+                    <tr>
+                        <td>修改人：</td>
+                        <td><?php echo $target_user->updated_by; ?></td>
+                        <td>修改日期：</td>
+                        <td><?php echo $target_user->updated_at; ?></td>
+                    </tr>                    
                     <tr>
                         <td>
                         </td>
@@ -91,8 +98,99 @@
                             </div>
                         </td>
                     </tr>
-
-
+                </table>
+            </div>
+            <div id="enterpriseinfo" style="display:<?php echo ($enterprise)?'':'none';?>;">
+                <h3>企业信息：</h3>
+                <table>
+                    <tr>
+                        <td>公司信息：</td>
+                    </tr>
+                    <tr>
+                        <td>id：</td>
+                        <td><?php echo $enterprise->id_enterprise; ?></td>
+                        <td>企业名称：</td>
+                        <td><?php echo $enterprise->name; ?></td>
+                    </tr>
+                    <tr>
+                        <td>所在地：</td>
+                        <td><?php echo $enterprise->location; ?></td>
+                        <td>地址：</td>
+                        <td><?php echo $enterprise->address; ?></td>
+                    </tr>
+                    <tr>
+                        <td>发票抬头：</td>
+                        <td><?php echo $enterprise->invoice_title; ?></td>
+                        <td>发票类型：</td>
+                        <td><?php echo $enterprise->invoice_type; ?></td>
+                    </tr>
+                    <tr>
+                        <td>联系人信息：</td>
+                    </tr>
+                    <tr>
+                        <td>姓名：</td>
+                        <td><?php echo $enterprise->contacter_name; ?></td>
+                        <td>职位：</td>
+                        <td><?php echo $enterprise->contacter_post; ?></td>
+                    </tr>
+                    <tr>
+                        <td>电话：</td>
+                        <td><?php echo $enterprise->contacter_phone; ?></td>
+                        <td>邮箱：</td>
+                        <td><?php echo $enterprise->contacter_email; ?></td>
+                    </tr>                    
+                </table>
+            </div>
+            <div id="mediainfo" style="display:<?php echo ($media)?'':'none';?>;">
+                <h3>媒体信息：</h3>
+                <table>
+                    <tr>
+                        <td>公司信息：</td>
+                    </tr>
+                    <tr>
+                        <td>id：</td>
+                        <td><?php echo $media->id_media; ?></td>
+                        <td>企业名称：</td>
+                        <td><?php echo $media->name; ?></td>
+                    </tr>
+                    <tr>
+                        <td>所在地：</td>
+                        <td><?php echo $media->location; ?></td>
+                        <td>地址：</td>
+                        <td><?php echo $media->address; ?></td>
+                    </tr>
+                    <tr>
+                        <td>发票抬头：</td>
+                        <td><?php echo $media->invoice_title; ?></td>
+                        <td>发票类型：</td>
+                        <td><?php echo $media->invoice_type; ?></td>
+                    </tr>
+                    <tr>
+                        <td>联系人信息：</td>
+                    </tr>
+                    <tr>
+                        <td>姓名：</td>
+                        <td><?php echo $media->contacter_name; ?></td>
+                        <td>职位：</td>
+                        <td><?php echo $media->contacter_post; ?></td>
+                    </tr>
+                    <tr>
+                        <td>电话：</td>
+                        <td><?php echo $media->contacter_phone; ?></td>
+                        <td>邮箱：</td>
+                        <td><?php echo $media->contacter_email; ?></td>
+                    </tr>                    
+                </table>
+            </div>
+            <div id="creditinfo" style="display:<?php echo ($credit)?'':'none';?>;">
+                <h3>现金账户：</h3>
+                <table>
+                    <tr>
+                        <td>账户余额：</td>
+                        <td><?php echo $credit->amount.'元'; ?></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                 </table>
             </div>
         </div>

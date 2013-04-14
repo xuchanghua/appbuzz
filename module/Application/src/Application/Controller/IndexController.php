@@ -38,37 +38,6 @@ class IndexController extends AbstractActionController
 
     public function loginAction()
     {
-/*
-        $db = $this->_getParam('db');
- 
-        $loginForm = new Default_Form_Login();
- 
-        if ($loginForm->isValid($_POST)) {
- 
-            $adapter = new Zend_Auth_Adapter_DbTable(
-                $db,
-                'users',
-                'username',
-                'password',
-                'MD5(CONCAT(?, password_salt))'
-                );
- 
-            $adapter->setIdentity($loginForm->getValue('username'));
-            $adapter->setCredential($loginForm->getValue('password'));
- 
-            $auth   = Zend_Auth::getInstance();
-            $result = $auth->authenticate($adapter);
- 
-            if ($result->isValid()) {
-                $this->_helper->FlashMessenger('Successful Login');
-                $this->_redirect('/');
-                return;
-            }
- 
-        }
- 
-        $this->view->loginForm = $loginForm;
-*/
     }
 
     public function loginFormAction()

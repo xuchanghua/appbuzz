@@ -37,6 +37,17 @@ class CreditTable
         return $row;
     }
 
+    public function getCreditByFkUser($fk_user)
+    {
+        $fk_user = (int) $fk_user;
+        $rowset = $this->tableGateway->select(array('fk_user' => $fk_user));
+        $row = $rowset->current();
+        /*if (!$row) {
+            throw new \Exception("Could not find row $fk_user");
+        }*/
+        return $row;
+    }
+
     public function saveCredit(Credit $credit)
     {
         $data = array(

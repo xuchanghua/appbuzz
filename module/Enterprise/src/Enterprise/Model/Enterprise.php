@@ -18,6 +18,10 @@ class Enterprise implements InputFilterAwareInterface
     public $contacter_post;
     public $contacter_phone;
     public $contacter_email;
+    public $created_at;
+    public $created_by;
+    public $updated_at;
+    public $updated_by;
 
     protected $inputFilter;
 
@@ -33,6 +37,10 @@ class Enterprise implements InputFilterAwareInterface
         $this->contacter_post  = (isset($data['contacter_post']))  ? $data['contacter_post']  : null;
         $this->contacter_phone = (isset($data['contacter_phone'])) ? $data['contacter_phone'] : null;
         $this->contacter_email = (isset($data['contacter_email'])) ? $data['contacter_email'] : null;
+        $this->created_at      = (isset($data['created_at']))      ? $data['created_at']      : null;
+        $this->created_by      = (isset($data['created_by']))      ? $data['created_by']      : null;
+        $this->updated_at      = (isset($data['updated_at']))      ? $data['updated_at']      : null;
+        $this->updated_by      = (isset($data['updated_by']))      ? $data['updated_by']      : null;
     }
 
     public function getArrayCopy()

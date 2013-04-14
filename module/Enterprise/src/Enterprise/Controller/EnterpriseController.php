@@ -15,12 +15,13 @@ class EnterpriseController extends AbstractActionController
     protected $productTable;
     protected $newspubTable;
     protected $evaluateTable;
+    protected $creditTable;
 
     public function indexAction()
     {
         //Authenticate the user information from the session
         //$cur_user = $this->_authenticateSession(1);
-        $arr_type_allowed = array(1, 3);
+        $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $email = $this->_getUserEmail($cur_user);
@@ -104,6 +105,7 @@ class EnterpriseController extends AbstractActionController
 
     public function myaccountAction()
     {
+
     }
 
     public function myorderAction()
@@ -183,6 +185,15 @@ class EnterpriseController extends AbstractActionController
         $this->evaluateTable = $sm->get('Evaluate\Model\EvaluateTable');
         }
         return $this->evaluateTable;
+    }
+
+    public function getCreditTable()
+    {
+        if(!$this->creditTable){
+            $sm = $this->getServiceLocator();
+            $this->creditTable = $sm->get('Credit\Model\CreditTable');
+        }
+        return $this->creditTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

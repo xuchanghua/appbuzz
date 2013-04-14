@@ -16,6 +16,8 @@ class UserController extends AbstractActionController
 {
     protected $userTable;
     protected $creditTable;
+    protected $enterpriseTable;
+    protected $mediaTable;
 
     public function indexAction()
     {
@@ -287,10 +289,24 @@ class UserController extends AbstractActionController
             ));
         }
         $target_user = $this->getUserTable()->getUser($id);
+        if(($target_user->fk_user_type == 1) && ($target_user->fk_enterprise > 0)){
+            $enterprise = $this->getEnterpriseTable()->getEnterprise($target_user->fk_enterprise);
+            $media = null;
+        }elseif(($target_user->fk_user_type == 2) && ($target_user->fk_media > 0)){
+            $enterprise = null;
+            $media = $this->getMediaTable()->getMedia($target_user->fk_media);
+        }else{
+            $enterprise = null;
+            $media = null;
+        }
+        $credit = $this->getCreditTable()->getCreditByFkUser($target_user->id);
 
         return new ViewModel(array(
-            'user' => $cur_user,
+            'user'        => $cur_user,
             'target_user' => $target_user,
+            'enterprise'  => $enterprise,
+            'media'       => $media,
+            'credit'      => $credit,
         ));
     }
 
@@ -307,9 +323,12 @@ class UserController extends AbstractActionController
         }
 
         $target_user = $this->getUserTable()->getUser($id);
-        //die(var_dump($target_user));
+        $tu_created_at    = $target_user->created_at;
+        $tu_created_by    = $target_user->created_by;
+        $tu_fk_enterprise = $target_user->fk_enterprise;
+        $tu_fk_media      = $target_user->fk_media;
+
         $form = new UserForm();
-        //die(var_dump($form));
         $form->bind($target_user);
         $form->get('submit')->setAttribute('value','保存');
 
@@ -318,11 +337,19 @@ class UserController extends AbstractActionController
             $form->setInputFilter($target_user->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
+                $form->getData()->created_at    = $tu_created_at;
+                $form->getData()->created_by    = $tu_created_by;
+                $form->getData()->fk_enterprise = $tu_fk_enterprise;
+                $form->getData()->fk_media      = $tu_fk_media;
+                $form->getData()->updated_at    = $this->_getDateTime();
+                $form->getData()->updated_by    = $cur_user;
                 $this->getUserTable()->saveUser($form->getData());
                 return $this->redirect()->toRoute('user', array(
                     'action' => 'detail',
                     'id'     => $target_user->id,
                 ));
+            }else{
+                die(var_dump($form->getMessages()));
             }
         }
         return new ViewModel(array(
@@ -343,6 +370,11 @@ class UserController extends AbstractActionController
         }
 
         $target_user = $this->getUserTable()->getUser($id);
+        $tu_created_at    = $target_user->created_at;
+        $tu_created_by    = $target_user->created_by;
+        $tu_fk_enterprise = $target_user->fk_enterprise;
+        $tu_fk_media      = $target_user->fk_media;
+
         $original_password = $target_user->password;
         $form = new UserForm();
         $form->bind($target_user);
@@ -362,6 +394,12 @@ class UserController extends AbstractActionController
                     echo "<a href='/'>Back</a></br>";
                     die("Password and confirm password must be corresponded!");
                 }
+                $form->getData()->created_at    = $tu_created_at;
+                $form->getData()->created_by    = $tu_created_by;
+                $form->getData()->fk_enterprise = $tu_fk_enterprise;
+                $form->getData()->fk_media      = $tu_fk_media;
+                $form->getData()->updated_at    = $this->_getDateTime();
+                $form->getData()->updated_by    = $cur_user;
                 $this->getUserTable()->saveUser($form->getData());
                 //change the session
                 $this->session = new SessionContainer('userinfo');
@@ -414,6 +452,24 @@ class UserController extends AbstractActionController
             $this->creditTable = $sm->get('Credit\Model\CreditTable');
         }
         return $this->creditTable;
+    }
+
+    public function getEnterpriseTable()
+    {
+        if(!$this->enterpriseTable){
+            $sm = $this->getServiceLocator();
+            $this->enterpriseTable = $sm->get('Enterprise\Model\EnterpriseTable');
+        }
+        return $this->enterpriseTable;
+    }
+
+    public function getMediaTable()
+    {
+        if(!$this->mediaTable){
+            $sm = $this->getServiceLocator();
+            $this->mediaTable = $sm->get('Media\Model\MediaTable');
+        }
+        return $this->mediaTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

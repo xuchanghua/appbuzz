@@ -51,6 +51,10 @@ class EnterpriseTable
             'contacter_post'  => $enterprise->contacter_post,
             'contacter_phone' => $enterprise->contacter_phone,
             'contacter_email' => $enterprise->contacter_email,
+            'created_at'      => $enterprise->created_at,
+            'created_by'      => $enterprise->created_by,
+            'updated_at'      => $enterprise->updated_at,
+            'updated_by'      => $enterprise->updated_by,
         );
 
         $id = (int)$enterprise->id_enterprise;

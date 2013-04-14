@@ -51,6 +51,10 @@ class MediaTable
             'contacter_post'  => $media->contacter_post,
             'contacter_phone' => $media->contacter_phone,
             'contacter_email' => $media->contacter_email,
+            'created_at'      => $media->created_at,
+            'created_by'      => $media->created_by,
+            'updated_at'      => $media->updated_at,
+            'updated_by'      => $media->updated_by,
         );
 
         $id = (int)$media->id_media;
