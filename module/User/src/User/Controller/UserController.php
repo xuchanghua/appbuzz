@@ -18,6 +18,7 @@ class UserController extends AbstractActionController
     protected $creditTable;
     protected $enterpriseTable;
     protected $mediaTable;
+    protected $creditlogTable;
 
     public function indexAction()
     {
@@ -140,6 +141,8 @@ class UserController extends AbstractActionController
                     $credit->amount = 0;
                     $credit->created_at = $this->_getDateTime();
                     $credit->created_by = $user2->username;
+                    $credit->updated_at = $this->_getDateTime();
+                    $credit->updated_by = $user2->username;
                     $this->getCreditTable()->saveCredit($credit);
                 }
                 else
@@ -186,7 +189,22 @@ class UserController extends AbstractActionController
                 if($user->password == $user->confirmpassword)
                 {
                     $user->fk_user_type = 2;//media user
+                    $user->created_at = $this->_getDateTime();
+                    $user->created_by = $user->username;
+                    $user->updated_at = $this->_getDateTime();
+                    $user->updated_by = $user->username;
                     $this->getUserTable()->saveUser($user);
+                    //create credit for the user
+                    $user2 = $this->getUserTable()->getUserByName($user->username);
+                    $credit = new Credit();
+                    $credit->fk_user = $user2->id;
+                    $credit->fk_user_type = $user2->fk_user_type;
+                    $credit->amount = 0;
+                    $credit->created_at = $this->_getDateTime();
+                    $credit->created_by = $user2->username;
+                    $credit->updated_at = $this->_getDateTime();
+                    $credit->updated_by = $user2->username;
+                    $this->getCreditTable()->saveCredit($credit);
                 }
                 else
                 {
@@ -235,7 +253,22 @@ class UserController extends AbstractActionController
                 $user->exchangeArray($form->getData());
                 if($user->password == $user->confirmpassword)
                 {
+                    $user->created_at = $this->_getDateTime();
+                    $user->created_by = $cur_user;
+                    $user->updated_at = $this->_getDateTime();
+                    $user->updated_by = $cur_user;
                     $this->getUserTable()->saveUser($user);
+                    //create credit for the user
+                    $user2 = $this->getUserTable()->getUserByName($user->username);
+                    $credit = new Credit();
+                    $credit->fk_user = $user2->id;
+                    $credit->fk_user_type = $user2->fk_user_type;
+                    $credit->amount = 0;
+                    $credit->created_at = $this->_getDateTime();
+                    $credit->created_by = $cur_user;
+                    $credit->updated_at = $this->_getDateTime();
+                    $credit->updated_by = $cur_user;
+                    $this->getCreditTable()->saveCredit($credit);
                 }
                 else
                 {
@@ -300,6 +333,7 @@ class UserController extends AbstractActionController
             $media = null;
         }
         $credit = $this->getCreditTable()->getCreditByFkUser($target_user->id);
+        $creditlog = $this->getCreditlogTable()->fetchLogByFkCreditLimit5($credit->id_credit);
 
         return new ViewModel(array(
             'user'        => $cur_user,
@@ -307,6 +341,7 @@ class UserController extends AbstractActionController
             'enterprise'  => $enterprise,
             'media'       => $media,
             'credit'      => $credit,
+            'creditlog'   => $creditlog,
         ));
     }
 
@@ -452,6 +487,15 @@ class UserController extends AbstractActionController
             $this->creditTable = $sm->get('Credit\Model\CreditTable');
         }
         return $this->creditTable;
+    }
+
+    public function getCreditlogTable()
+    {
+        if(!$this->creditlogTable){
+            $sm = $this->getServiceLocator();
+            $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
+        }
+        return $this->creditlogTable;
     }
 
     public function getEnterpriseTable()

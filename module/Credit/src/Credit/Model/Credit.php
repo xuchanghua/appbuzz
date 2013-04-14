@@ -8,13 +8,15 @@ use Zend\InputFilter\InputFilterInterface;
 
 class Credit implements InputFilterAwareInterface
 {
-
     public $id_credit;
     public $fk_user;
     public $fk_user_type;
     public $amount;
     public $created_at;
     public $created_by;
+    public $updated_at;
+    public $updated_by;
+    public $chargeamount;
     protected $inputFilter;                       // <-- Add this variable
 
     public function exchangeArray($data)
@@ -25,6 +27,9 @@ class Credit implements InputFilterAwareInterface
         $this->amount       = (isset($data['amount']))       ? $data['amount']       : null;
         $this->created_at   = (isset($data['created_at']))   ? $data['created_at']   : null;
         $this->created_by   = (isset($data['created_by']))   ? $data['created_by']   : null;
+        $this->updated_at   = (isset($data['updated_at']))   ? $data['updated_at']   : null;
+        $this->updated_by   = (isset($data['updated_by']))   ? $data['updated_by']   : null;
+        $this->chargeamount = (isset($data['chargeamount'])) ? $data['chargeamount'] : null;
     }
 
     // Add the following method:

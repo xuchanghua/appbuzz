@@ -7,6 +7,7 @@ use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use Media\Model\Media;
 use Media\Form\MediaForm;
+use DateTime;
 
 class MediaController extends AbstractActionController
 {
@@ -34,6 +35,10 @@ class MediaController extends AbstractActionController
             $user = $this->getUserTable()->getUserByName($cur_user);
             if($form->isValid()){
                 $media->exchangeArray($form->getData());
+                $media->created_at = $this->_getDateTime();
+                $media->created_by = $cur_user;
+                $media->updated_at = $this->_getDateTime();
+                $media->updated_by = $cur_user;
                 $this->getMediaTable()->saveMedia($media);
                 $newMed = $this->getMediaTable()->getMediaByName($media->name);
                 $user->fk_media = $newMed->id_media;
@@ -67,6 +72,8 @@ class MediaController extends AbstractActionController
             ));
         }
         $media = $this->getMediaTable()->getMedia($id);
+        $md_created_at = $media->created_at;
+        $md_created_by = $media->created_by;
         $form = new MediaForm();
         $form->bind($media);
         $form->get('submit')->setAttribute('value','保存');
@@ -76,6 +83,10 @@ class MediaController extends AbstractActionController
             $form->setInputFilter($media->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
+                $form->getData()->created_at = $md_created_at;
+                $form->getData()->created_by = $md_created_by;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->updated_by = $cur_user;
                 $this->getMediaTable()->saveMedia($form->getData());
 
                 return $this->redirect()->toRoute('media',array(
@@ -90,6 +101,50 @@ class MediaController extends AbstractActionController
             'fk_media' => $this->_getUserFkMedia($cur_user),
             'media' => (isset($fk_media))? $this->getMediaTable()->getMedia($fk_media) : null,
             'form' => $form,
+        ));
+    }
+
+    public function adminAction()
+    {        
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_media = (int)$this->params()->fromRoute('id',0);
+        if (!$id_media) {
+            return $this->redirect()->toRoute('user', array(
+                'action' => 'admin',
+            ));
+        }
+        $media = $this->getMediaTable()->getMedia($id_media);
+        $target_user = $this->getUserTable()->getUserByFkMedia($media->id_media);
+        $md_created_at = $media->created_at;
+        $md_created_by = $media->created_by;
+        $form = new MediaForm();
+        $form->bind($media);
+        $form->get('submit')->setAttribute('value','保存');
+
+        $request = $this->getRequest();
+        if ($request->isPost()){
+            $form->setInputFilter($media->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $form->getData()->created_at = $md_created_at;
+                $form->getData()->created_by = $md_created_by;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->updated_by = $cur_user;
+                $this->getMediaTable()->saveMedia($form->getData());
+
+                return $this->redirect()->toRoute('user',array(
+                    'action' => 'detail',
+                    'id'     => $target_user->id,
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user'  => $cur_user,
+            'media' => $media,
+            'form'  => $form,
         ));
     }
 
@@ -233,5 +288,20 @@ class MediaController extends AbstractActionController
     protected function _getUserFkMedia($user)
     {
         return $this->getUserTable()->getUserByName($user)->fk_media;
+    }
+
+    /**
+     * Get the current time with the format which could be accepted by MySQL datetime.
+     * @return YYYY-MM-DD HH:MM:SS
+     */
+    protected function _getDateTime()
+    {        
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $strdatetime = $datetime->format(DATE_ATOM);
+        $date = substr($strdatetime,0,10);
+        $time = substr($strdatetime,11,8);
+        $result = $date.' '.$time;
+        return $result;
     }
 }

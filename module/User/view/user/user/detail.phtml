@@ -76,29 +76,25 @@
                         <td><?php echo $target_user->updated_by; ?></td>
                         <td>修改日期：</td>
                         <td><?php echo $target_user->updated_at; ?></td>
-                    </tr>                    
-                    <tr>
-                        <td>
-                        </td>
-                        <td>
-                            <div class="linkbtns">
-                                <form action="/user/edit/<?php echo $target_user->id;?>">
-                                    <input type="submit" class="btn btn-primary" value="修改用户信息">
-                                </form>
-                            </div>
-                            <div class="linkbtns">
-                                <form action="/user/delete/<?php echo $target_user->id;?>">
-                                    <input type="submit" class="btn btn-danger" value="删除此用户">
-                                </form>
-                            </div>
-                            <div>
-                                <form action="/user/admin">
-                                    <input type="submit" class="btn btn-primary" value="返回列表">
-                                </form>
-                            </div>
-                        </td>
                     </tr>
                 </table>
+                <div>
+                    <div class="linkbtns">
+                        <form action="/user/edit/<?php echo $target_user->id;?>">
+                            <input type="submit" class="btn btn-primary" value="修改用户信息">
+                        </form>
+                    </div>
+                    <div class="linkbtns">
+                        <form action="/user/delete/<?php echo $target_user->id;?>">
+                            <input type="submit" class="btn btn-danger" value="删除此用户">
+                        </form>
+                    </div>
+                    <div>
+                        <form action="/user/admin">
+                            <input type="submit" class="btn btn-primary" value="返回列表">
+                        </form>
+                    </div>
+                </div>
             </div>
             <div id="enterpriseinfo" style="display:<?php echo ($enterprise)?'':'none';?>;">
                 <h3>企业信息：</h3>
@@ -138,8 +134,27 @@
                         <td><?php echo $enterprise->contacter_phone; ?></td>
                         <td>邮箱：</td>
                         <td><?php echo $enterprise->contacter_email; ?></td>
-                    </tr>                    
+                    </tr>
+                    <tr>
+                        <td>创建人：</td>
+                        <td><?php echo $enterprise->created_by; ?></td>
+                        <td>创建日期：</td>
+                        <td><?php echo $enterprise->created_at; ?></td>
+                    </tr>
+                    <tr>
+                        <td>修改人：</td>
+                        <td><?php echo $enterprise->updated_by; ?></td>
+                        <td>修改日期：</td>
+                        <td><?php echo $enterprise->updated_at; ?></td>
+                    </tr>
                 </table>
+                <div>
+                    <div>
+                        <form action="/enterprise/admin/<?php echo $enterprise->id_enterprise;?>">
+                            <input type="submit" class="btn btn-primary" value="修改企业信息">
+                        </form>
+                    </div>
+                </div>
             </div>
             <div id="mediainfo" style="display:<?php echo ($media)?'':'none';?>;">
                 <h3>媒体信息：</h3>
@@ -179,19 +194,90 @@
                         <td><?php echo $media->contacter_phone; ?></td>
                         <td>邮箱：</td>
                         <td><?php echo $media->contacter_email; ?></td>
-                    </tr>                    
+                    </tr>
+                    <tr>
+                        <td>创建人：</td>
+                        <td><?php echo $media->created_by; ?></td>
+                        <td>创建日期：</td>
+                        <td><?php echo $media->created_at; ?></td>
+                    </tr>
+                    <tr>
+                        <td>修改人：</td>
+                        <td><?php echo $media->updated_by; ?></td>
+                        <td>修改日期：</td>
+                        <td><?php echo $media->updated_at; ?></td>
+                    </tr>
                 </table>
+                <div>
+                    <div>
+                        <form action="/media/admin/<?php echo $media->id_media;?>">
+                            <input type="submit" class="btn btn-primary" value="修改公司信息">
+                        </form>
+                    </div>
+                </div>
             </div>
             <div id="creditinfo" style="display:<?php echo ($credit)?'':'none';?>;">
                 <h3>现金账户：</h3>
                 <table>
                     <tr>
+                        <td>id：</td>
+                        <td><?php echo $credit->id_credit; ?></td>
                         <td>账户余额：</td>
-                        <td><?php echo $credit->amount.'元'; ?></td>
-                        <td></td>
-                        <td></td>
+                        <td><?php echo '人民币 '.$credit->amount.' 元'; ?></td>
                     </tr>
+                    <tr>
+                        <td>创建人：</td>
+                        <td><?php echo $credit->created_by; ?></td>
+                        <td>创建日期：</td>
+                        <td><?php echo $credit->created_at; ?></td>
+                    </tr>
+                    <tr>
+                        <td>修改人：</td>
+                        <td><?php echo $credit->updated_by; ?></td>
+                        <td>修改日期：</td>
+                        <td><?php echo $credit->updated_at; ?></td>
+                    </tr>                    
                 </table>
+                <div>
+                    <div class="linkbtns">
+                        <form action="/credit/charge/<?php echo $credit->id_credit;?>">
+                            <input type="submit" class="btn btn-primary" value="充值">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div id="creditlog" style="display:<?php echo ($creditlog)?'':'none';?>;" class="widget-box">
+                <div class="widget-title">
+                    <h3>最近交易记录：</h3>
+                </div>
+                <div class="widget-content nopadding">
+                    <?php 
+                    $arr_service_type = array(
+                        '1' => '充值',
+                        '2' => '',
+                    );
+                    ?>
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <th>id</th>
+                            <th>交易类型</th>
+                            <th>交易金额</th>
+                            <th>交易日期</th>
+                            <th>经办人</th>
+                        </tr>
+                        <?php foreach($creditlog as $log): ?>
+                        <tr>
+                            <td><?php echo $log->id_creditlog; ?></td>
+                            <td><?php echo $arr_service_type[$log->fk_service_type]; ?></td>
+                            <td><?php echo $log->amount.'元'; ?></td>
+                            <td><?php echo $log->date_time; ?></td>
+                            <td><?php echo $log->created_by; ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </table>
+                </div>
             </div>
         </div>
         <div id="right" class="span3 right">

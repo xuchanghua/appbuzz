@@ -1,0 +1,144 @@
+<h1>用户详细信息：</h1>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span2 left">
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_admin.phtml'; 
+        ?>
+        </div>
+        <div id="mid" class="span8 mid">
+            <div>
+                <?php
+                $arr_user_type = array(
+                    '1' => '企业用户',
+                    '2' => '媒体用户',
+                    '3' => '管理员用户',
+                    );
+                ?>
+                <table>
+                    <?php
+                    $form = $this->form;
+                    $form->setAttribute('action',$this->url(
+                        'enterprise',
+                        array(
+                            'action' => 'admin',
+                            'id'     => $enterprise->id_enterprise,
+                        )
+                    ));
+                    $form->prepare();
+                    echo $this->form()->openTag($form);
+                    echo $this->formHidden($form->get('id_enterprise'));
+                    ?>
+                    <tr>
+                        <td class="tdlabel">id：</td>
+                        <td class="tdinput"><?php echo $enterprise->id_enterprise;?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">企业名称：</td>
+                        <td class="tdinput"><?php echo $this->formRow($form->get('name'));?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">所在地：</td>
+                        <td class="tdinput"><?php echo $this->formRow($form->get('location'));?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">地址：</td>
+                        <td class="tdinput"><?php echo $this->formRow($form->get('address'));?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">发票抬头：</td>
+                        <td class="tdinput"><?php echo $this->formRow($form->get('invoice_title'));?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">发票类型：</td>
+                        <td class="tdinput"><?php echo $this->formRow($form->get('invoice_type'));?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">联系人姓名：</td>
+                        <td class="tdinput"><?php echo $this->formRow($form->get('contacter_name'));?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">联系人职位：</td>
+                        <td class="tdinput"><?php echo $this->formRow($form->get('contacter_post'));?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">联系人电话：</td>
+                        <td class="tdinput"><?php echo $this->formRow($form->get('contacter_phone'));?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">联系人邮箱：</td>
+                        <td class="tdinput"><?php echo $this->formRow($form->get('contacter_email'));?></td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            <?php echo $this->formSubmit($form->get('submit'));?>
+                            <?php echo $this->form()->closeTag(); ?>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="right" class="span3 right">
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div.user,.mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 80%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>

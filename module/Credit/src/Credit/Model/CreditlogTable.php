@@ -7,8 +7,9 @@ use Zend\Db\Sql\Where;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Db\ResultSet\ResultSet;
+use DateTime;
 
-class CreditTable
+class CreditlogTable
 {
     const ORDER_DEFAULT = 0;
     const ORDER_LATEST  = 1;
@@ -26,10 +27,29 @@ class CreditTable
         return $resultSet;
     }
 
-    public function getCredit($id)
+    public function fetchLogByFkCredit($fk_credit)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_credit){
+            $select->where->equalTo('fk_credit', $fk_credit);
+            $select->order('id_creditlog DESC');
+        });
+        return $resultSet;
+    }
+
+    public function fetchLogByFkCreditLimit5($fk_credit)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_credit){
+            $select->where->equalTo('fk_credit', $fk_credit);
+            $select->order('id_creditlog DESC');
+            $select->limit(5);
+        });
+        return $resultSet;
+    }
+
+    public function getCreditlog($id)
     {
         $id  = (int) $id;
-        $rowset = $this->tableGateway->select(array('id_credit' => $id));
+        $rowset = $this->tableGateway->select(array('id_creditlog' => $id));
         $row = $rowset->current();
         if (!$row) {
             throw new \Exception("Could not find row $id");
@@ -37,44 +57,36 @@ class CreditTable
         return $row;
     }
 
-    public function getCreditByFkUser($fk_user)
-    {
-        $fk_user = (int) $fk_user;
-        $rowset = $this->tableGateway->select(array('fk_user' => $fk_user));
-        $row = $rowset->current();
-        /*if (!$row) {
-            throw new \Exception("Could not find row $fk_user");
-        }*/
-        return $row;
-    }
-
-    public function saveCredit(Credit $credit)
+    public function saveCreditlog(Creditlog $creditlog)
     {
         $data = array(
-            'fk_user'      => $credit->fk_user,
-            'fk_user_type' => $credit->fk_user_type,
-            'amount'       => $credit->amount,
-            'created_at'   => $credit->created_at,
-            'created_by'   => $credit->created_by,
-            'updated_at'   => $credit->updated_at,
-            'updated_by'   => $credit->updated_by,
+            'fk_credit'       => $creditlog->fk_credit,
+            'fk_service_type' => $creditlog->fk_service_type,
+            'fk_from'         => $creditlog->fk_from,
+            'fk_to'           => $creditlog->fk_to,
+            'date_time'       => $creditlog->date_time,
+            'amount'          => $creditlog->amount,
+            'is_pay'          => $creditlog->is_pay,
+            'is_charge'       => $creditlog->is_charge,
+            'created_at'      => $creditlog->created_at,
+            'created_by'      => $creditlog->created_by,
         );
 
-        $id = (int)$credit->id_credit;
+        $id = (int)$creditlog->id_creditlog;
         if ($id == 0) {
             $this->tableGateway->insert($data);
         } else {
-            if ($this->getCredit($id)) {
-                $this->tableGateway->update($data, array('id_credit' => $id));
+            if ($this->getCreditlog($id)) {
+                $this->tableGateway->update($data, array('id_creditlog' => $id));
             } else {
                 throw new \Exception('Form id does not exist');
             }
         }
     }
 
-    public function deleteCredit($id)
+    public function deleteCreditlog($id)
     {
-        $this->tableGateway->delete(array('id_credit' => $id));
+        $this->tableGateway->delete(array('id_creditlog' => $id));
     }
 
     /**

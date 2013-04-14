@@ -51,6 +51,26 @@ class UserTable
 		return $row;
 	}
 
+	public function getUserByFkEnt($fk_enterprise)
+	{
+		$rowset = $this->tableGateway->select(array('fk_enterprise' => $fk_enterprise));
+		$row = $rowset->current();
+		if(!$row){
+			throw new \Exception("Could not find this $fk_enterprise");
+		}
+		return $row;
+	}
+
+	public function getUserByFkMedia($fk_media)
+	{
+		$rowset = $this->tableGateway->select(array('fk_media' => $fk_media));
+		$row = $rowset->current();
+		if(!$row){
+			throw new \Exception("Could not find this $fk_media");
+		}
+		return $row;
+	}
+
 	//get the record of the `user` with the passed-in username
 	public function getUserByName($username)
 	{

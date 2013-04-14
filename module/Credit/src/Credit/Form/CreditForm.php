@@ -11,27 +11,50 @@ class CreditForm extends Form
         parent::__construct('credit');
         $this->setAttribute('method', 'post');
         $this->add(array(
-            'name' => 'id',
+            'name' => 'id_credit',
             'attributes' => array(
                 'type'  => 'hidden',
             ),
         ));
         $this->add(array(
-            'name' => 'artist',
+            'name' => 'fk_user',
             'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Artist',
+                'type'  => 'hidden',
             ),
         ));
         $this->add(array(
-            'name' => 'title',
+            'name' => 'fk_user_type',
+            'attributes' => array(
+                'type'  => 'hidden',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'created_at',
+            'attributes' => array(
+                'type'  => 'hidden',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'created_by',
+            'attributes' => array(
+                'type'  => 'hidden',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'amount',
             'attributes' => array(
                 'type'  => 'text',
+                'placeholder' => '',
             ),
             'options' => array(
-                'label' => 'Title',
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'chargeamount',
+            'attributes' => array(
+                'type' => 'text',
+                'placeholder' => '充值金额',
             ),
         ));
         $this->add(array(
@@ -40,6 +63,7 @@ class CreditForm extends Form
                 'type'  => 'submit',
                 'value' => 'Go',
                 'id' => 'submitbutton',
+                'class' => 'btn btn-primary'
             ),
         ));
     }

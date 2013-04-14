@@ -7,6 +7,7 @@ use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use Enterprise\Model\Enterprise;
 use Enterprise\Form\EnterpriseForm;
+use DateTime;
 
 class EnterpriseController extends AbstractActionController
 {
@@ -38,6 +39,10 @@ class EnterpriseController extends AbstractActionController
             $user = $this->getUserTable()->getUserByName($cur_user);
             if($form->isValid()){
                 $enterprise->exchangeArray($form->getData());
+                $enterprise->created_at = $this->_getDateTime();
+                $enterprise->created_by = $cur_user;
+                $enterprise->updated_at = $this->_getDateTime();
+                $enterprise->updated_by = $cur_user;
                 $this->getEnterpriseTable()->saveEnterprise($enterprise);
                 $newEnt = $this->getEnterpriseTable()->getEnterpriseByName($enterprise->name);
                 $user->fk_enterprise = $newEnt->id_enterprise;
@@ -66,13 +71,15 @@ class EnterpriseController extends AbstractActionController
         $arr_type_allowed = array(1, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
-        $id = (int)$this->params()->fromRoute('id',0);
-        if (!$id) {
+        $id_enterprise = (int)$this->params()->fromRoute('id',0);
+        if (!$id_enterprise) {
             return $this->redirect()->toRoute('enterprise', array(
                 'action' => 'index',
             ));
         }
-        $enterprise = $this->getEnterpriseTable()->getEnterprise($id);
+        $enterprise = $this->getEnterpriseTable()->getEnterprise($id_enterprise);
+        $ent_created_at = $enterprise->created_at;
+        $ent_created_by = $enterprise->created_by;
         $form = new EnterpriseForm();
         $form->bind($enterprise);
         $form->get('submit')->setAttribute('value','保存');
@@ -82,6 +89,10 @@ class EnterpriseController extends AbstractActionController
             $form->setInputFilter($enterprise->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
+                $form->getData()->created_at = $ent_created_at;
+                $form->getData()->created_by = $ent_created_by;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->updated_by = $cur_user;
                 $this->getEnterpriseTable()->saveEnterprise($form->getData());
 
                 return $this->redirect()->toRoute('enterprise',array(
@@ -96,6 +107,50 @@ class EnterpriseController extends AbstractActionController
             'fk_enterprise' => $this->_getUserFkEnterprise($cur_user),
             'enterprise' => (isset($fk_enterprise))? $this->getEnterpriseTable()->getEnterprise($fk_enterprise) : null,
             'form' => $form,
+        ));
+    }
+
+    public function adminAction()
+    {
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_enterprise = (int)$this->params()->fromRoute('id',0);
+        if (!$id_enterprise) {
+            return $this->redirect()->toRoute('user', array(
+                'action' => 'admin',
+            ));
+        }
+        $enterprise = $this->getEnterpriseTable()->getEnterprise($id_enterprise);
+        $target_user = $this->getUserTable()->getUserByFkEnt($id_enterprise);
+        $ent_created_at = $enterprise->created_at;
+        $ent_created_by = $enterprise->created_by;
+        $form = new EnterpriseForm();
+        $form->bind($enterprise);
+        $form->get('submit')->setAttribute('value','保存');
+
+        $request = $this->getRequest();
+        if ($request->isPost()){
+            $form->setInputFilter($enterprise->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $form->getData()->created_at = $ent_created_at;
+                $form->getData()->created_by = $ent_created_by;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->updated_by = $cur_user;
+                $this->getEnterpriseTable()->saveEnterprise($form->getData());
+
+                return $this->redirect()->toRoute('user',array(
+                    'action' => 'detail',
+                    'id'     => $target_user->id,
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user'       => $cur_user,
+            'enterprise' => $enterprise,
+            'form'       => $form,
         ));
     }
 
@@ -303,5 +358,20 @@ class EnterpriseController extends AbstractActionController
     protected function _getUserFkEnterprise($user)
     {
         return $this->getUserTable()->getUserByName($user)->fk_enterprise;
+    }
+
+    /**
+     * Get the current time with the format which could be accepted by MySQL datetime.
+     * @return YYYY-MM-DD HH:MM:SS
+     */
+    protected function _getDateTime()
+    {        
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $strdatetime = $datetime->format(DATE_ATOM);
+        $date = substr($strdatetime,0,10);
+        $time = substr($strdatetime,11,8);
+        $result = $date.' '.$time;
+        return $result;
     }
 }
