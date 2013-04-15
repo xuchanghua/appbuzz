@@ -22,28 +22,29 @@
         <div id="left" class="span2 left">
         <?php 
         set_include_path("public/include");        
-        include 'sidebar_enterprise.phtml'; 
+        include 'sidebar_media.phtml'; 
         ?>
         </div>
         <div id="mid" class="span8 mid">
             <div>
                 <div class="linkbtns">
-                    <form action="/">
-                        <input type="submit" class="btn btn-primary linkbtn" value="企业资料">
+                    <form action="/media/mediainfo">
+                        <input type="submit" class="btn btn-primary linkbtn" value="媒体资料">
                     </form>
                 </div>
                 <div class="linkbtns">
-                    <form action="/enterprise/myaccount">
+                    <form action="/media/myaccount">
                         <input type="submit" class="btn btn-primary linkbtn" value="我的账户">
                     </form>
                 </div>
+                <!--
                 <div class="linkbtns">
                     <form action="/product/index">
                         <input type="submit" class="btn btn-primary linkbtn" value="我的产品">
                     </form>
-                </div>
+                </div>-->
                 <div>
-                    <form action="/enterprise/myorder">
+                    <form action="/media/myorder">
                         <input type="submit" class="btn btn-primary linkbtn" value="我的订单">
                     </form>
                 </div>
@@ -76,14 +77,6 @@
                         <tr>
                             <th>id</th>
                             <th>交易类型</th>
-                            <th>交易金额</th>
-                            <th>交易日期</th>
-                            <th>经办人</th>
-                        </tr>
-                        <?php foreach($creditlog as $log): ?>
-                        <tr>
-                            <td><?php echo $log->id_creditlog; ?></td>
-                            <td><?php echo $arr_service_type[$log->fk_service_type]; ?></td>
                             <td>
                                 <?php 
                                 $sign = '';
@@ -93,6 +86,14 @@
                                 echo $sign.$log->amount.'元'; 
                                 ?>
                             </td>
+                            <th>交易日期</th>
+                            <th>经办人</th>
+                        </tr>
+                        <?php foreach($creditlog as $log): ?>
+                        <tr>
+                            <td><?php echo $log->id_creditlog; ?></td>
+                            <td><?php echo $arr_service_type[$log->fk_service_type]; ?></td>
+                            <td><?php echo $log->amount.'元'; ?></td>
                             <td><?php echo $log->date_time; ?></td>
                             <td><?php echo $log->created_by; ?></td>
                         </tr>

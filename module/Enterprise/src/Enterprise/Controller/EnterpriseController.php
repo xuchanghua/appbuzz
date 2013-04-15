@@ -17,6 +17,7 @@ class EnterpriseController extends AbstractActionController
     protected $newspubTable;
     protected $evaluateTable;
     protected $creditTable;
+    protected $creditlogTable;
 
     public function indexAction()
     {
@@ -160,7 +161,18 @@ class EnterpriseController extends AbstractActionController
 
     public function myaccountAction()
     {
+        //企业用户首页->我的账户
+        $arr_type_allowed = array(1);        
+        $cur_user = $this->_auth($arr_type_allowed);
+        $user = $this->getUserTable()->getUserByName($cur_user);
+        $credit = $this->getCreditTable()->getCreditByFkUser($user->id);
+        $creditlog = $this->getCreditlogTable()->fetchLogByFkCredit($credit->id_credit);
 
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'credit' => $credit,
+            'creditlog' => $creditlog,
+        ));
     }
 
     public function myorderAction()
@@ -249,6 +261,15 @@ class EnterpriseController extends AbstractActionController
             $this->creditTable = $sm->get('Credit\Model\CreditTable');
         }
         return $this->creditTable;
+    }
+
+    public function getCreditlogTable()
+    {
+        if(!$this->creditlogTable){
+            $sm = $this->getServiceLocator();
+            $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
+        }
+        return $this->creditlogTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

@@ -99,6 +99,10 @@ class Newspub implements InputFilterAwareInterface
                     ),
                 ),
             )));
+            $inputFilter->add($factory->createInput(array(
+                'name' => 'fk_product',
+                'required' => true,
+            )));
 
             $this->inputFilter = $inputFilter;
         }

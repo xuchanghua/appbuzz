@@ -15,6 +15,8 @@ use Attachment\Model\Barcode;
 use DateTime;
 use Newspub\Model\Npmedia;
 use Newspub\Form\NpmediaForm;
+use Credit\Model\Credit;
+use Credit\Model\Creditlog;
 
 class NewspubController extends AbstractActionController
 {
@@ -24,6 +26,8 @@ class NewspubController extends AbstractActionController
     protected $attachmentTable;
     protected $barcodeTable;
     protected $npmediaTable;
+    protected $creditTable;
+    protected $creditlogTable;
 
     public function indexAction()
     {
@@ -70,6 +74,18 @@ class NewspubController extends AbstractActionController
                 {
                     echo "<a href='/newspub/add'>Back</a></br>";
                     die("Please select at least one media!");
+                }
+                if($newspub->fk_pub_mode == 1){
+                    $price = count($newspub->sel_right) * 350;
+                }else{
+                    $price = 1500;
+                }                
+                $fk_user = $this->getUserTable()->getUserByName($cur_user)->id;
+                $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
+                if(!$is_sufficient)
+                {
+                    echo "<a href='/newspub/add'>Back</a></br>";
+                    die("Insufficient Credit! Please Charge Your Account!");
                 }
                 $newspub->created_by = $cur_user;
                 $newspub->created_at = $this->_getDateTime();
@@ -136,6 +152,32 @@ class NewspubController extends AbstractActionController
                 $newspub2->order_no = 10000000 + $newspub2->id_newspub;
                 $this->getNewspubTable()->saveNewspub($newspub2);
 
+                //update the user's credit
+                $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+                $originamount = $credit->amount;
+                $credit->amount = $originamount - $price;
+                $credit->updated_at = $this->_getDateTime();
+                $credit->updated_by = $cur_user;
+                $this->getCreditTable()->saveCredit($credit);
+
+                //create creditlog record;
+                $creditlog = new Creditlog();
+                $creditlog->fk_credit = $credit->id_credit;
+                if($newspub2->fk_pub_mode == 1){
+                    $creditlog->fk_service_type = 2;//新闻发布->单篇发布
+                }else{
+                    $creditlog->fk_service_type = 3;//新闻发布->打包发布
+                }
+                $creditlog->fk_from = $fk_user;
+                $creditlog->fk_to = null;
+                $creditlog->date_time = $this->_getDateTime();
+                $creditlog->amount = $price;
+                $creditlog->is_pay = 1;//is pay
+                $creditlog->is_charge = 0;//not charge
+                $creditlog->created_at = $this->_getDateTime();
+                $creditlog->created_by = $cur_user;
+                $this->getCreditlogTable()->saveCreditlog($creditlog);                
+
                 //save npmedia for single payment newspub
                 if($newspub->fk_pub_mode == 1)
                 {
@@ -158,7 +200,9 @@ class NewspubController extends AbstractActionController
                     'action'=>'detail',
                     'id'    => $id_newspub,
                 ));
-            }
+            }/*else{
+                die(var_dump($form->getMessages()));
+            }*/
         }
 
         return new ViewModel(array(
@@ -702,6 +746,24 @@ class NewspubController extends AbstractActionController
         $this->barcodeTable = $sm->get('Attachment\Model\BarcodeTable');
         }
         return $this->barcodeTable;
+    }
+
+    public function getCreditTable()
+    {
+        if(!$this->creditTable){
+            $sm = $this->getServiceLocator();
+            $this->creditTable = $sm->get('Credit\Model\CreditTable');
+        }
+        return $this->creditTable;
+    }
+
+    public function getCreditlogTable()
+    {
+        if(!$this->creditlogTable){
+            $sm = $this->getServiceLocator();
+            $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
+        }
+        return $this->creditlogTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

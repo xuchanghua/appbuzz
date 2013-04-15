@@ -48,6 +48,24 @@ class CreditTable
         return $row;
     }
 
+    /**
+     * 检查余额是否充足
+     * @param int $price 服务的价格
+     * @param int $fk_user 请求服务的用户id
+     * @return boolean 余额是否充足
+     */
+    public function issufficient($price, $fk_user)
+    {
+        $price = (int)$price;
+        $fk_user = (int)$fk_user;
+        $credit = $this->getCreditByFkUser($fk_user);
+        if($credit->amount < $price){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public function saveCredit(Credit $credit)
     {
         $data = array(

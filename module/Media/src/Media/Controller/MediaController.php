@@ -13,6 +13,8 @@ class MediaController extends AbstractActionController
 {
     protected $userTable;
     protected $mediaTable;
+    protected $creditTable;
+    protected $creditlogTable;
 
     public function indexAction()
     {
@@ -148,6 +150,22 @@ class MediaController extends AbstractActionController
         ));
     }
 
+    public function myaccountAction()
+    {
+        //媒体用户首页->我的账户
+        $arr_type_allowed = array(2);        
+        $cur_user = $this->_auth($arr_type_allowed);
+        $user = $this->getUserTable()->getUserByName($cur_user);
+        $credit = $this->getCreditTable()->getCreditByFkUser($user->id);
+        $creditlog = $this->getCreditlogTable()->fetchLogByFkCredit($credit->id_credit);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'credit' => $credit,
+            'creditlog' => $creditlog,
+        ));
+    }
+
     public function topicpublishAction()
     {
     }
@@ -180,6 +198,24 @@ class MediaController extends AbstractActionController
             $this->mediaTable = $sm->get('Media\Model\MediaTable');
         }
         return $this->mediaTable;
+    }
+
+    public function getCreditTable()
+    {
+        if(!$this->creditTable){
+            $sm = $this->getServiceLocator();
+            $this->creditTable = $sm->get('Credit\Model\CreditTable');
+        }
+        return $this->creditTable;
+    }
+
+    public function getCreditlogTable()
+    {
+        if(!$this->creditlogTable){
+            $sm = $this->getServiceLocator();
+            $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
+        }
+        return $this->creditlogTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

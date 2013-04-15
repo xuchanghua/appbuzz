@@ -256,7 +256,8 @@
                     <?php 
                     $arr_service_type = array(
                         '1' => '充值',
-                        '2' => '',
+                        '2' => '新闻发布(单篇)',
+                        '3' => '新闻发布(打包)',
                     );
                     ?>
                     <table class="table table-bordered table-striped">
@@ -271,7 +272,15 @@
                         <tr>
                             <td><?php echo $log->id_creditlog; ?></td>
                             <td><?php echo $arr_service_type[$log->fk_service_type]; ?></td>
-                            <td><?php echo $log->amount.'元'; ?></td>
+                            <td>
+                                <?php 
+                                $sign = '';
+                                if($log->fk_service_type==1){
+                                    $sign = '+';
+                                }
+                                echo $sign.$log->amount.'元'; 
+                                ?>
+                            </td>
                             <td><?php echo $log->date_time; ?></td>
                             <td><?php echo $log->created_by; ?></td>
                         </tr>
