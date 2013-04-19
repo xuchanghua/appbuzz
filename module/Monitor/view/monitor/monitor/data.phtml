@@ -33,42 +33,71 @@
             </div>
             <div>
                 <form action="#">
-                    <input type="submit" class="btn btn-primary linkbtn" value="购买服务">
+                    <input type="submit" class="btn btn-primary linkbtn" value="监测数据">
                 </form>
             </div>
             <div class="widget-box">
                 <div class="widget-title">
-                    <h4>购买网络监测服务</h4>
+                    <h4>近期监测数据</h4>
                 </div>
                 <div class="widget-content nopadding">
                     <table class="table table-bordered table-striped">
                         <tr>
-                            <th>服务周期</th>
-                            <th>费用</th>
-                            <th>操作</th>
+                            <th>新闻</th>
+                            <th>标签</th>
                         </tr>
+                        <?php while($row = mysql_fetch_array($result_keyword1_news)){  ?>
                         <tr>
-                            <td>6个月</td>
-                            <td>18,000元</td>
-                            <td>
-                                <form action="<?php echo $this->url('monitor', array('action' => 'buysixm')) ;?>">
-                                    <input type="submit" class="btn btn-primary btn-mini" value="购买">
-                                </form>
-                            </td>
+                            <td><?php echo $row['content']; ?></td>
+                            <td><?php echo $keyword1->keyword; ?></td>
                         </tr>
+                        <?php } ?>
+                        <?php while($row = mysql_fetch_array($result_keyword2_news)){  ?>
                         <tr>
-                            <td>12个月</td>
-                            <td>30,000元</td>
-                            <td>
-                                <form action="<?php echo $this->url('monitor', array('action' => 'buytwelvem')) ;?>">
-                                    <input type="submit" class="btn btn-primary btn-mini" value="购买">
-                                </form>
-                            </td>
+                            <td><?php echo $row['content']; ?></td>
+                            <td><?php echo $keyword2->keyword; ?></td>
                         </tr>
+                        <?php } ?>
+                    </table>
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <th>论坛</th>
+                            <th>标签</th>
+                        </tr>
+                        <?php while($row = mysql_fetch_array($result_keyword1_forum)){  ?>
+                        <tr>
+                            <td><?php echo $row['content']; ?></td>
+                            <td><?php echo $keyword1->keyword; ?></td>
+                        </tr>
+                        <?php } ?>
+                        <?php while($row = mysql_fetch_array($result_keyword2_forum)){  ?>
+                        <tr>
+                            <td><?php echo $row['content']; ?></td>
+                            <td><?php echo $keyword2->keyword; ?></td>
+                        </tr>
+                        <?php } ?>
+                    </table>
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <th>微博</th>
+                            <th>标签</th>
+                        </tr>
+                        <?php while($row = mysql_fetch_array($result_keyword1_weibo)){  ?>
+                        <tr>
+                            <td><?php echo $row['content']; ?></td>
+                            <td><?php echo $keyword1->keyword; ?></td>
+                        </tr>
+                        <?php } ?>
+                        <?php while($row = mysql_fetch_array($result_keyword2_weibo)){  ?>
+                        <tr>
+                            <td><?php echo $row['content']; ?></td>
+                            <td><?php echo $keyword2->keyword; ?></td>
+                        </tr>
+                        <?php } ?>
                     </table>
                 </div>
                 <div>
-                    <span>购买网络监测服务即可获赠媒体选题免费服务。</span>
+                    <a href="/monitor/history">历史数据查询</a>
                 </div>
             </div>
         </div>

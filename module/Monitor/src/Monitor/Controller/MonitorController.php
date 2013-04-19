@@ -295,6 +295,58 @@ class MonitorController extends AbstractActionController
         $id_user = $this->getUserTable()->getUserByName($cur_user)->id;
         $this->is_bought($id_user);
 
+        //get Monitor
+        $monitorSet = $this->getMonitorTable()->fetchValidMonitorByFkEntUser($id_user);
+        $monitor = $monitorSet->current();
+        $id_monitor = $monitor->id_monitor;
+        //get two Keywords (object)
+        $keyword1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 1);
+        $keyword2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 2);
+
+        $str_keyword_1 = $keyword1->keyword;
+        $str_keyword_2 = $keyword2->keyword;
+
+        //connect to the monitor database
+        $con = mysql_connect("localhost:3306", "root", "");
+        mysql_set_charset('utf8', $con);
+        $charset = mysql_client_encoding($con);
+        mysql_select_db("article", $con);
+
+        //query
+        $query_keyword1_weibo = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_1."%' AND website_type = 'weibo' ORDER BY id DESC LIMIT 2;";
+        $query_keyword1_news  = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_1."%' AND website_type = '新闻'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword1_forum = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_1."%' AND website_type = '论坛'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword2_weibo = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_2."%' AND website_type = 'weibo' ORDER BY id DESC LIMIT 2;";
+        $query_keyword2_news  = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_2."%' AND website_type = '新闻'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword2_forum = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_2."%' AND website_type = '论坛'  ORDER BY id DESC LIMIT 2;";
+        //$sql = "SELECT * FROM t_blog;";
+        $result_keyword1_weibo = mysql_query($query_keyword1_weibo, $con);
+        $result_keyword1_news  = mysql_query($query_keyword1_news,  $con);
+        $result_keyword1_forum = mysql_query($query_keyword1_forum, $con);
+        $result_keyword2_weibo = mysql_query($query_keyword2_weibo, $con);
+        $result_keyword2_news  = mysql_query($query_keyword2_news,  $con);
+        $result_keyword2_forum = mysql_query($query_keyword2_forum, $con);
+        /*
+        $result = mysql_query($sql, $con);
+        while($row = mysql_fetch_array($result))
+        {
+            var_dump($row['content']);
+            echo "<br>";
+        }
+        */
+        mysql_close($con);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'keyword1' => $keyword1,
+            'keyword2' => $keyword2,
+            'result_keyword1_weibo' => $result_keyword1_weibo,
+            'result_keyword1_news'  => $result_keyword1_news,
+            'result_keyword1_forum' => $result_keyword1_forum,
+            'result_keyword2_weibo' => $result_keyword2_weibo,
+            'result_keyword2_news'  => $result_keyword2_news,
+            'result_keyword2_forum' => $result_keyword2_forum,
+        ));
     }
 
     public function mgmtAction()
