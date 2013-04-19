@@ -166,7 +166,7 @@ class EnterpriseController extends AbstractActionController
         $cur_user = $this->_auth($arr_type_allowed);
         $user = $this->getUserTable()->getUserByName($cur_user);
         $credit = $this->getCreditTable()->getCreditByFkUser($user->id);
-        $creditlog = $this->getCreditlogTable()->fetchLogByFkCredit($credit->id_credit);
+        $creditlog = $this->getCreditlogTable()->fetchLogByFkCreditLimit5($credit->id_credit);
 
         return new ViewModel(array(
             'user' => $cur_user,

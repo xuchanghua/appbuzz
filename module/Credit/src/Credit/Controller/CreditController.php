@@ -122,6 +122,12 @@ class CreditController extends AbstractActionController
                 $log->created_at = $this->_getDateTime();
                 $log->created_by = $cur_user;
                 $this->getCreditlogTable()->saveCreditlog($log);
+
+                $id_creditlog = $this->getCreditlogTable()->getId($log->created_at, $log->created_by);
+                $log2 = $this->getCreditlogTable()->getCreditlog($id_creditlog);
+                $log2->order_no = 90000000 + (int)$id_creditlog;
+                $this->getCreditlogTable()->saveCreditlog($log2);
+
                 return $this->redirect()->toRoute('user', array(
                     'action' => 'detail',
                     'id'     => $target_user->id,

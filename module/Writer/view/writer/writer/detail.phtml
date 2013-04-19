@@ -60,6 +60,12 @@
                     );
                     ?>
                     <tr>
+                        <td class="tdlabel">订单号：</td>
+                        <td>
+                            <?php echo $this->escapeHtml($writer->order_no); ?>
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="tdlabel">App产品：</td>
                         <td>
                             <?php echo $this->escapeHtml($product->name); ?>
@@ -121,7 +127,7 @@
                                 <div class="widget-content nopadding">
                                     <table class="table table-bordered table-striped">
                                         <tr>
-                                            <th>订单号：</th>
+                                            <th>子订单号：</th>
                                             <th>媒体名称</th>
                                             <th>订单状态</th>
                                             <th>操作</th>
@@ -169,10 +175,18 @@
                     <tr>
                         <td></td>
                         <td>
-                            <form action="<?php echo $this->url('writer',
-                                array('action' => 'edit', 'id' => $writer->id_writer)) ;?>">
-                                <input type="submit" class="btn btn-primary" value="修改订单">
-                            </form>
+                            <div class="linkbtns">
+                                <form action="<?php echo $this->url('writer',
+                                    array('action' => 'edit', 'id' => $writer->id_writer)) ;?>">
+                                    <input type="submit" class="btn btn-primary" value="修改订单">
+                                </form>
+                            </div>
+                            <div>
+                                <form action="<?php echo $this->url('writer',
+                                    array('action' => 'index')) ;?>">
+                                    <input type="submit" class="btn btn-primary" value="返回列表">
+                                </form>
+                            </div>
                         </td>
                     </tr>                    
                 </table>

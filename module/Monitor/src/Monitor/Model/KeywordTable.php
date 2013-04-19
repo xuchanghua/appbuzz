@@ -1,5 +1,5 @@
 <?php
-namespace Credit\Model;
+namespace Monitor\Model;
 
 use Zend\Db\TableGateway\TableGateway;      
 use Zend\Db\Sql\Select;
@@ -7,9 +7,8 @@ use Zend\Db\Sql\Where;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Db\ResultSet\ResultSet;
-use DateTime;
 
-class CreditlogTable
+class KeywordTable
 {
     const ORDER_DEFAULT = 0;
     const ORDER_LATEST  = 1;
@@ -27,29 +26,10 @@ class CreditlogTable
         return $resultSet;
     }
 
-    public function fetchLogByFkCredit($fk_credit)
-    {
-        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_credit){
-            $select->where->equalTo('fk_credit', $fk_credit);
-            $select->order('id_creditlog DESC');
-        });
-        return $resultSet;
-    }
-
-    public function fetchLogByFkCreditLimit5($fk_credit)
-    {
-        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_credit){
-            $select->where->equalTo('fk_credit', $fk_credit);
-            $select->order('id_creditlog DESC');
-            $select->limit(5);
-        });
-        return $resultSet;
-    }
-
-    public function getCreditlog($id)
+    public function getKeyword($id)
     {
         $id  = (int) $id;
-        $rowset = $this->tableGateway->select(array('id_creditlog' => $id));
+        $rowset = $this->tableGateway->select(array('id_keyword' => $id));
         $row = $rowset->current();
         if (!$row) {
             throw new \Exception("Could not find row $id");
@@ -57,50 +37,48 @@ class CreditlogTable
         return $row;
     }
 
-    public function getId($created_at, $created_by)
+    public function getKeywordByMonitor($fk_monitor, $fk_keyword_type)
     {
+        $fk_monitor = (int) $fk_monitor;
+        $fk_keyword_type = (int) $fk_keyword_type;
         $rowset = $this->tableGateway->select(array(
-            'created_at' => $created_at,
-            'created_by' => $created_by,
+            'fk_monitor' => $fk_monitor,
+            'fk_keyword_type' => $fk_keyword_type,
         ));
         $row = $rowset->current();
         if (!$row) {
-            throw new \Exception("Could not find row $id");
+            throw new \Exception("Could not find row $fk_monitor and $fk_keyword_type");
         }
-        return $row->id_creditlog;
+        return $row;
     }
 
-    public function saveCreditlog(Creditlog $creditlog)
+    public function saveKeyword(Keyword $keyword)
     {
         $data = array(
-            'fk_credit'       => $creditlog->fk_credit,
-            'fk_service_type' => $creditlog->fk_service_type,
-            'fk_from'         => $creditlog->fk_from,
-            'fk_to'           => $creditlog->fk_to,
-            'date_time'       => $creditlog->date_time,
-            'amount'          => $creditlog->amount,
-            'is_pay'          => $creditlog->is_pay,
-            'is_charge'       => $creditlog->is_charge,
-            'order_no'        => $creditlog->order_no,
-            'created_at'      => $creditlog->created_at,
-            'created_by'      => $creditlog->created_by,
+            'fk_monitor'      => $keyword->fk_monitor,
+            'keyword'         => $keyword->keyword,
+            'fk_keyword_type' => $keyword->fk_keyword_type,
+            'created_at'      => $keyword->created_at,
+            'created_by'      => $keyword->created_by,
+            'updated_at'      => $keyword->updated_at,
+            'updated_by'      => $keyword->updated_by,
         );
 
-        $id = (int)$creditlog->id_creditlog;
+        $id = (int)$keyword->id_keyword;
         if ($id == 0) {
             $this->tableGateway->insert($data);
         } else {
-            if ($this->getCreditlog($id)) {
-                $this->tableGateway->update($data, array('id_creditlog' => $id));
+            if ($this->getKeyword($id)) {
+                $this->tableGateway->update($data, array('id_keyword' => $id));
             } else {
                 throw new \Exception('Form id does not exist');
             }
         }
     }
 
-    public function deleteCreditlog($id)
+    public function deleteKeyword($id)
     {
-        $this->tableGateway->delete(array('id_creditlog' => $id));
+        $this->tableGateway->delete(array('id_keyword' => $id));
     }
 
     /**
@@ -117,7 +95,7 @@ class CreditlogTable
             $order = self::ORDER_DEFAULT)
     {
         //新建select对象
-        $select = new Select('credit');
+        $select = new Select('keyword');
         //构建查询条件
         $closure = function (Where $where) use($keyword) {
                     if ($keyword != '') {
@@ -133,7 +111,7 @@ class CreditlogTable
         }
         //将返回的结果设置为Ablum的实例
         $resultSetPrototype = new ResultSet();
-        $resultSetPrototype->setArrayObjectPrototype(new Credit());
+        $resultSetPrototype->setArrayObjectPrototype(new Monitor());
         //创建分页用的适配器，第2个参数为数据库adapter，使用全局默认的即可        
         $adapter = new DbSelect($select, $this->tableGateway->getAdapter(), $resultSetPrototype);
         //新建分页

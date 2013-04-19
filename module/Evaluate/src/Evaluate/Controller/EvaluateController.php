@@ -14,6 +14,8 @@ use DateTime;
 use Evaluate\Model\Evamedia;
 use Evaluate\Form\EvamediaForm;
 use Attachment\Model\Barcode;
+use Credit\Model\Credit;
+use Credit\Model\Creditlog;
 
 class EvaluateController extends AbstractActionController
 {
@@ -22,6 +24,8 @@ class EvaluateController extends AbstractActionController
     protected $productTable;
     protected $evamediaTable;
     protected $barcodeTable;
+    protected $creditTable;
+    protected $creditlogTable;
 
     public function indexAction()
     {     
@@ -225,6 +229,7 @@ class EvaluateController extends AbstractActionController
         $eva_created_by = $evaluate->created_by;
         $eva_created_at = $evaluate->created_at;
         $eva_barcode    = $evaluate->barcode;
+        $eva_order_no   = $evaluate->order_no;
         $form = new EvaluateForm();
         $form->bind($evaluate);
         $form->get('submit')->setAttribute('value','保存');
@@ -290,6 +295,7 @@ class EvaluateController extends AbstractActionController
             $form->setInputFilter($evaluate->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
+                $form->getData()->order_no   = $eva_order_no;
                 $form->getData()->created_by = $eva_created_by;
                 $form->getData()->created_at = $eva_created_at;
                 $form->getData()->updated_by = $cur_user;
@@ -351,7 +357,16 @@ class EvaluateController extends AbstractActionController
             $form->setData($request->getPost());
             if($form->isValid()){
                 $evaluate->exchangeArray($form->getData());
-                //die(var_dump($form->getData()));
+
+                $price = 2000;//对企业用户应收2000元的媒体评测费用
+                $fk_user = $this->getUserTable()->getUserByName($cur_user)->id;
+                $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
+                if(!$is_sufficient)
+                {
+                    echo "<a href='/evaluate/add'>Back</a></br>";
+                    die("Insufficient Credit! Please Charge Your Account!");
+                }
+
                 $evaluate->created_by = $cur_user;
                 $evaluate->created_at = $this->_getDateTime();
                 $evaluate->updated_by = $cur_user;
@@ -412,36 +427,31 @@ class EvaluateController extends AbstractActionController
 
                 $evaluate2 = $this->getEvaluateTable()->getEvaluate($id_evaluate);
                 $evaluate2->barcode = $id_barcode;
+                $evaluate2->order_no = 21000000 + $id_evaluate;
                 $this->getEvaluateTable()->saveEvaluate($evaluate2);
 
-                /*
-                //start: handle the assigned media
-                $arr_get = $form->getData();
-                $str_evamedias = trim($arr_get["evamedia"]);
-                $arr_evamedias = explode(";", $str_evamedias);
-                foreach ($arr_evamedias as $em)
-                {
-                    $evamedia = new Evamedia();    
-                    $evamedia->fk_evaluate = $id_evaluate;
-                    //$em->fk_enterprise 
-                    $enterprise_user = $this->getUserTable()->getUserByName($cur_user);
-                    $evamedia->fk_enterprise_user = $enterprise_user->id;
-                    if($this->getUserTable()->checkUser($em)) {
-                        $media_user = $this->getUserTable()->getUserByName($em);
-                        $evamedia->fk_media_user = $media_user->id;                        
-                        $evamedia->created_by = $cur_user;
-                        $evamedia->created_at = $this->_getDateTime();
-                        $evamedia->updated_by = $cur_user;
-                        $evamedia->updated_at = $this->_getDateTime();
-                        $this->getEvamediaTable()->saveEvamedia($evamedia);
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                //end: handle the assigned media
-                */
+                //update the user's credit
+                $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+                $originamount = $credit->amount;
+                $credit->amount = $originamount - $price;
+                $credit->updated_at = $this->_getDateTime();
+                $credit->updated_by = $cur_user;
+                $this->getCreditTable()->saveCredit($credit);
+
+                //create creditlog record;
+                $creditlog = new Creditlog();
+                $creditlog->fk_credit = $credit->id_credit;
+                $creditlog->fk_service_type = 4;//企业->我要评测
+                $creditlog->fk_from = $fk_user;
+                $creditlog->fk_to = null;
+                $creditlog->date_time = $this->_getDateTime();
+                $creditlog->amount = $price;
+                $creditlog->is_pay = 1;//is pay
+                $creditlog->is_charge = 0;//not charge
+                $creditlog->order_no = $evaluate2->order_no;
+                $creditlog->created_at = $this->_getDateTime();
+                $creditlog->created_by = $cur_user;
+                $this->getCreditlogTable()->saveCreditlog($creditlog);
 
                 return $this->redirect()->toRoute('evaluate',array(
                     'action'=>'detail',
@@ -519,7 +529,7 @@ class EvaluateController extends AbstractActionController
         //save the order number
         $id_evamedia = $this->getEvamediaTable()->getId($evamedia->created_at, $evamedia->created_by);
         $evamedia2 = $this->getEvamediaTable()->getEvamedia($id_evamedia);
-        $evamedia2->order_no = 20000000 + $id_evamedia;
+        $evamedia2->order_no = 22000000 + $id_evamedia;
         $this->getEvamediaTable()->saveEvamedia($evamedia2);
 
         return $this->redirect()->toRoute('evaluate',array(
@@ -562,7 +572,7 @@ class EvaluateController extends AbstractActionController
         //save the order number
         $id_evamedia = $this->getEvamediaTable()->getId($evamedia->created_at, $evamedia->created_by);
         $evamedia2 = $this->getEvamediaTable()->getEvamedia($id_evamedia);
-        $evamedia2->order_no = 20000000 + $id_evamedia;
+        $evamedia2->order_no = 22000000 + $id_evamedia;
         $this->getEvamediaTable()->saveEvamedia($evamedia2);
 
         return $this->redirect()->toRoute('evaluate',array(
@@ -580,7 +590,7 @@ class EvaluateController extends AbstractActionController
         $arr_type_allowed = array(1, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
-        $id_evamedia = (int)$this->params()->fromRoute('id',0);        
+        $id_evamedia = (int)$this->params()->fromRoute('id',0);
         if (!$id_evamedia) {
             return $this->redirect()->toRoute('evaluate', array(
                 'action' => 'index'
@@ -592,6 +602,32 @@ class EvaluateController extends AbstractActionController
         $evamedia->updated_at = $this->_getDateTime();
         $evamedia->fk_evaluate_status = 5;//accept the order
         $this->getEvamediaTable()->saveEvamedia($evamedia);
+        $fk_user = $evamedia->fk_media_user;
+
+        //企业接受时，媒体将获得由appbuzz给出的500元
+        //update the user's credit
+        $price = 500;
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+        $originamount = $credit->amount;
+        $credit->amount = $originamount + $price;
+        $credit->updated_at = $this->_getDateTime();
+        $credit->updated_by = $cur_user;
+        $this->getCreditTable()->saveCredit($credit);
+
+        //create creditlog record;
+        $creditlog = new Creditlog();
+        $creditlog->fk_credit = $credit->id_credit;
+        $creditlog->fk_service_type = 5;//媒体->媒体评测
+        $creditlog->fk_from = null;
+        $creditlog->fk_to = $fk_user;
+        $creditlog->date_time = $this->_getDateTime();
+        $creditlog->amount = $price;
+        $creditlog->is_pay = 0;//is pay
+        $creditlog->is_charge = 1;//not charge
+        $creditlog->order_no = $evamedia->order_no;
+        $creditlog->created_at = $this->_getDateTime();
+        $creditlog->created_by = $cur_user;
+        $this->getCreditlogTable()->saveCreditlog($creditlog);
 
         return $this->redirect()->toRoute('evaluate',array(
             'action' => 'detail',
@@ -768,6 +804,24 @@ class EvaluateController extends AbstractActionController
             $this->barcodeTable = $sm->get('Attachment\Model\BarcodeTable');
         }
         return $this->barcodeTable;
+    }
+
+    public function getCreditTable()
+    {
+        if(!$this->creditTable){
+            $sm = $this->getServiceLocator();
+            $this->creditTable = $sm->get('Credit\Model\CreditTable');
+        }
+        return $this->creditTable;
+    }
+
+    public function getCreditlogTable()
+    {
+        if(!$this->creditlogTable){
+            $sm = $this->getServiceLocator();
+            $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
+        }
+        return $this->creditlogTable;
     }
 
     protected function _getEvamedia(Evaluate $evaluate)

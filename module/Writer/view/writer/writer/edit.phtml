@@ -57,6 +57,12 @@
                 echo $this->formHidden($form->get('fk_product'));
                 ?>
                 <tr>
+                    <td class="tdlabel">订单号：</td>
+                    <td>
+                        <?php echo $order_no; ?>
+                    </td>
+                </tr>
+                <tr>
                     <td class="tdlabel">App产品：</td>
                     <td>
                         <?php echo $product->name; ?>

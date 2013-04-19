@@ -75,10 +75,12 @@ class NewspubController extends AbstractActionController
                     echo "<a href='/newspub/add'>Back</a></br>";
                     die("Please select at least one media!");
                 }
+
+                //对企业应收账款如下：
                 if($newspub->fk_pub_mode == 1){
-                    $price = count($newspub->sel_right) * 350;
+                    $price = count($newspub->sel_right) * 350;//单篇发布：每篇350元
                 }else{
-                    $price = 1500;
+                    $price = 1500;//打包发布：一共1500元
                 }                
                 $fk_user = $this->getUserTable()->getUserByName($cur_user)->id;
                 $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
@@ -149,7 +151,7 @@ class NewspubController extends AbstractActionController
 
                 $newspub2 = $this->getNewspubTable()->getNewspub($id_newspub);
                 $newspub2->barcode = $id_barcode;
-                $newspub2->order_no = 10000000 + $newspub2->id_newspub;
+                $newspub2->order_no = 11000000 + $newspub2->id_newspub;
                 $this->getNewspubTable()->saveNewspub($newspub2);
 
                 //update the user's credit
@@ -174,9 +176,10 @@ class NewspubController extends AbstractActionController
                 $creditlog->amount = $price;
                 $creditlog->is_pay = 1;//is pay
                 $creditlog->is_charge = 0;//not charge
+                $creditlog->order_no = $newspub2->order_no;
                 $creditlog->created_at = $this->_getDateTime();
                 $creditlog->created_by = $cur_user;
-                $this->getCreditlogTable()->saveCreditlog($creditlog);                
+                $this->getCreditlogTable()->saveCreditlog($creditlog);
 
                 //save npmedia for single payment newspub
                 if($newspub->fk_pub_mode == 1)

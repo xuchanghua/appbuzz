@@ -70,11 +70,17 @@
                         '1' => '充值',
                         '2' => '新闻发布(单篇)',
                         '3' => '新闻发布(打包)',
+                        '4' => '产品评测',
+                        '5' => '媒体评测',
+                        '6' => '新闻撰稿',
+                        '7' => '媒体撰稿',
+                        '8' => '网络监测(6个月)',
+                        '9' => '网络监测(12个月)',
                     );
                     ?>
                     <table class="table table-bordered table-striped">
                         <tr>
-                            <th>id</th>
+                            <th>订单号</th>
                             <th>交易类型</th>
                             <th>交易金额</th>
                             <th>交易日期</th>
@@ -82,7 +88,7 @@
                         </tr>
                         <?php foreach($creditlog as $log): ?>
                         <tr>
-                            <td><?php echo $log->id_creditlog; ?></td>
+                            <td><?php echo $log->order_no; ?></td>
                             <td><?php echo $arr_service_type[$log->fk_service_type]; ?></td>
                             <td>
                                 <?php 

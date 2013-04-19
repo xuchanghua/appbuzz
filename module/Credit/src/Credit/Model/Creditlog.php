@@ -18,6 +18,7 @@ class Creditlog implements InputFilterAwareInterface
     public $amount;
     public $is_pay;
     public $is_charge;
+    public $order_no;
     public $created_at;
     public $created_by;
     protected $inputFilter;                       // <-- Add this variable
@@ -33,6 +34,7 @@ class Creditlog implements InputFilterAwareInterface
         $this->amount          = (isset($data['amount']))          ? $data['amount']          : null;
         $this->is_pay          = (isset($data['is_pay']))          ? $data['is_pay']          : null;
         $this->is_charge       = (isset($data['is_charge']))       ? $data['is_charge']       : null;
+        $this->order_no        = (isset($data['order_no']))        ? $data['order_no']        : null;
         $this->created_at      = (isset($data['created_at']))      ? $data['created_at']      : null;
         $this->created_by      = (isset($data['created_by']))      ? $data['created_by']      : null;
     }

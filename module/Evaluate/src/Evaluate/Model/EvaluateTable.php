@@ -117,6 +117,7 @@ class EvaluateTable
             'updated_at'      => $evaluate->updated_at,
             'requirement'     => $evaluate->requirement,
             'due_date'        => $evaluate->due_date,
+            'order_no'        => $evaluate->order_no,
         );
 
         $id = (int)$evaluate->id_evaluate;

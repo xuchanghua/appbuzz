@@ -11,6 +11,7 @@ return array(
         'Interview',
 	    'Media',
         'Message',
+        'Monitor',
         'Newspub',
         'Product',
         'Topic',

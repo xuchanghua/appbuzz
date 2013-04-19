@@ -81,6 +81,7 @@ class WriterTable
             'created_at'      => $writer->created_at,
             'updated_by'      => $writer->updated_by,
             'updated_at'      => $writer->updated_at,
+            'order_no'        => $writer->order_no,
         );
 
         $id = (int)$writer->id_writer;

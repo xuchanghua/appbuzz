@@ -21,6 +21,7 @@ class Writer implements InputFilterAwareInterface
     public $updated_by;
     public $updated_at;
     public $wrtmedia;
+    public $order_no;
 
     protected $inputFilter;                       // <-- Add this variable
 
@@ -39,6 +40,7 @@ class Writer implements InputFilterAwareInterface
         $this->updated_by      = (isset($data['updated_by']))      ? $data['updated_by']      : null;
         $this->updated_at      = (isset($data['updated_at']))      ? $data['updated_at']      : null;
         $this->wrtmedia        = (isset($data['wrtmedia']))        ? $data['wrtmedia']        : null;
+        $this->order_no        = (isset($data['order_no']))        ? $data['order_no']        : null;
     }
 
     // Add the following method:

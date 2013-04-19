@@ -1,5 +1,5 @@
 <?php
-namespace Credit\Model;
+namespace Monitor\Model;
 
 use Zend\Db\TableGateway\TableGateway;      
 use Zend\Db\Sql\Select;
@@ -9,7 +9,7 @@ use Zend\Paginator\Adapter\DbSelect;
 use Zend\Db\ResultSet\ResultSet;
 use DateTime;
 
-class CreditlogTable
+class MonitorTable
 {
     const ORDER_DEFAULT = 0;
     const ORDER_LATEST  = 1;
@@ -27,29 +27,35 @@ class CreditlogTable
         return $resultSet;
     }
 
-    public function fetchLogByFkCredit($fk_credit)
+    public function fetchMonitorByFkEntUser($fk_enterprise_user)
     {
-        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_credit){
-            $select->where->equalTo('fk_credit', $fk_credit);
-            $select->order('id_creditlog DESC');
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_enterprise_user){
+            $select->where->equalTo('fk_enterprise_user', $fk_enterprise_user);
+            $select->order('id_monitor DESC');
         });
         return $resultSet;
     }
 
-    public function fetchLogByFkCreditLimit5($fk_credit)
+    public function fetchValidMonitorByFkEntUser($fk_enterprise_user)
     {
-        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_credit){
-            $select->where->equalTo('fk_credit', $fk_credit);
-            $select->order('id_creditlog DESC');
-            $select->limit(5);
+        date_default_timezone_set("Asia/Shanghai");
+        $datetime = new DateTime;
+        $strdatetime = $datetime->format(DATE_ATOM);
+        $date = substr($strdatetime,0,10);
+        $time = substr($strdatetime,11,8);
+        $now = $date.' '.$time;
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_enterprise_user, $now){
+            $select->where->equalTo('fk_enterprise_user', $fk_enterprise_user);
+            $select->where->greaterThanOrEqualTo('end_date', $now);
+            $select->order('id_monitor DESC');
         });
         return $resultSet;
     }
 
-    public function getCreditlog($id)
+    public function getMonitor($id)
     {
         $id  = (int) $id;
-        $rowset = $this->tableGateway->select(array('id_creditlog' => $id));
+        $rowset = $this->tableGateway->select(array('id_monitor' => $id));
         $row = $rowset->current();
         if (!$row) {
             throw new \Exception("Could not find row $id");
@@ -65,42 +71,40 @@ class CreditlogTable
         ));
         $row = $rowset->current();
         if (!$row) {
-            throw new \Exception("Could not find row $id");
+            throw new \Exception("Could not find row $created_at, $created_by");
         }
-        return $row->id_creditlog;
+        return $row->id_monitor;
     }
 
-    public function saveCreditlog(Creditlog $creditlog)
+    public function saveMonitor(Monitor $monitor)
     {
         $data = array(
-            'fk_credit'       => $creditlog->fk_credit,
-            'fk_service_type' => $creditlog->fk_service_type,
-            'fk_from'         => $creditlog->fk_from,
-            'fk_to'           => $creditlog->fk_to,
-            'date_time'       => $creditlog->date_time,
-            'amount'          => $creditlog->amount,
-            'is_pay'          => $creditlog->is_pay,
-            'is_charge'       => $creditlog->is_charge,
-            'order_no'        => $creditlog->order_no,
-            'created_at'      => $creditlog->created_at,
-            'created_by'      => $creditlog->created_by,
+            'fk_enterprise_user' => $monitor->fk_enterprise_user,
+            'duration'           => $monitor->duration,
+            'start_date'         => $monitor->start_date,
+            'end_date'           => $monitor->end_date,
+            'order_no'           => $monitor->order_no,
+            'created_at'         => $monitor->created_at,
+            'created_by'         => $monitor->created_by,
+            'updated_at'         => $monitor->updated_at,
+            'updated_by'         => $monitor->updated_by,
         );
 
-        $id = (int)$creditlog->id_creditlog;
+        $id = (int)$monitor->id_monitor;
         if ($id == 0) {
             $this->tableGateway->insert($data);
         } else {
-            if ($this->getCreditlog($id)) {
-                $this->tableGateway->update($data, array('id_creditlog' => $id));
+            if ($this->getMonitor($id)) {
+                $this->tableGateway->update($data, array('id_monitor' => $id));
             } else {
                 throw new \Exception('Form id does not exist');
             }
         }
     }
 
-    public function deleteCreditlog($id)
+    public function deleteMonitor($id)
     {
-        $this->tableGateway->delete(array('id_creditlog' => $id));
+        $this->tableGateway->delete(array('id_monitor' => $id));
     }
 
     /**
@@ -117,7 +121,7 @@ class CreditlogTable
             $order = self::ORDER_DEFAULT)
     {
         //新建select对象
-        $select = new Select('credit');
+        $select = new Select('monitor');
         //构建查询条件
         $closure = function (Where $where) use($keyword) {
                     if ($keyword != '') {
@@ -133,7 +137,7 @@ class CreditlogTable
         }
         //将返回的结果设置为Ablum的实例
         $resultSetPrototype = new ResultSet();
-        $resultSetPrototype->setArrayObjectPrototype(new Credit());
+        $resultSetPrototype->setArrayObjectPrototype(new Monitor());
         //创建分页用的适配器，第2个参数为数据库adapter，使用全局默认的即可        
         $adapter = new DbSelect($select, $this->tableGateway->getAdapter(), $resultSetPrototype);
         //新建分页

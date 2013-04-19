@@ -15,13 +15,14 @@ class Evaluate implements InputFilterAwareInterface
     public $appstore_link;
     public $androidmkt_link;
     public $barcode;
+    public $evamedia;
+    public $requirement;
+    public $due_date;
+    public $order_no;
     public $created_by;
     public $created_at;
     public $updated_by;
     public $updated_at;
-    public $evamedia;
-    public $requirement;
-    public $due_date;
 
     protected $inputFilter;                       // <-- Add this variable
 
@@ -41,6 +42,7 @@ class Evaluate implements InputFilterAwareInterface
         $this->evamedia        = (isset($data['evamedia']))        ? $data['evamedia']        : null;
         $this->requirement     = (isset($data['requirement']))     ? $data['requirement']     : null;
         $this->due_date        = (isset($data['due_date']))        ? $data['due_date']        : null;
+        $this->order_no        = (isset($data['order_no']))        ? $data['order_no']        : null;
     }
 
     // Add the following method:

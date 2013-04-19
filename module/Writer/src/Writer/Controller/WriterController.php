@@ -14,6 +14,8 @@ use Zend\Validator\File\Extension as FileExt;
 use DateTime;
 use Writer\Model\Wrtmedia;
 use Attachment\Model\Barcode;
+use Credit\Model\Credit;
+use Credit\Model\Creditlog;
 
 class WriterController extends AbstractActionController
 {
@@ -22,6 +24,8 @@ class WriterController extends AbstractActionController
     protected $productTable;
     protected $wrtmediaTable;
     protected $barcodeTable;
+    protected $creditTable;
+    protected $creditlogTable;
 
     public function indexAction()
     {     
@@ -211,6 +215,7 @@ class WriterController extends AbstractActionController
         $wrt_created_by = $writer->created_by;
         $wrt_created_at = $writer->created_at;
         $wrt_barcode    = $writer->barcode;
+        $wrt_order_no   = $writer->order_no;
         $form = new WriterForm();
         $form->bind($writer);
         $form->get('submit')->setAttribute('value','保存');
@@ -277,6 +282,7 @@ class WriterController extends AbstractActionController
             if($form->isValid()){
                 $form->getData()->created_by = $wrt_created_by;
                 $form->getData()->created_at = $wrt_created_at;
+                $form->getData()->order_no   = $wrt_order_no;
                 $form->getData()->updated_by = $cur_user;
                 $form->getData()->updated_at = $this->_getDateTime();
                 if(isset($id_barcode))
@@ -311,6 +317,7 @@ class WriterController extends AbstractActionController
 
         return new ViewModel(array(
             //'writer' => $this->getWriterTable()->getWriter($id),
+            'order_no' => $wrt_order_no,
             'user'     => $cur_user,
             'form'     => $form,
             'id'       => $id_writer,
@@ -336,6 +343,16 @@ class WriterController extends AbstractActionController
             $form->setData($request->getPost());
             if($form->isValid()){
                 $writer->exchangeArray($form->getData());
+
+                $price = 1500;//对企业用户应收1500元的新闻撰写费用
+                $fk_user = $this->getUserTable()->getUserByName($cur_user)->id;
+                $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
+                if(!$is_sufficient)
+                {
+                    echo "<a href='/writer/add'>Back</a></br>";
+                    die("Insufficient Credit! Please Charge Your Account!");
+                }
+
                 $writer->created_by = $cur_user;
                 $writer->created_at = $this->_getDateTime();
                 $writer->updated_by = $cur_user;
@@ -396,7 +413,26 @@ class WriterController extends AbstractActionController
 
                 $writer2 = $this->getWriterTable()->getWriter($id_writer);
                 $writer2->barcode = $id_barcode;
+                $writer2->order_no = 31000000 + $id_writer;
                 $this->getWriterTable()->saveWriter($writer2);
+
+                //update the user's credit
+                $credit = $this->consume($fk_user, $price);
+
+                //create creditlog record;
+                $creditlog = new Creditlog();
+                $creditlog->fk_credit = $credit->id_credit;
+                $creditlog->fk_service_type = 6;//企业->我要撰稿
+                $creditlog->fk_from = $fk_user;
+                $creditlog->fk_to = null;
+                $creditlog->date_time = $this->_getDateTime();
+                $creditlog->amount = $price;
+                $creditlog->is_pay = 1;//is pay
+                $creditlog->is_charge = 0;//not charge
+                $creditlog->order_no = $writer2->order_no;
+                $creditlog->created_at = $this->_getDateTime();
+                $creditlog->created_by = $cur_user;
+                $this->getCreditlogTable()->saveCreditlog($creditlog);
 
                 return $this->redirect()->toRoute('writer',array(
                     'action'=>'detail',
@@ -471,7 +507,7 @@ class WriterController extends AbstractActionController
         //save the order number
         $id_wrtmedia = $this->getWrtmediaTable()->getId($wrtmedia->created_at, $wrtmedia->created_by);
         $wrtmedia2 = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
-        $wrtmedia2->order_no = 30000000 + $id_wrtmedia;
+        $wrtmedia2->order_no = 32000000 + $id_wrtmedia;
         $this->getWrtmediaTable()->saveWrtmedia($wrtmedia2);
 
         return $this->redirect()->toRoute('writer', array(
@@ -514,7 +550,7 @@ class WriterController extends AbstractActionController
         //save the order number
         $id_wrtmedia = $this->getWrtmediaTable()->getId($wrtmedia->created_at, $wrtmedia->created_by);
         $wrtmedia2 = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
-        $wrtmedia2->order_no = 30000000 + $id_wrtmedia;
+        $wrtmedia2->order_no = 32000000 + $id_wrtmedia;
         $this->getWrtmediaTable()->saveWrtmedia($wrtmedia2);
 
         return $this->redirect()->toRoute('writer', array(
@@ -1006,6 +1042,41 @@ class WriterController extends AbstractActionController
             $this->barcodeTable = $sm->get('Attachment\Model\BarcodeTable');
         }
         return $this->barcodeTable;
+    }
+
+    public function getCreditTable()
+    {
+        if(!$this->creditTable){
+            $sm = $this->getServiceLocator();
+            $this->creditTable = $sm->get('Credit\Model\CreditTable');
+        }
+        return $this->creditTable;
+    }
+
+    public function getCreditlogTable()
+    {
+        if(!$this->creditlogTable){
+            $sm = $this->getServiceLocator();
+            $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
+        }
+        return $this->creditlogTable;
+    }
+
+    /**
+     * Update the Credit of a user who consumed the given amount of money
+     * @param int $fk_user: the id of the user (who consumed)
+     * @param int $price: the amount of money the user consumed
+     */
+    public function consume($fk_user, $price)
+    {
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+        $originamount = $credit->amount;
+        $credit->amount = $originamount - $price;
+        $credit->updated_at = $this->_getDateTime();
+        $credit->updated_by = $cur_user;
+        $this->getCreditTable()->saveCredit($credit);
+
+        return $credit;
     }
 
     protected function _authorizeUser($type, $user, $pass)
