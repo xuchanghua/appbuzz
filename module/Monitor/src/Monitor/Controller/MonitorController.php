@@ -584,7 +584,157 @@ class MonitorController extends AbstractActionController
 
     public function exportreportAction()
     {
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
 
+        $id_user = $this->getUserTable()->getUserByName($cur_user)->id;
+        $this->is_bought($id_user);
+
+        $this->session = new SessionContainer('timerange');
+        $start_date = $this->session->start_date;
+        $end_date = $this->session->end_date;
+
+        //get Monitor
+        $monitorSet = $this->getMonitorTable()->fetchValidMonitorByFkEntUser($id_user);
+        $monitor = $monitorSet->current();
+        $id_monitor = $monitor->id_monitor;
+        //get two Keywords (object)
+        $keyword1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 1);
+        $keyword2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 2);
+
+        $str_keyword_1 = $keyword1->keyword;
+        $str_keyword_2 = $keyword2->keyword;
+
+        //connect to the monitor database
+        $con = mysql_connect("localhost:3306", "root", "");
+        mysql_set_charset('utf8', $con);
+        $charset = mysql_client_encoding($con);
+        mysql_select_db("article", $con);
+
+        //query
+        $query_chart1_keyword1_weibo = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
+                                        FROM t_blog 
+                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        AND website_type = 'weibo' 
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
+                                        GROUP BY date_post
+                                        ORDER BY date_post ASC;";
+        $query_chart1_keyword1_news  = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
+                                        FROM t_blog 
+                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        AND website_type = '新闻'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
+                                        GROUP BY date_post
+                                        ORDER BY date_post ASC;";
+        $query_chart1_keyword1_forum = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
+                                        FROM t_blog 
+                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        AND website_type = '论坛'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
+                                        GROUP BY date_post
+                                        ORDER BY date_post ASC;";
+        $query_chart2_keyword2_weibo = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
+                                        FROM t_blog 
+                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        AND website_type = 'weibo' 
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
+                                        GROUP BY date_post
+                                        ORDER BY date_post ASC;";
+        $query_chart2_keyword2_news  = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
+                                        FROM t_blog 
+                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        AND website_type = '新闻'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
+                                        GROUP BY date_post
+                                        ORDER BY date_post ASC;";
+        $query_chart2_keyword2_forum = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
+                                        FROM t_blog 
+                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        AND website_type = '论坛'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
+                                        GROUP BY date_post
+                                        ORDER BY date_post ASC;";
+        $query_chart3_keyword1       = "SELECT COUNT(id) AS quantity, website_type
+                                        FROM t_blog
+                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
+                                        GROUP BY website_type";
+        $query_chart3_keyword2       = "SELECT COUNT(id) AS quantity, website_type
+                                        FROM t_blog
+                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
+                                        GROUP BY website_type";
+        $query_chart4_keyword1_weibo = "SELECT COUNT(id) AS quantity, tone
+                                        FROM t_blog
+                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        AND website_type = 'weibo'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
+                                        GROUP BY tone";
+        $query_chart4_keyword1_news = "SELECT COUNT(id) AS quantity, tone
+                                        FROM t_blog
+                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        AND website_type = '新闻'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
+                                        GROUP BY tone";
+        $query_chart4_keyword1_forum = "SELECT COUNT(id) AS quantity, tone
+                                        FROM t_blog
+                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        AND website_type = '论坛'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
+                                        GROUP BY tone";
+        $query_chart5_keyword2_weibo = "SELECT COUNT(id) AS quantity, tone
+                                        FROM t_blog
+                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        AND website_type = 'weibo'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
+                                        GROUP BY tone";
+        $query_chart5_keyword2_news  = "SELECT COUNT(id) AS quantity, tone
+                                        FROM t_blog
+                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        AND website_type = '新闻'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
+                                        GROUP BY tone";
+        $query_chart5_keyword2_forum = "SELECT COUNT(id) AS quantity, tone
+                                        FROM t_blog
+                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        AND website_type = '论坛'  
+                                        AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
+                                        GROUP BY tone";
+        $result_chart1_keyword1_weibo = mysql_query($query_chart1_keyword1_weibo, $con);
+        $result_chart1_keyword1_news  = mysql_query($query_chart1_keyword1_news,  $con);
+        $result_chart1_keyword1_forum = mysql_query($query_chart1_keyword1_forum, $con);
+        $result_chart2_keyword2_weibo = mysql_query($query_chart2_keyword2_weibo, $con);
+        $result_chart2_keyword2_news  = mysql_query($query_chart2_keyword2_news,  $con);
+        $result_chart2_keyword2_forum = mysql_query($query_chart2_keyword2_forum, $con);
+        $result_chart3_keyword1       = mysql_query($query_chart3_keyword1, $con);
+        $result_chart3_keyword2       = mysql_query($query_chart3_keyword2, $con);
+        $result_chart4_keyword1_weibo = mysql_query($query_chart4_keyword1_weibo, $con);
+        $result_chart4_keyword1_news  = mysql_query($query_chart4_keyword1_news,  $con);
+        $result_chart4_keyword1_forum = mysql_query($query_chart4_keyword1_forum, $con);
+        $result_chart5_keyword2_weibo = mysql_query($query_chart5_keyword2_weibo, $con);
+        $result_chart5_keyword2_news  = mysql_query($query_chart5_keyword2_news,  $con);
+        $result_chart5_keyword2_forum = mysql_query($query_chart5_keyword2_forum, $con);
+        
+        mysql_close($con);
+
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'result_chart1_keyword1_weibo' => $result_chart1_keyword1_weibo,
+            'result_chart1_keyword1_news'  => $result_chart1_keyword1_news,
+            'result_chart1_keyword1_forum' => $result_chart1_keyword1_forum,
+            'result_chart2_keyword2_weibo' => $result_chart2_keyword2_weibo,
+            'result_chart2_keyword2_news'  => $result_chart2_keyword2_news,
+            'result_chart2_keyword2_forum' => $result_chart2_keyword2_forum,
+            'result_chart3_keyword1'       => $result_chart3_keyword1,
+            'result_chart3_keyword2'       => $result_chart3_keyword2,
+            'result_chart4_keyword1_weibo' => $result_chart4_keyword1_weibo,
+            'result_chart4_keyword1_news'  => $result_chart4_keyword1_news,
+            'result_chart4_keyword1_forum' => $result_chart4_keyword1_forum,
+            'result_chart5_keyword2_weibo' => $result_chart5_keyword2_weibo,
+            'result_chart5_keyword2_news'  => $result_chart5_keyword2_news,
+            'result_chart5_keyword2_forum' => $result_chart5_keyword2_forum,
+        ));
     }
 
     public function getMonitorTable()

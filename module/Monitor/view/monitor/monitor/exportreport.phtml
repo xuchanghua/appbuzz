@@ -1,0 +1,497 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <h1>网络监测</h1>  
+    <div id="header" class="container" style="width:1170px;"> 
+        CONTAINER
+        <div class="row">
+            ROW
+            <div id="logo" class="span2 logo">
+                APPBUZZ LOGO
+            </div>
+            <div id="banner" class="span8 banner">
+                BANNER
+            </div>
+        </div>
+    </div>
+    </br>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span2 left">
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_enterprise.phtml'; 
+        ?>
+        </div>
+        <div id="mid" class="span8 mid"> 
+            <div class="linkbtns">
+                <form action="#">
+                    <input type="submit" class="btn btn-primary linkbtn" value="网络监测">
+                </form>
+            </div>
+            <div>
+                <form action="#">
+                    <input type="submit" class="btn btn-primary linkbtn" value="监测图表">
+                </form>
+            </div>
+            <table>
+                <tr>
+                    <td colspan=2>
+                        <div id="chart1_1"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                        <div id="chart1_2"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                        <div id="chart1_3"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                        <div id="chart2_1"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                        <div id="chart2_2"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                        <div id="chart2_3"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="chart3_1"></div>
+                    </td>
+                    <td>
+                        <div id="chart3_2"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="chart4_1"></div>
+                    </td>
+                    <td>
+                        <div id="chart5_1"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="chart4_2"></div>
+                    </td>
+                    <td>
+                        <div id="chart5_2"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="chart4_3"></div>
+                    </td>
+                    <td>
+                        <div id="chart5_3"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="right" class="span3 right">
+            SPAN3 RIGHT
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!--Load the AJAX API-->
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+// Load the Visualization API and the piechart package.
+google.load('visualization', '1.0', {'packages':['corechart']});
+
+// Set a callback to run when the Google Visualization API is loaded.
+google.setOnLoadCallback(drawChart);
+
+// Callback that creates and populates a data table,
+// instantiates the pie chart, passes in the data and
+// draws it.
+function drawChart() {
+    drawChart1_1();
+    drawChart1_2();
+    drawChart1_3();
+    drawChart2_1();
+    drawChart2_2();
+    drawChart2_3();
+    drawChart3_1();
+    drawChart3_2();
+    drawChart4_1();
+    drawChart5_1();
+    drawChart4_2();
+    drawChart5_2();
+    drawChart4_3();
+    drawChart5_3();
+}
+
+function drawChart1_1() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '日期');
+    data.addColumn('number', '数量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart1_keyword1_weibo)){  
+            echo "['".$row['date_post']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'自产品时间段内信息量变化（微博）：',
+                    'width':720,
+                    'height':300,
+                    //'hAxis.format':1,
+                };
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart1_1'));
+    chart.draw(data, options);
+}
+
+function drawChart1_2() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '日期');
+    data.addColumn('number', '数量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart1_keyword1_news)){  
+            echo "['".$row['date_post']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'自产品时间段内信息量变化（新闻）：',
+                    'width':720,
+                    'height':300,
+                    //'hAxis.format':1,
+                };
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart1_2'));
+    chart.draw(data, options);
+}
+
+function drawChart1_3() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '日期');
+    data.addColumn('number', '数量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart1_keyword1_forum)){  
+            echo "['".$row['date_post']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'自产品时间段内信息量变化（论坛）：',
+                    'width':720,
+                    'height':300,
+                    //'hAxis.format':1,
+                };
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart1_3'));
+    chart.draw(data, options);
+}
+
+function drawChart2_1() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '日期');
+    data.addColumn('number', '数量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart2_keyword2_weibo)){  
+            echo "['".$row['date_post']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'竞争产品时间段内信息量变化（微博）：',
+                    'width':720,
+                    'height':300,
+                    //'hAxis.format':1,
+                };
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart2_1'));
+    chart.draw(data, options);
+}
+
+function drawChart2_2() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '日期');
+    data.addColumn('number', '数量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart2_keyword2_news)){  
+            echo "['".$row['date_post']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'竞争产品时间段内信息量变化（新闻）：',
+                    'width':720,
+                    'height':300,
+                    //'hAxis.format':1,
+                };
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart2_2'));
+    chart.draw(data, options);
+}
+
+function drawChart2_3() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '日期');
+    data.addColumn('number', '数量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart2_keyword2_forum)){  
+            echo "['".$row['date_post']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'竞争产品时间段内信息量变化（论坛）：',
+                    'width':720,
+                    'height':300,
+                    //'hAxis.format':1,
+                };
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart2_3'));
+    chart.draw(data, options);
+}
+
+function drawChart3_1() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '渠道');
+    data.addColumn('number', '信息量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart3_keyword1)){  
+            echo "['".$row['website_type']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'自产品各渠道数据量构成：',
+                    'width':360,
+                    'height':300};
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('chart3_1'));
+    chart.draw(data, options);
+}
+
+function drawChart3_2() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '渠道');
+    data.addColumn('number', '信息量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart3_keyword2)){  
+            echo "['".$row['website_type']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'竞争产品各渠道数据量构成：',
+                    'width':360,
+                    'height':300};
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('chart3_2'));
+    chart.draw(data, options);
+}
+
+function drawChart4_1() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '倾向性');
+    data.addColumn('number', '信息量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart4_keyword1_weibo)){  
+            echo "['".$row['tone']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'自产品数据正负面语义对比（微博）：',
+                    'width':360,
+                    'height':300};
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('chart4_1'));
+    chart.draw(data, options);
+}
+
+function drawChart4_2() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '倾向性');
+    data.addColumn('number', '信息量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart4_keyword1_news)){  
+            echo "['".$row['tone']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'自产品数据正负面语义对比（新闻）：',
+                    'width':360,
+                    'height':300};
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('chart4_2'));
+    chart.draw(data, options);
+}
+
+function drawChart4_3() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '倾向性');
+    data.addColumn('number', '信息量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart4_keyword1_forum)){  
+            echo "['".$row['tone']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'自产品数据正负面语义对比（论坛）：',
+                    'width':360,
+                    'height':300};
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('chart4_3'));
+    chart.draw(data, options);
+}
+
+function drawChart5_1() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '倾向性');
+    data.addColumn('number', '信息量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart5_keyword2_weibo)){  
+            echo "['".$row['tone']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'竞争产品数据正负面语义对比（微博）：',
+                    'width':360,
+                    'height':300};
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('chart5_1'));
+    chart.draw(data, options);
+}
+
+function drawChart5_2() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '倾向性');
+    data.addColumn('number', '信息量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart5_keyword2_news)){  
+            echo "['".$row['tone']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'竞争产品数据正负面语义对比（新闻）：',
+                    'width':360,
+                    'height':300};
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('chart5_2'));
+    chart.draw(data, options);
+}
+
+function drawChart5_3() {
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', '倾向性');
+    data.addColumn('number', '信息量');
+    data.addRows([
+        <?php 
+        while($row = mysql_fetch_array($result_chart5_keyword2_forum)){  
+            echo "['".$row['tone']."', ".$row['quantity']."],";
+        } 
+        ?>
+    ]);
+    // Set chart options
+    var options = {'title':'竞争产品数据正负面语义对比（论坛）：',
+                    'width':360,
+                    'height':300};
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('chart5_3'));
+    chart.draw(data, options);
+}
+
+</script>
+
+<style>
+div.user,.mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 80%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>
+
+
+            <script src="js/excanvas.min.js"></script>
+            <script src="js/jquery.min.js"></script>
+            <script src="js/jquery.ui.custom.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script src="js/jquery.flot.min.js"></script>
+            <script src="js/jquery.flot.resize.min.js"></script>
+            <script src="js/jquery.peity.min.js"></script>
+            <script src="js/fullcalendar.min.js"></script>
+            <script src="js/unicorn.js"></script>
+            <script src="js/unicorn.dashboard.js"></script>
