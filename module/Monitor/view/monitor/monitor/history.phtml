@@ -38,7 +38,7 @@
             </div>
             <div class="widget-box">
                 <div class="widget-title">
-                    <h4>近期监测数据</h4>
+                    <h4>历史监测数据：从<?php echo " ".$start_date." ";?>到<?php echo " ".$end_date;?></h4>
                 </div>
                 <div class="widget-content nopadding">
                     <table class="table table-bordered table-striped">
@@ -95,9 +95,19 @@
                         </tr>
                         <?php } ?>
                     </table>
+                    <div class="linkbtns">
+                        <form action="/monitor/exportsheet">
+                            <input type="submit" class="btn btn-primary" value="导出excel报表">
+                        </form>
+                    </div>
+                    <div>
+                        <form action="/monitor/exportreport">
+                            <input type="submit" class="btn btn-primary" value="导出分析报告">
+                        </form>
+                    </div>
                 </div>
                 <div>
-                    <a href="/monitor/timerangepicker">历史数据查询</a>
+                    <a href="/monitor/data">最近监测数据</a>
                 </div>
             </div>
         </div>
