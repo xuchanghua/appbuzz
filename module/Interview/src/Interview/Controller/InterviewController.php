@@ -30,6 +30,20 @@ class InterviewController extends AbstractActionController
         ));
     }
 
+    public function adminAction()
+    {
+        //管理员->订单管理->媒体采访
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,    
+            'interview' => $this->getInterviewTable()->fetchAllDesc(),
+            'products' => $this->getProductTable()->fetchAll(),    
+            'all_users' => $this->getUserTable()->fetchAll()
+        ));
+    }
+
     public function addAction()
     {
         //媒体->采访邀约
@@ -61,7 +75,7 @@ class InterviewController extends AbstractActionController
                 $id_interview = $this->getInterviewTable()->getId($interview->created_at, $interview->created_by);
 
                 $interview2 = $this->getInterviewTable()->getInterview($id_interview);
-                $interview2->order_no = 50000000 + $id_interview;
+                $interview2->order_no = 52000000 + $id_interview;
                 $this->getInterviewTable()->saveInterview($interview2);
 
                 // Redirect to list of interview detail
@@ -83,7 +97,7 @@ class InterviewController extends AbstractActionController
     public function detailAction()
     {
         //媒体->采访管理->邀约详情
-        $arr_type_allowed = array(2);
+        $arr_type_allowed = array(2, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_interview = (int)$this->params()->fromRoute('id', 0);
@@ -97,6 +111,7 @@ class InterviewController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'interview' => $interview,
             'product' => $product,
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
@@ -106,7 +121,7 @@ class InterviewController extends AbstractActionController
     public function editAction()
     {        
         //媒体->采访管理->修改订单
-        $arr_type_allowed = array(2);
+        $arr_type_allowed = array(2, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_interview = (int)$this->params()->fromRoute('id', 0);
@@ -154,6 +169,7 @@ class InterviewController extends AbstractActionController
 
         return array(
             'user' => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'form' => $form,
             'interview' => $interview,
             'product' => $product,

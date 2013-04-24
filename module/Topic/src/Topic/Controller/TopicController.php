@@ -37,6 +37,20 @@ class TopicController extends AbstractActionController
         ));
     }
 
+    public function adminAction()
+    {        
+        //管理员->订单管理->媒体选题
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'products' => $this->getProductTable()->fetchAll(),
+            'all_users' => $this->getUserTable()->fetchAll(),
+            'tpjointc' => $this->getTopicTable()->fetchAllJoinLeftTpcontactDesc(),
+        ));    
+    }
+
     public function addAction()
     {        
         $arr_type_allowed = array(2);
@@ -56,6 +70,11 @@ class TopicController extends AbstractActionController
                 $topic->updated_by = $cur_user;
                 $topic->updated_at = $this->_getDateTime();
                 $this->getTopicTable()->saveTopic($topic);
+
+                $id_topic = $this->getTopicTable()->getId($topic->created_at, $topic->created_by);
+                $topic2 = $this->getTopicTable()->getTopic($id_topic);
+                $topic2->order_no = 42000000 + (int)$id_topic;
+                $this->getTopicTable()->saveTopic($topic2);
 
                 return $this->redirect()->toRoute('topic',array(
                     'action' => 'detail',
@@ -110,6 +129,7 @@ class TopicController extends AbstractActionController
             ));
         }
         $topic = $this->getTopicTable()->getTopic($id);
+        $tp_order_no = $topic->order_no;
         $tp_created_by = $topic->created_by;
         $tp_created_at = $topic->created_at;
         $form = new TopicForm();
@@ -121,6 +141,7 @@ class TopicController extends AbstractActionController
             $form->setInputFilter($topic->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
+                $form->getData()->order_no   = $tp_order_no;
                 $form->getData()->created_by = $tp_created_by;
                 $form->getData()->created_at = $tp_created_at;
                 $form->getData()->updated_by = $cur_user;
@@ -259,7 +280,7 @@ class TopicController extends AbstractActionController
 
                 $tpcontact2 = $this->getTpcontactTable()->getTpcontact($id_tpcontact);
                 $tpcontact2->attachment = $id_attachment;
-                $tpcontact2->order_no = 40000000 + $id_tpcontact;
+                $tpcontact2->order_no = 41000000 + $id_tpcontact;
                 $this->getTpcontactTable()->saveTpcontact($tpcontact2);
 
                 return $this->redirect()->toRoute('topic', array(

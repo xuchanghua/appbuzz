@@ -478,14 +478,14 @@ class EvaluateController extends AbstractActionController
     public function adminAction()
     {
         //管理员->订单管理->产品评测
-        $arr_type_allowed = array(2, 3);
+        $arr_type_allowed = array(3);
         $cur_user = $this->_auth($arr_type_allowed);
 
         return new ViewModel(array(
             'user' => $cur_user,
-            'evaluate' => $this->getEvaluateTable()->fetchAllDesc(),
+            //'evaluate' => $this->getEvaluateTable()->fetchAllDesc(),
             'products' => $this->getProductTable()->fetchAll(),
-            'evamedia' => $this->getEvamediaTable()->fetchAllDesc(),
+            //'evamedia' => $this->getEvamediaTable()->fetchAllDesc(),
             'all_users' => $this->getUserTable()->fetchAll(),
             'evajoinem' => $this->getEvaluateTable()->fetchAllJoinLeftEvamediaDesc(),
         ));    

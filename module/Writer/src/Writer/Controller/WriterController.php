@@ -53,8 +53,8 @@ class WriterController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
-            'writer' => $this->getWriterTable()->fetchAll(),
-            'wrtmedia' => $this->getWrtmediaTable()->fetchAllDesc(),
+            //'writer' => $this->getWriterTable()->fetchAll(),
+            //'wrtmedia' => $this->getWrtmediaTable()->fetchAllDesc(),
             'products' => $this->getProductTable()->fetchAll(),
             'all_users' => $this->getUserTable()->fetchAll(),
             'wrtjoinwm' => $this->getWriterTable()->fetchAllJoinLeftWrtmediaDesc(),

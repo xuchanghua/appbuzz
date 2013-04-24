@@ -17,6 +17,7 @@ class Topic implements InputFilterAwareInterface
     public $updated_by;
     public $updated_at;
     public $due_date;
+    public $order_no;
     public $fk_topic_status;
     protected $inputFilter;                       // <-- Add this variable
 
@@ -32,6 +33,14 @@ class Topic implements InputFilterAwareInterface
         $this->updated_at      = (isset($data['updated_at']))      ? $data['updated_at']      : null;
         $this->due_date        = (isset($data['due_date']))        ? $data['due_date']        : null;
         $this->fk_topic_status = (isset($data['fk_topic_status'])) ? $data['fk_topic_status'] : null;
+        $this->order_no        = (isset($data['order_no']))        ? $data['order_no']        : null;
+        // leftjoin tpcontact
+        $this->tc_order_no            = (isset($data['tc_order_no']))            ? $data['tc_order_no']            : null;
+        $this->tc_fk_enterprise_user  = (isset($data['tc_fk_enterprise_user']))  ? $data['tc_fk_enterprise_user']  : null;
+        $this->tc_fk_media_user       = (isset($data['tc_fk_media_user']))       ? $data['tc_fk_media_user']       : null;
+        $this->tc_created_at          = (isset($data['tc_created_at']))          ? $data['tc_created_at']          : null;
+        $this->tc_fk_tpcontact_status = (isset($data['tc_fk_tpcontact_status'])) ? $data['tc_fk_tpcontact_status'] : null;
+        $this->tc_fk_product          = (isset($data['tc_fk_product']))          ? $data['tc_fk_product']          : null;
     }
 
     // Add the following method:

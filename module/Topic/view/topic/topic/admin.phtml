@@ -31,16 +31,11 @@
             ?>
             <div id="pubmgmt" class="widget-box">
                 <div class="widget-title">
-                    <h4>产品评测订单</h4>
+                    <h4>媒体选题订单</h4>
                 </div>
                 <div class="widget-content nopadding">
                 <table class="table table-bordered table-striped">
                     <?php
-                    /*$arr_id_eva = array();
-                    foreach($evaluate as $eva)
-                    {
-                        $arr_id_eva[$eva->id_evaluate] = $eva;
-                    }*/
                     $arr_id_user = array();
                     foreach($all_users as $au)
                     {
@@ -51,58 +46,69 @@
                     {
                         $arr_id_product[$pd->id_product] = $pd;
                     }
-                    $arr_fk_evamedia_status = array(
-                        '1' => '新订单',
-                        '2' => '媒体拒绝',
-                        '3' => '媒体接受',
-                        '4' => '企业拒绝',
-                        '5' => '企业接受',
+                    $arr_fk_tpcontact_status = array(
+                        '1' => '联系中',
+                        '2' => '已结束',
+                    );
+                    $arr_fk_topic_status = array(
+                        '1' => '待发布',
+                        '2' => '征集中',
+                        '3' => '已结束',
                     );
                     ?>
                     <tr>
                         <th>母订单号</th>
-                        <th>发布企业</th>
+                        <th>发布媒体</th>
                         <th>产品名称</th>
+                        <th>订单状态</th>
                         <th>子订单号</th>
-                        <th>评测媒体</th>
+                        <th>联系企业</th>
                         <th>订单状态</th>
                         <th>创建日期</th>
                         <!--<th>操作</th>-->
                     </tr>
-                    <?php foreach($evajoinem as $ejm): ?>
+                    <?php foreach($tpjointc as $tjc): ?>
                     <tr>
                         <td>                       
-                            <a href="/evaluate/detail/<?php echo $ejm->id_evaluate; ?>">
-                                <?php echo $ejm->order_no; ?>
+                            <a href="/topic/detail/<?php echo $tjc->id_topic; ?>">
+                                <?php echo $tjc->order_no; ?>
                             </a>
                         </td>
-                        <td><?php echo $ejm->created_by; ?></td>
+                        <td><?php echo $tjc->created_by; ?></td>
                         <td>
                             <?php
-                            if(array_key_exists($ejm->fk_product, $arr_id_product))
+                            if(array_key_exists($tjc->tc_fk_product, $arr_id_product))
                             {
-                                echo $arr_id_product[$ejm->fk_product]->name; 
+                                echo $arr_id_product[$tjc->tc_fk_product]->name; 
                             }
                             ?>
                         </td>
-                        <td><?php echo $ejm->em_order_no; ?></td>
+                        <td>
+                            <?php
+                            if(array_key_exists($tjc->fk_topic_status, $arr_fk_topic_status))
+                            {
+                                echo $arr_fk_topic_status[$tjc->fk_topic_status];
+                            }
+                            ?>
+                        </td>
+                        <td><?php echo $tjc->tc_order_no; ?></td>
                         <td>
                             <?php                             
-                            if(array_key_exists($ejm->em_fk_media_user, $arr_id_user))
+                            if(array_key_exists($tjc->tc_fk_enterprise_user, $arr_id_user))
                             {
-                                echo $arr_id_user[$ejm->em_fk_media_user]->username; 
+                                echo $arr_id_user[$tjc->tc_fk_enterprise_user]->username; 
                             }
                             ?>
                         </td>
                         <td>
                             <?php
-                            if(array_key_exists($ejm->em_fk_evaluate_status, $arr_fk_evamedia_status))
+                            if(array_key_exists($tjc->tc_fk_tpcontact_status, $arr_fk_tpcontact_status))
                             {
-                                echo $arr_fk_evamedia_status[$ejm->em_fk_evaluate_status];
+                                echo $arr_fk_tpcontact_status[$tjc->tc_fk_tpcontact_status];
                             }
                             ?>
                         </td>
-                        <td><?php echo $ejm->em_created_at; ?></td>
+                        <td><?php echo $tjc->tc_created_at; ?></td>
                         <!--<td></td>-->
                     </tr>
                     <?php endforeach; ?>

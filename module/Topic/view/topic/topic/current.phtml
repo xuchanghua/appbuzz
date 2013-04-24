@@ -60,6 +60,7 @@
                 <div class="widget-content nopadding">
                     <table class="table table-bordered table-striped">
                         <tr>
+                            <th>订单号</th>
                             <th>媒体</th>
                             <th>选题概要</th>
                             <th>有效日期</th>
@@ -69,6 +70,9 @@
                         <?php foreach($current_topics as $ct): ?>
                         <!--<tr onclick="document.location = '/topic/detail/<?php echo $this->escapeHtml($ct->id_topic);?>';">-->
                         <tr>
+                            <td>
+                                <?php echo $this->escapeHtml($ct->order_no); ?>
+                            </td>
                             <td>
                                 <?php echo $this->escapeHtml($ct->created_by);?>
                             </td>

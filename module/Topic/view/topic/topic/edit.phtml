@@ -30,19 +30,19 @@
         <div id="mid" class="span8 mid">
             <div>
                 <div class="linkbtns">
-                    <form action="/topic/index">
+                    <form action="#">
                         <input type="submit" class="btn btn-primary linkbtn" value="发布选题">
                     </form>
                 </div>
                 <div>
-                    <form action="/topic/index">
-                        <input type="submit" class="btn btn-primary linkbtn" value="我要发布">
+                    <form action="#">
+                        <input type="submit" class="btn btn-primary linkbtn" value="订单详情">
                     </form>
                 </div>
             </div>
             <div id="addtopic">
                 <div>
-                    <h4>新建选题：</h4>
+                    <h4>选题<?php echo $topic->order_no; ?>：</h4>
                 </div>
                 <table>
                     <?php

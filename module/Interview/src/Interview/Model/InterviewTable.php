@@ -24,6 +24,14 @@ class InterviewTable
         return $resultSet;
     }
 
+    public function fetchAllDesc()
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select){
+            $select->order('id_interview DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchInterviewByUser($created_by)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
