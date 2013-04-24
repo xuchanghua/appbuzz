@@ -26,6 +26,14 @@ class WrtmediaTable
         return $resultSet;
     }
 
+    public function fetchAllDesc()
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select){
+            $select->order('id_wrtmedia DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchWrtmediaByFkWrt($fk_writer)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($fk_writer){

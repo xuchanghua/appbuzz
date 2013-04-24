@@ -50,6 +50,20 @@ class MonitorController extends AbstractActionController
         ));
     }
 
+    public function adminAction()
+    {        
+        //管理员->订单管理->网络监测
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'monitors' => $this->getMonitorTable()->fetchAllDesc(),
+            'all_users' => $this->getUserTable()->fetchAll(),
+        ));
+    }
+
     public function buyAction()
     {
         $arr_type_allowed = array(1);
@@ -310,7 +324,7 @@ class MonitorController extends AbstractActionController
         $str_keyword_2 = $keyword2->keyword;
 
         //connect to the monitor database
-        $con = mysql_connect("localhost:3306", "root", "");
+        $con = mysql_connect("localhost:3306", "root", "rocket2012");
         mysql_set_charset('utf8', $con);
         $charset = mysql_client_encoding($con);
         mysql_select_db("article", $con);
@@ -422,7 +436,7 @@ class MonitorController extends AbstractActionController
         $str_keyword_2 = $keyword2->keyword;
 
         //connect to the monitor database
-        $con = mysql_connect("localhost:3306", "root", "");
+        $con = mysql_connect("localhost:3306", "root", "rocket2012");
         mysql_set_charset('utf8', $con);
         $charset = mysql_client_encoding($con);
         mysql_select_db("article", $con);
@@ -515,7 +529,7 @@ class MonitorController extends AbstractActionController
         // connection with the database
         $dbhost = "localhost";
         $dbuser = "root";
-        $dbpass = "";
+        $dbpass = "rocket2012";
         $dbname = "article";
 
         $con = mysql_connect($dbhost,$dbuser,$dbpass);
@@ -606,7 +620,7 @@ class MonitorController extends AbstractActionController
         $str_keyword_2 = $keyword2->keyword;
 
         //connect to the monitor database
-        $con = mysql_connect("localhost:3306", "root", "");
+        $con = mysql_connect("localhost:3306", "root", "rocket2012");
         mysql_set_charset('utf8', $con);
         $charset = mysql_client_encoding($con);
         mysql_select_db("article", $con);

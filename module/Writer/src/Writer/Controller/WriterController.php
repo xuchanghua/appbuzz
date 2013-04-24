@@ -46,6 +46,21 @@ class WriterController extends AbstractActionController
         return $view;
     }
 
+    public function adminAction()
+    {
+        $arr_type_allowed = array(3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'writer' => $this->getWriterTable()->fetchAll(),
+            'wrtmedia' => $this->getWrtmediaTable()->fetchAllDesc(),
+            'products' => $this->getProductTable()->fetchAll(),
+            'all_users' => $this->getUserTable()->fetchAll(),
+            'wrtjoinwm' => $this->getWriterTable()->fetchAllJoinLeftWrtmediaDesc(),
+        ));
+    }
+
     public function neworderAction()
     {
         $cur_user = $this->_authenticateSession(1);
@@ -446,6 +461,7 @@ class WriterController extends AbstractActionController
             'form' => $form,
             'writer' => $this->getWriterTable()->fetchWriterByUser($cur_user),
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
         ));                
     }
 
@@ -460,6 +476,7 @@ class WriterController extends AbstractActionController
             'writer' => $this->getWriterTable()->fetchAllDesc(),
             'products' => $this->getProductTable()->fetchAll(),
             'wrtmedia' => $this->getWrtmediaTable()->fetchWrtmediaByUser($cur_user),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -474,6 +491,7 @@ class WriterController extends AbstractActionController
             'writer' => $this->getWriterTable()->fetchAllDesc(),
             'products' => $this->getProductTable()->fetchAll(),
             'wrtmedia' => $this->getWrtmediaTable()->fetchWrtmediaByUser($cur_user),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -516,6 +534,7 @@ class WriterController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -559,6 +578,7 @@ class WriterController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -651,6 +671,7 @@ class WriterController extends AbstractActionController
             'product' => $this->getProductTable()->getProduct($writer->fk_product),
             'wrtmedia' => $wrtmedia,
             'barcode_path' => $barcode_path,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -758,6 +779,7 @@ class WriterController extends AbstractActionController
             'wrtmedia' => $wrtmedia,
             'product' => $this->getProductTable()->getProduct($writer->fk_product),
             'barcode_path' => $barcode_path,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -912,6 +934,7 @@ class WriterController extends AbstractActionController
             'wrtmedia' => $wrtmedia,
             'product' => $this->getProductTable()->getProduct($writer->fk_product),
             'barcode_path' => $barcode_path,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 

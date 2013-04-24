@@ -33,6 +33,7 @@ class TopicController extends AbstractActionController
             'past_topics' => $this->getTopicTable()->fetchPastTopic($cur_user),
             'current_topics' => $this->getTopicTable()->fetchCurrentTopic($cur_user),
             'topics' => $this->getTopicTable()->fetchTopicByUser($cur_user),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -66,6 +67,7 @@ class TopicController extends AbstractActionController
         return new ViewModel(array(
             'user' => $cur_user,
             'form' => $form,            
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -92,6 +94,7 @@ class TopicController extends AbstractActionController
             'tpcontact' => $tpcontact,
             'all_users' => $all_users,
             'products' => $this->getProductTable()->fetchAll(),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -136,6 +139,7 @@ class TopicController extends AbstractActionController
             'user'  => $cur_user,
             'form'  => $form,
             'id'    => $id,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -428,6 +432,7 @@ class TopicController extends AbstractActionController
             'topic' => $topic,
             'tpcontact' => $tpcontact,
             'attachment' => $this->getAttachmentTable()->getAttachment($tpcontact->attachment),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         );
 
         if($tpcontact)
@@ -472,6 +477,7 @@ class TopicController extends AbstractActionController
             'topic'      => $topic,
             'product'    => $product,
             'attachment' => $attachment,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -536,6 +542,7 @@ class TopicController extends AbstractActionController
             'user' => $cur_user,
             'tpcontact' => $tpcontact,
             'form' => $form,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 

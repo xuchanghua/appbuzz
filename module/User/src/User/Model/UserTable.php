@@ -95,6 +95,7 @@ class UserTable
 			'created_at'    => $user->created_at,
 			'created_by'    => $user->created_by,
 			'updated_at'    => $user->updated_at,
+			'is_writer'     => $user->is_writer,
 			'updated_by'    => $user->updated_by,
 		);
 		$id = (int)$user->id;

@@ -42,6 +42,7 @@ $form->add(array(
     'type'  => 'Zend\Form\Element\Select',
     'attributes' => array(
         'id' => 'usertype',
+        'onchange' => 'show_is_writer();',
     ),
     'options' => array(
         'value_options' => array(
@@ -60,9 +61,11 @@ echo $this->formRow($form->get('fk_user_type'));
 echo "</br>";
 echo $this->formRow($form->get('username'));
 echo "</br>";
-echo $this->formRow($form->get('real_name'));
-echo "</br>";
+//echo $this->formRow($form->get('real_name'));
+//echo "</br>";
 echo $this->formRow($form->get('email'));
+echo "</br>";
+echo $this->formRow($form->get('is_writer'));
 echo "</br>";
 echo $this->formRow($form->get('password'));
 echo "</br>";
@@ -86,6 +89,23 @@ echo $this->form()->closeTag();
     </div>
     </div>
 </div>
+
+<script>
+function show_is_writer()
+{
+    var user_type = document.getElementById("usertype").value;
+    var is_writer = document.getElementById("is_writer");
+    if(user_type == 2)
+    {
+        is_writer.style.display = "";
+    }
+    else
+    {
+        is_writer.style.display = "none";
+    }
+}
+
+</script>
 
 <style>
 div.user,.mid

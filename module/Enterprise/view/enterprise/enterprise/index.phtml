@@ -3,8 +3,8 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>企业用户首页</h1>  
-    <div id="header" class="container" style="width:1170px;"> 
+    <h1>企业用户首页</h1>
+    <div id="header" class="container" style="width:1170px;">
     CONTAINER
     <div class="row">
         ROW
@@ -67,8 +67,6 @@
                             <tr>
                                 <td>
                                     电子邮箱：
-                                </td>
-                                <td>
                                     <?php echo $email;?>
                                 </td>
                             </tr>
@@ -121,10 +119,59 @@
                                 </td>
                             </tr>
                             <tr>
+                                <?php echo $arr_invoice_type = array('1' => '普通发票', '2' => '增值税发票'); ?>
                                 <td></td>
                                 <td>发票类型：</td>
                                 <td>
-                                    <?php echo $enterprise->invoice_type;?>
+                                    <?php
+                                    if(array_key_exists($enterprise->invoice_type, $arr_invoice_type)){
+                                        echo $arr_invoice_type[$enterprise->invoice_type];
+                                    }else{
+                                        echo $enterprise->invoice_type;
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>公司全称</td>
+                                <td>
+                                    <?php echo $enterprise->ent_full_name; ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>税务登记证号</td>
+                                <td>
+                                    <?php echo $enterprise->tex_registry_number; ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>公司银行开户行名称</td>
+                                <td>
+                                    <?php echo $enterprise->bank_name; ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>公司银行账号</td>
+                                <td>
+                                    <?php echo $enterprise->bank_account; ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>公司地址</td>
+                                <td>
+                                    <?php echo $enterprise->ent_address; ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>公司电话</td>
+                                <td>
+                                    <?php echo $enterprise->ent_phone_number; ?>
                                 </td>
                             </tr>
                             <tr>
@@ -146,6 +193,13 @@
                                 <td>电话：</td>
                                 <td>
                                     <?php echo $enterprise->contacter_phone;?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>手机：</td>
+                                <td>
+                                    <?php echo $enterprise->contacter_mobile;?>
                                 </td>
                             </tr>
                             <tr>
@@ -206,6 +260,48 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td></td>
+                                <td class="tdlabel">公司全称：</td>
+                                <td class="tdinput">
+                                    <?php echo $this->formRow($form->get('ent_full_name')); ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="tdlabel">税务登记证号：</td>
+                                <td class="tdinput">
+                                    <?php echo $this->formRow($form->get('tex_registry_number')); ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="tdlabel">公司银行开户行名称：</td>
+                                <td class="tdinput">
+                                    <?php echo $this->formRow($form->get('bank_name')); ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="tdlabel">公司银行账号：</td>
+                                <td class="tdinput">
+                                    <?php echo $this->formRow($form->get('bank_account')); ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="tdlabel">公司地址：</td>
+                                <td class="tdinput">
+                                    <?php echo $this->formRow($form->get('ent_address')); ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="tdlabel">公司电话：</td>
+                                <td class="tdinput">
+                                    <?php echo $this->formRow($form->get('ent_phone_number')); ?>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td class="tdlabel">联系人：</td>
                                 <td class="tdlabel">姓名</td>
                                 <td class="tdinput">
@@ -224,6 +320,13 @@
                                 <td class="tdlabel">电话</td>
                                 <td class="tdinput">
                                     <?php echo $this->formRow($form->get('contacter_phone')); ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="tdlabel">手机</td>
+                                <td class="tdinput">
+                                    <?php echo $this->formRow($form->get('contacter_mobile')); ?>
                                 </td>
                             </tr>
                             <tr>

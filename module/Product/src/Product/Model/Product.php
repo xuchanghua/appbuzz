@@ -15,6 +15,7 @@ class Product implements InputFilterAwareInterface
     public $appstore_link;
     public $androidmkt_link;
     public $web_link;
+    public $barcode;
     public $created_by;
     public $created_at;
     public $updated_by;
@@ -31,6 +32,7 @@ class Product implements InputFilterAwareInterface
         $this->appstore_link   = (isset($data['appstore_link']))   ? $data['appstore_link']   : null;
         $this->androidmkt_link = (isset($data['androidmkt_link'])) ? $data['androidmkt_link'] : null;
         $this->web_link        = (isset($data['web_link']))        ? $data['web_link']        : null;
+        $this->barcode         = (isset($data['barcode']))         ? $data['barcode']         : null;
         $this->created_by      = (isset($data['created_by']))      ? $data['created_by']      : null;
         $this->created_at      = (isset($data['created_at']))      ? $data['created_at']      : null;
         $this->updated_by      = (isset($data['updated_by']))      ? $data['updated_by']      : null;

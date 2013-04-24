@@ -46,6 +46,19 @@ class ProductTable
         return $row;
     }
 
+    public function getId($created_at, $created_by)
+    {
+        $rowset = $this->tableGateway->select(array(
+            'created_at' => $created_at,
+            'created_by' => $created_by,
+        ));
+        $row = $rowset->current();
+        if (!$row) {
+            throw new \Exception("Could not find row $id");
+        }
+        return $row->id_product;
+    }
+
     public function saveProduct(Product $product)
     {
         $data = array(
@@ -55,6 +68,7 @@ class ProductTable
             'appstore_link'   => $product->appstore_link,
             'androidmkt_link' => $product->androidmkt_link,
             'web_link'        => $product->web_link,
+            'barcode'         => $product->barcode,
             'created_by'      => $product->created_by,
             'created_at'      => $product->created_at,
             'updated_by'      => $product->updated_by,

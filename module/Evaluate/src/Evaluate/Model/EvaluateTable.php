@@ -35,6 +35,26 @@ class EvaluateTable
         return $resultSet;
     }
 
+    public function fetchAllJoinLeftEvamediaDesc()
+    {
+         $resultSet = $this->tableGateway->select(function(Select $select){
+            $select->join(
+                array('em' => 'evamedia'), //table name
+                'em.fk_evaluate = evaluate.id_evaluate', //on
+                array(
+                    'em_order_no' => 'order_no', 
+                    'em_fk_enterprise_user' => 'fk_enterprise_user',
+                    'em_fk_media_user' => 'fk_media_user',
+                    'em_created_at' => 'created_at',
+                    'em_fk_evaluate_status' => 'fk_evaluate_status',
+                ), //columns
+                'left'
+                );
+            $select->order('id_evaluate DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchCurrentEvaluate($created_by = null)
     {
         date_default_timezone_set("Asia/Shanghai");

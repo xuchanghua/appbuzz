@@ -1,4 +1,4 @@
-<h1>Newspub Admin Page</h1>
+<h1>订单管理</h1>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/style.css">
 
@@ -53,8 +53,8 @@
                     </tr>
                     <?php foreach($newspubs as $np): ?>
                     <tr>
-                        <td><?php echo $this->escapeHtml($np->order_no);?></td>
-                        <td><a href="<?php echo $this->url('newspub',array('action'=>'detail','id'=>$np->id_newspub));?>"><?php echo $this->escapeHtml($np->title);?></a></td>
+                        <td><a href="<?php echo $this->url('newspub',array('action'=>'detail','id'=>$np->id_newspub));?>"><?php echo $this->escapeHtml($np->order_no);?></a></td>
+                        <td><?php echo $this->escapeHtml($np->title);?></td>
                         <td>
                             <?php 
                             if(array_key_exists($np->fk_pub_mode, $arr_pub_mode))

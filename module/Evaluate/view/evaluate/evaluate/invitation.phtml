@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>评测APP</h1>  
+    <h1>产品评测</h1>  
     <div id="header" class="container" style="width:1170px;"> 
         CONTAINER
         <div class="row">
@@ -28,7 +28,7 @@
         <div id="mid" class="span8 mid"> 
             <div class="linkbtns">
                 <form action="#">
-                    <input type="submit" class="btn btn-primary linkbtn" value="评测APP">
+                    <input type="submit" class="btn btn-primary linkbtn" value="产品评测">
                 </form>
             </div>
             <div>
@@ -86,20 +86,15 @@
                     <?php foreach($evaluate as $eva): ?>
                     <tr>
                         <td>
-                            <?php 
-                            if(array_key_exists($eva->id_evaluate, $arr_eva_order))
-                            {
-                                echo $this->escapeHtml($arr_eva_order[$eva->id_evaluate]);
-                            }
-                            ?>
-                        </td>
-                        <td><?php echo $this->escapeHtml($arr_product_name[$eva->fk_product]);?></td>
-                        <td>
+                            <?php if(array_key_exists($eva->id_evaluate, $arr_eva_order)): ?>
                             <a href="<?php echo $this->url('evaluate', 
                             array('action' => 'evainfo', 'id' => $eva->id_evaluate)) ;?>">
-                                <?php echo $this->escapeHtml($eva->requirement);?>
+                            <?php echo $this->escapeHtml($arr_eva_order[$eva->id_evaluate]); ?>
                             </a>
+                            <?php endif; ?>
                         </td>
+                        <td><?php echo $this->escapeHtml($arr_product_name[$eva->fk_product]);?></td>
+                        <td><?php echo $this->escapeHtml($eva->requirement);?></td>
                         <td><?php echo $this->escapeHtml($eva->due_date);?></td>
                         <td><?php echo $this->escapeHtml($eva->created_by);?></td>
                         <td>500元</td>

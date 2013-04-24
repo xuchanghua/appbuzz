@@ -1,0 +1,130 @@
+<h1>订单管理</h1>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span2 left">
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_admin.phtml'; 
+        ?>
+        </div>
+        <div id="mid" class="span8 mid">
+            <?php
+
+            ?>
+            <div id="pubmgmt" class="widget-box">
+                <div class="widget-title">
+                    <h4>产品评测订单</h4>
+                </div>
+                <div class="widget-content nopadding">
+                <table class="table table-bordered table-striped">
+                    <?php
+                    $arr_id_eva = array();
+                    foreach($evaluate as $eva)
+                    {
+                        $arr_id_eva[$eva->id_evaluate] = $eva;
+                    }
+                    $arr_id_user = array();
+                    foreach($all_users as $au)
+                    {
+                        $arr_id_user[$au->id] = $au;
+                    }
+                    $arr_id_product = array();
+                    foreach ($products as $pd) 
+                    {
+                        $arr_id_product[$pd->id_product] = $pd;
+                    }
+                    $arr_fk_evamedia_status = array(
+                        '1' => '新订单',
+                        '2' => '媒体拒绝',
+                        '3' => '媒体接受',
+                        '4' => '企业拒绝',
+                        '5' => '企业接受',
+                    );
+                    ?>
+                    <tr>
+                        <th>母订单号</th>
+                        <th>发布企业</th>
+                        <th>产品名称</th>
+                        <th>子订单号</th>
+                        <th>评测媒体</th>
+                        <th>订单状态</th>
+                        <th>创建日期</th>
+                        <!--<th>操作</th>-->
+                    </tr>
+                    <?php foreach($evajoinem as $ejm): ?>
+                    <tr>
+                        <td>                       
+                            <a href="/evaluate/detail/<?php echo $ejm->id_evaluate; ?>">
+                                <?php echo $ejm->order_no; ?>
+                            </a>
+                        </td>
+                        <td><?php echo $ejm->created_by; ?></td>
+                        <td>
+                            <?php
+                            if(array_key_exists($ejm->fk_product, $arr_id_product))
+                            {
+                                echo $arr_id_product[$ejm->fk_product]->name; 
+                            }
+                            ?>
+                        </td>
+                        <td><?php echo $ejm->em_order_no; ?></td>
+                        <td>
+                            <?php                             
+                            if(array_key_exists($ejm->em_fk_media_user, $arr_id_user))
+                            {
+                                echo $arr_id_user[$ejm->em_fk_media_user]->username; 
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                            if(array_key_exists($ejm->em_fk_evaluate_status, $arr_fk_evamedia_status))
+                            {
+                                echo $arr_fk_evamedia_status[$ejm->em_fk_evaluate_status];
+                            }
+                            ?>
+                        </td>
+                        <td><?php echo $ejm->em_created_at; ?></td>
+                        <!--<td></td>-->
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+                </div>
+            </div>
+        </div>
+        <div id="right" class="span3 right">
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div#userinfo
+{
+    border: 1px solid black;
+}
+</style>

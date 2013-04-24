@@ -43,6 +43,12 @@ class Evaluate implements InputFilterAwareInterface
         $this->requirement     = (isset($data['requirement']))     ? $data['requirement']     : null;
         $this->due_date        = (isset($data['due_date']))        ? $data['due_date']        : null;
         $this->order_no        = (isset($data['order_no']))        ? $data['order_no']        : null;
+        // leftjoin evamedia
+        $this->em_order_no           = (isset($data['em_order_no']))           ? $data['em_order_no']           : null;
+        $this->em_fk_enterprise_user = (isset($data['em_fk_enterprise_user'])) ? $data['em_fk_enterprise_user'] : null;
+        $this->em_fk_media_user      = (isset($data['em_fk_media_user']))      ? $data['em_fk_media_user']      : null;
+        $this->em_created_at         = (isset($data['em_created_at']))         ? $data['em_created_at']         : null;
+        $this->em_fk_evaluate_status = (isset($data['em_fk_evaluate_status'])) ? $data['em_fk_evaluate_status'] : null;        
     }
 
     // Add the following method:

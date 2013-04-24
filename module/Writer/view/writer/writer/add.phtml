@@ -3,7 +3,7 @@
 
 
 <div id="indexpage" class="indexpage">
-    <h1>新闻撰写</h1>  
+    <h1>撰稿外包</h1>  
     <div id="header" class="container" style="width:1170px;"> 
         CONTAINER
         <div class="row">
@@ -28,13 +28,13 @@
 
         <div id="mid" class="span8 mid">
             <div class="linkbtns">
-                <form action="/writer/index">
-                    <input type="submit" class="btn btn-primary linkbtn" value="新闻撰写">
+                <form action="#">
+                    <input type="submit" class="btn btn-primary linkbtn" value="撰稿外包">
                 </form>
             </div>
             <div>
-                <form action="/writer/add">
-                    <input type="submit" class="btn btn-primary linkbtn" value="我要撰稿">
+                <form action="#">
+                    <input type="submit" class="btn btn-primary linkbtn" value="订单发布">
                 </form>
             </div>
             <div id="writeredit">
@@ -50,7 +50,7 @@
                         'action' => 'add',
                     )
                 ));
-                $arr_products = array();
+                $arr_products = array( '' => '' );
                 foreach ($products as $p)
                 {
                     $arr_products[$p->id_product] = $p->name;
@@ -60,6 +60,7 @@
                     'type'  => 'Zend\Form\Element\Select',
                     'attributes' => array(
                         'id' => 'appproduct',
+                        'onchange' => "change_product();",
                         ),
                     'options' => array(
                         'value_options' => $arr_products,
@@ -68,7 +69,6 @@
                 $form->prepare();
                 echo $this->form()->openTag($form);
                 echo $this->formHidden($form->get('id_writer'));
-                echo $this->formHidden($form->get('fk_product'));
                 ?>
                 <tr>
                     <td class="tdlabel">App产品：</td>
@@ -153,6 +153,24 @@
     </div>
     </div>
 </div>
+
+<script>
+function change_product()
+{
+    var product = document.getElementById("appproduct").value;
+    var product_web = new Array();
+    var product_appstore = new Array();
+    var product_android = new Array();
+    <?php foreach($js_products as $pro): ?>
+    product_web[<?php echo $pro->id_product; ?>] = "<?php echo $pro->web_link; ?>";
+    product_appstore[<?php echo $pro->id_product; ?>] = "<?php echo $pro->appstore_link; ?>";
+    product_android[<?php echo $pro->id_product; ?>] = "<?php echo $pro->androidmkt_link; ?>";
+    <?php endforeach; ?>
+    document.getElementById("web_link").value = product_web[product];
+    document.getElementById("appstore_link").value = product_appstore[product];
+    document.getElementById("androidmkt_link").value = product_android[product];
+}
+</script>
 
 <style>
 div.user,.mid

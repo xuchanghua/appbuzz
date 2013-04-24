@@ -50,17 +50,20 @@
                         'action' => 'add',
                     )
                 ));
-                $arr_products = array();
+                $arr_products = array( '' => '');
                 foreach ($products as $p)
                 {
                     $arr_products[$p->id_product] = $p->name;
+                    /*$arr_product_appstorelink[$p->id_product] = $p->appstore_link;
+                    $arr_product_androidmktlink[$p->id_product] = $p->androidmkt_link;
+                    $arr_product_weblink[$p->id_product] = $p->web_link;*/
                 }
                 $form->add(array(
                     'name' => 'fk_product',
                     'type'  => 'Zend\Form\Element\Select',
                     'attributes' => array(
                         'id' => 'appproduct',
-                        //'onchange' => "alert();",
+                        'onchange' => "change_product();",
                         ),
                     'options' => array(
                         'value_options' => $arr_products,
@@ -217,6 +220,23 @@
 </div>
 
 <script>
+function change_product()
+{
+    var product = document.getElementById("appproduct").value;
+    var product_web = new Array();
+    var product_appstore = new Array();
+    var product_android = new Array();
+    <?php foreach($js_products as $pro): ?>
+    product_web[<?php echo $pro->id_product; ?>] = "<?php echo $pro->web_link; ?>";
+    product_appstore[<?php echo $pro->id_product; ?>] = "<?php echo $pro->appstore_link; ?>";
+    product_android[<?php echo $pro->id_product; ?>] = "<?php echo $pro->androidmkt_link; ?>";
+    <?php endforeach; ?>
+    document.getElementById("download_link").value = product_web[product];
+    document.getElementById("appstore_links").value = product_appstore[product];
+    document.getElementById("androidmkt_link").value = product_android[product];
+}
+
+
 //show and hide the charge method according to the value of the publish mode
 var media = document.getElementById("tr_pick_media");
 var single = document.getElementById("charge_method_single");

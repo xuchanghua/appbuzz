@@ -52,7 +52,7 @@
                         'action' => 'add',
                     )
                 ));
-                $arr_products = array();
+                $arr_products = array( '' => '' );
                 foreach ($products as $p)
                 {
                     $arr_products[$p->id_product] = $p->name;
@@ -62,6 +62,7 @@
                     'type'  => 'Zend\Form\Element\Select',
                     'attributes' => array(
                         'id' => 'appproduct',
+                        'onchange' => "change_product();",
                         ),
                     'options' => array(
                         'value_options' => $arr_products,
@@ -192,6 +193,22 @@ input[type="text"], textarea
 </style>
 
 <script>
+function change_product()
+{
+    var product = document.getElementById("appproduct").value;
+    var product_web = new Array();
+    var product_appstore = new Array();
+    var product_android = new Array();
+    <?php foreach($js_products as $pro): ?>
+    product_web[<?php echo $pro->id_product; ?>] = "<?php echo $pro->web_link; ?>";
+    product_appstore[<?php echo $pro->id_product; ?>] = "<?php echo $pro->appstore_link; ?>";
+    product_android[<?php echo $pro->id_product; ?>] = "<?php echo $pro->androidmkt_link; ?>";
+    <?php endforeach; ?>
+    document.getElementById("web_link").value = product_web[product];
+    document.getElementById("appstore_link").value = product_appstore[product];
+    document.getElementById("androidmkt_link").value = product_android[product];
+}
+
     window.onload = function(){
         new JsDatePick({
             useMode:2,

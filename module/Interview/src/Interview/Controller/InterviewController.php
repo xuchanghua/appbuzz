@@ -26,6 +26,7 @@ class InterviewController extends AbstractActionController
             'current_interview' => $this->getInterviewTable()->fetchCurrentInterview($cur_user),
             'past_interview' => $this->getInterviewTable()->fetchPastInterview($cur_user),
             'products' => $this->getProductTable()->fetchAll(),    
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -75,6 +76,7 @@ class InterviewController extends AbstractActionController
             'user' => $cur_user,
             'form' => $form,
             'all_products' => $this->getProductTable()->fetchAll(),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -97,6 +99,7 @@ class InterviewController extends AbstractActionController
             'user' => $cur_user,
             'interview' => $interview,
             'product' => $product,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -154,6 +157,7 @@ class InterviewController extends AbstractActionController
             'form' => $form,
             'interview' => $interview,
             'product' => $product,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         );
     }
 

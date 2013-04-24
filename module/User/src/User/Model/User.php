@@ -19,6 +19,7 @@ class User implements InputFilterAwareInterface
 	public $email;
 	public $fk_enterprise;
 	public $fk_media;
+	public $is_writer;
 	public $created_at;
 	public $created_by;
 	public $updated_at;
@@ -38,6 +39,7 @@ class User implements InputFilterAwareInterface
 		$this->fk_media         = (isset($data['fk_media']))         ? $data['fk_media']         : null;
 		$this->confirmpassword  = (isset($data['confirmpassword']))  ? $data['confirmpassword']  : null;
 		$this->originalpassword = (isset($data['originalpassword'])) ? $data['originalpassword'] : null;
+		$this->is_writer        = (isset($data['is_writer']))        ? $data['is_writer']        : null;
 		$this->created_at       = (isset($data['created_at']))       ? $data['created_at']       : null;
 		$this->created_by       = (isset($data['created_by']))       ? $data['created_by']       : null;
 		$this->updated_at       = (isset($data['updated_at']))       ? $data['updated_at']       : null;
@@ -101,7 +103,7 @@ class User implements InputFilterAwareInterface
 						),
 					),
 				)));
-
+			/*
 			$inputFilter->add($factory->createInput(array(
 				'name'     => 'real_name',
 				'required' => true,
@@ -121,7 +123,7 @@ class User implements InputFilterAwareInterface
 						),
 					),
 				)));
-
+			*/
 			$inputFilter->add($factory->createInput(array(
 				'name'     => 'email',
 				'required' => true,

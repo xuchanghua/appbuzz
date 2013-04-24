@@ -58,6 +58,7 @@ class MediaController extends AbstractActionController
             'fk_media' => $fk_media,
             'media' => (isset($fk_media))? $this->getMediaTable()->getMedia($fk_media) : null,
             'form' => $form,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
             //'products' => $this->getProductTable()->fetchProductByUser($cur_user),
             ));
     }
@@ -103,6 +104,7 @@ class MediaController extends AbstractActionController
             'fk_media' => $this->_getUserFkMedia($cur_user),
             'media' => (isset($fk_media))? $this->getMediaTable()->getMedia($fk_media) : null,
             'form' => $form,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -163,6 +165,7 @@ class MediaController extends AbstractActionController
             'user' => $cur_user,
             'credit' => $credit,
             'creditlog' => $creditlog,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 

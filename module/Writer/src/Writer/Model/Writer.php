@@ -41,6 +41,12 @@ class Writer implements InputFilterAwareInterface
         $this->updated_at      = (isset($data['updated_at']))      ? $data['updated_at']      : null;
         $this->wrtmedia        = (isset($data['wrtmedia']))        ? $data['wrtmedia']        : null;
         $this->order_no        = (isset($data['order_no']))        ? $data['order_no']        : null;
+        //leftjoin wrtmedia
+        $this->wm_order_no           = (isset($data['wm_order_no']))           ? $data['wm_order_no']           : null;
+        $this->wm_fk_enterprise_user = (isset($data['wm_fk_enterprise_user'])) ? $data['wm_fk_enterprise_user'] : null;
+        $this->wm_fk_media_user      = (isset($data['wm_fk_media_user']))      ? $data['wm_fk_media_user']      : null;
+        $this->wm_created_at         = (isset($data['wm_created_at']))         ? $data['wm_created_at']         : null;
+        $this->wm_fk_wrtmedia_status = (isset($data['wm_fk_wrtmedia_status'])) ? $data['wm_fk_wrtmedia_status'] : null;
     }
 
     // Add the following method:

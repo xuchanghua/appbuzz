@@ -213,6 +213,7 @@ class NewspubController extends AbstractActionController
             'form' => $form,
             'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'medias' => $this->getUserTable()->fetchUserByFkType(2),
         ));        
     }
@@ -265,10 +266,11 @@ class NewspubController extends AbstractActionController
             ));
         }
         $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
+        $owner = $this->getUserTable()->getUserByName($newspub->created_by);
         if($newspub->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($newspub->barcode);
-            $barcode_path = '/upload/'.$cur_user.'/newspub/'.$id_newspub.'/'.$barcode->filename;
+            $barcode_path = '/upload/'.$owner->username.'/newspub/'.$id_newspub.'/'.$barcode->filename;
         }
         else
         {
@@ -378,13 +380,13 @@ class NewspubController extends AbstractActionController
             'id'      => $id_newspub,
             'product' => $product,
             'barcode_path' => $barcode_path,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
         ));
     }
 
     public function adminAction()
     {
-        //authenticate the admin user:
-        //$cur_user = $this->_authenticateSession(3);
+        //管理员->订单管理->新闻发布
         $arr_type_allowed = array(3);
         $cur_user = $this->_auth($arr_type_allowed);
 

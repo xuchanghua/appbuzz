@@ -10,6 +10,8 @@ class ProductForm extends Form
         // we want to ignore the name passed
         parent::__construct('product');
         $this->setAttribute('method', 'post');
+        $this->setAttribute('enctype', 'multipart/form-data');
+        
         $this->add(array(
             'name' => 'id_product',
             'attributes' => array(
@@ -79,6 +81,23 @@ class ProductForm extends Form
             'attributes' => array(
                 'type' => 'text',
                 'placeholder' => 'web下载链接',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));      
+        $this->add(array(
+            'name' => 'MAX_FILE_SIZE',
+            'attributes' => array(
+                'type' => 'hidden',
+                'value' => '100000000'
+            ),
+        ));
+        $this->add(array(
+            'name' => 'barcode',
+            'attributes' => array(
+                'type'  => 'file',
+                'placeholder' => '下载二维码',
             ),
             'options' => array(
                 'label' => '',

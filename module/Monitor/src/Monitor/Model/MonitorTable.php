@@ -27,6 +27,14 @@ class MonitorTable
         return $resultSet;
     }
 
+    public function fetchAllDesc()
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select){
+            $select->order('id_monitor DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchMonitorByFkEntUser($fk_enterprise_user)
     {
         $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_enterprise_user){

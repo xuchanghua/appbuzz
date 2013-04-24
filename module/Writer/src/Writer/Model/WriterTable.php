@@ -26,6 +26,27 @@ class WriterTable
         return $resultSet;
     }
 
+    public function fetchAllJoinLeftWrtmediaDesc()
+    {
+         $resultSet = $this->tableGateway->select(function(Select $select){
+            //$select->from(array('wrt' => 'writer'), array('id_writer'));
+            $select->join(
+                array('wm' => 'wrtmedia'), //table name
+                'wm.fk_writer = writer.id_writer', //on
+                array(
+                    'wm_order_no' => 'order_no', 
+                    'wm_fk_enterprise_user' => 'fk_enterprise_user',
+                    'wm_fk_media_user' => 'fk_media_user',
+                    'wm_created_at' => 'created_at',
+                    'wm_fk_wrtmedia_status' => 'fk_wrtmedia_status',
+                ), //columns
+                'left'
+                );
+            $select->order('id_writer DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchAllDesc()
     {
         $resultSet = $this->tableGateway->select(function(Select $select){

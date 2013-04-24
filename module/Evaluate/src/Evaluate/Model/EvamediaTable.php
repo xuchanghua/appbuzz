@@ -26,6 +26,14 @@ class EvamediaTable
         return $resultSet;
     }
 
+    public function fetchAllDesc()
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select){
+            $select->order('id_evamedia DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchEvamediaByUser($created_by)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($created_by){

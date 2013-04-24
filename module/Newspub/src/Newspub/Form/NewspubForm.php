@@ -50,6 +50,7 @@ class NewspubForm extends Form
             'attributes' => array(
                 'type'  => 'text',
                 'placeholder' => 'web下载链接',
+                'id' => 'download_link',
             ),
             'options' => array(
                 'label' => '',
@@ -60,6 +61,7 @@ class NewspubForm extends Form
             'attributes' => array(
                 'type'  => 'text',
                 'placeholder' => 'Appstore下载链接',
+                'id' => 'appstore_links',
             ),
             'options' => array(
                 'label' => '',
@@ -70,6 +72,7 @@ class NewspubForm extends Form
             'attributes' => array(
                 'type'  => 'text',
                 'placeholder' => '安卓市场下载链接',
+                'id' => 'androidmkt_link',
             ),
             'options' => array(
                 'label' => '',

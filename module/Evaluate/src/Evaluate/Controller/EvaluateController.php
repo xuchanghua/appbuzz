@@ -160,7 +160,7 @@ class EvaluateController extends AbstractActionController
 
     public function detailAction()
     {
-        $arr_type_allowed = array(1, 2, 3);
+        $arr_type_allowed = array(1, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id = (int)$this->params()->fromRoute('id',0);        
@@ -170,10 +170,11 @@ class EvaluateController extends AbstractActionController
             ));
         }
         $evaluate = $this->getEvaluateTable()->getEvaluate($id);
+        $owner = $this->getUserTable()->getUserByName($evaluate->created_by);
         if($evaluate->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
-            $barcode_path = '/upload/'.$cur_user.'/evaluate/'.$id.'/'.$barcode->filename;
+            $barcode_path = '/upload/'.$owner->username.'/evaluate/'.$id.'/'.$barcode->filename;
         }
         else
         {
@@ -194,12 +195,14 @@ class EvaluateController extends AbstractActionController
         return new ViewModel(array(
             'evaluate' => $evaluate,
             'user' => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'allusers' => $this->getUserTable()->fetchAll(),
             'id' => $id,
             'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
             //'media_assignees' => $arr_media_assignees,
             'evamedias' => $this->getEvamediaTable()->fetchEmExRejByMedByFkEva($id),//not include those rejected by the media
             'barcode_path' => $barcode_path,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }    
 
@@ -216,10 +219,11 @@ class EvaluateController extends AbstractActionController
             ));
         }
         $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+        $owner = $this->getUserTable()->getUserByName($evaluate->created_by);
         if($evaluate->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
-            $barcode_path = '/upload/'.$cur_user.'/evaluate/'.$id_evaluate.'/'.$barcode->filename;
+            $barcode_path = '/upload/'.$owner->username.'/evaluate/'.$id_evaluate.'/'.$barcode->filename;
         }
         else
         {
@@ -256,7 +260,7 @@ class EvaluateController extends AbstractActionController
                     //check if the path exists
                     //path format: /public/upload/user_name/module_name/id_module_name/
                     $path_0    = 'public/upload/';
-                    $path_1    = $path_0.$cur_user.'/';
+                    $path_1    = $path_0.$owner->username.'/';
                     $path_2    = $path_1.'evaluate/';
                     $path_full = $path_2.$id_evaluate.'/';
                     if(!is_dir($path_1))
@@ -333,11 +337,13 @@ class EvaluateController extends AbstractActionController
         return new ViewModel(array(
             //'evaluate' => $this->getEvaluateTable()->getEvaluate($id),
             'user'     => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'form'     => $form,
             'id'       => $id_evaluate,
             'product'  => $product,
             //'media_assignees' => $arr_media_assignees,
             'barcode_path' => $barcode_path,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -465,7 +471,24 @@ class EvaluateController extends AbstractActionController
             'form' => $form,
             'evaluate' => $this->getEvaluateTable()->fetchEvaluateByUser($cur_user),
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
         ));        
+    }
+
+    public function adminAction()
+    {
+        //管理员->订单管理->产品评测
+        $arr_type_allowed = array(2, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'evaluate' => $this->getEvaluateTable()->fetchAllDesc(),
+            'products' => $this->getProductTable()->fetchAll(),
+            'evamedia' => $this->getEvamediaTable()->fetchAllDesc(),
+            'all_users' => $this->getUserTable()->fetchAll(),
+            'evajoinem' => $this->getEvaluateTable()->fetchAllJoinLeftEvamediaDesc(),
+        ));    
     }
 
     public function mgmtAction()
@@ -480,6 +503,7 @@ class EvaluateController extends AbstractActionController
             'evaluate' => $this->getEvaluateTable()->fetchPastEvaluate(),
             'products' => $this->getProductTable()->fetchAll(),
             'evamedia' => $this->getEvamediaTable()->fetchEvamediaByUser($cur_user),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));    
     }
 
@@ -495,6 +519,7 @@ class EvaluateController extends AbstractActionController
             'evaluate' => $this->getEvaluateTable()->fetchCurrentEvaluate(),
             'products' => $this->getProductTable()->fetchAll(),
             'evamedia' => $this->getEvamediaTable()->fetchEvamediaByUser($cur_user),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));        
     }
 
@@ -538,6 +563,7 @@ class EvaluateController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));        
     }
 
@@ -581,6 +607,7 @@ class EvaluateController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));  
     }
 
@@ -699,6 +726,7 @@ class EvaluateController extends AbstractActionController
             'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
             'evamedia' => $evamedia,
             'barcode_path' => $barcode_path,
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -758,6 +786,7 @@ class EvaluateController extends AbstractActionController
             'evaluate' => $evaluate,
             'evamedia' => $evamedia,
             'product' => $this->getProductTable()->getProduct($evaluate->fk_product),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 

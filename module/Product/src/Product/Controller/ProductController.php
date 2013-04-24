@@ -5,15 +5,19 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Product\Model\Product;          // <-- Add this import
 use Product\Form\ProductForm;       // <-- Add this import
+use Attachment\Model\Barcode;
+use Zend\File\Transfer\Adapter\Http as FileHttp;
+use Zend\Validator\File\Size as FileSize;
+use Zend\Validator\File\Extension as FileExt;
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
-use Zend\File\Transfer\Adapter\Http as FileHttp;
 use DateTime;
 
 class ProductController extends AbstractActionController
 {
     protected $productTable;
     protected $userTable;
+    protected $barcodeTable;
 
     public function indexAction()
     {             
@@ -69,6 +73,62 @@ class ProductController extends AbstractActionController
                 $product->updated_by = $cur_user;
                 $product->updated_at = $this->_getDateTime();
                 $this->getProductTable()->saveProduct($product);
+                $id_product = $this->getProductTable()->getId(
+                        $product->created_at, 
+                        $product->created_by
+                    );
+
+                //upload start
+                $file = $this->params()->fromFiles('barcode');
+                $max = 4000000;//单位比特
+                $sizeObj = new FileSize(array("max"=>$max));
+                $extObj = new FileExt(array("jpg","gif","png"));
+                $adapter = new FileHttp();
+                $adapter->setValidators(array($sizeObj, $extObj),$file['name']);
+                if(!$adapter->isValid()){
+                    echo implode("\n",$dataError = $adapter->getMessages());
+                }else{
+                    //check if the path exists
+                    //path format: /public/upload/user_name/module_name/id_module_name/
+                    $path_0    = 'public/upload/';
+                    $path_1    = $path_0.$cur_user.'/';
+                    $path_2    = $path_1.'product/';
+                    $path_full = $path_2.$id_product.'/';
+                    if(!is_dir($path_1))
+                    {
+                        mkdir($path_1);
+                    }
+                    if(!is_dir($path_2))
+                    {
+                        mkdir($path_2);
+                    }
+                    if(!is_dir($path_full))
+                    {
+                        mkdir($path_full);
+                    }
+                    $adapter->setDestination($path_full);
+                    if(!$adapter->receive($file['name'])){
+                        echo implode("\n", $adapter->getMessages());
+                    }
+                    else
+                    {
+                        //create a record in the table 'barcode'
+                        $barcode = new Barcode();
+                        $barcode->filename = $file['name'];
+                        $barcode->path = $path_full;
+                        $barcode->created_by = $cur_user;
+                        $barcode->created_at = $this->_getDateTime();
+                        $this->getBarcodeTable()->saveBarcode($barcode);
+                        $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
+                        //md5() the file name
+                        //rename($file['name'], md5($file['name']));
+                    }
+                }
+                //upload end
+
+                $product2 = $this->getProductTable()->getProduct($id_product);
+                $product2->barcode = $id_barcode;
+                $this->getProductTable()->saveProduct($product2);
 
                 return $this->redirect()->toRoute('product',array(
                     'action' => 'detail',
@@ -96,12 +156,23 @@ class ProductController extends AbstractActionController
                 'action' => 'index'
             ));
         }
+        $product = $this->getProductTable()->getProduct($id);
+        if($product->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($product->barcode);
+            $barcode_path = '/upload/'.$product->created_by.'/product/'.$id.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
 
         return new ViewModel(array(
             'user' => $cur_user,
             'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'product' => $this->getProductTable()->getProduct($id),
             'id' => $id,
+            'barcode_path' => $barcode_path,
         ));
     }
 
@@ -111,21 +182,87 @@ class ProductController extends AbstractActionController
         $arr_type_allowed = array(1, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
-        $id = (int)$this->params()->fromRoute('id',0);
-        if(!$id){
+        $id_product = (int)$this->params()->fromRoute('id',0);
+        if(!$id_product){
             return $this->redirect()->toRoute('application', array(
                 'action' => 'index'
             ));
         }
-        $product = $this->getProductTable()->getProduct($id);
+        $product = $this->getProductTable()->getProduct($id_product);
+        if($product->barcode)
+        {
+            $barcode = $this->getBarcodeTable()->getBarcode($product->barcode);
+            $barcode_path = '/upload/'.$cur_user.'/product/'.$id_product.'/'.$barcode->filename;
+        }
+        else
+        {
+            $barcode_path = '#';
+        }
         $product_created_by = $product->created_by;
         $product_created_at = $product->created_at;
+        $product_barcode    = $product->barcode;
         $form = new ProductForm();
         $form->bind($product);
         $form->get('submit')->setAttribute('value','保存');
 
         $request = $this->getRequest();
         if($request->isPost()){
+            //upload start
+            $file = $this->params()->fromFiles('barcode');
+            if(!$file['name'])
+            {
+                //if the barcode is not pick up:
+                //skip the upload section
+            }
+            else
+            {
+                $max = 4000000;//单位比特
+                $sizeObj = new FileSize(array("max"=>$max));
+                $extObj = new FileExt(array("jpg","gif","png"));
+                $adapter = new FileHttp();
+                $adapter->setValidators(array($sizeObj, $extObj),$file['name']);
+                if(!$adapter->isValid()){
+                    echo implode("\n",$dataError = $adapter->getMessages());
+                }else{
+                    //check if the path exists
+                    //path format: /public/upload/user_name/module_name/id_module_name/
+                    $path_0    = 'public/upload/';
+                    $path_1    = $path_0.$cur_user.'/';
+                    $path_2    = $path_1.'product/';
+                    $path_full = $path_2.$id_product.'/';
+                    if(!is_dir($path_1))
+                    {
+                        mkdir($path_1);
+                    }
+                    if(!is_dir($path_2))
+                    {
+                        mkdir($path_2);
+                    }
+                    if(!is_dir($path_full))
+                    {
+                        mkdir($path_full);
+                    }
+                    $adapter->setDestination($path_full);
+                    if(!$adapter->receive($file['name'])){
+                        echo implode("\n", $adapter->getMessages());
+                    }
+                    else
+                    {
+                        //create a record in the table 'barcode'
+                        $barcode = new Barcode();
+                        $barcode->filename = $file['name'];
+                        $barcode->path = $path_full;
+                        $barcode->created_by = $cur_user;
+                        $barcode->created_at = $this->_getDateTime();
+                        $this->getBarcodeTable()->saveBarcode($barcode);
+                        $id_barcode = $this->getBarcodeTable()->getId($barcode->created_at, $barcode->created_by);
+                        //md5() the file name
+                        //rename($file['name'], md5($file['name']));
+                    }
+                }
+            }
+            //upload end
+
             $form->setInputFilter($product->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
@@ -133,11 +270,19 @@ class ProductController extends AbstractActionController
                 $form->getData()->created_at = $product_created_at;
                 $form->getData()->updated_by = $cur_user;
                 $form->getData()->updated_at = $this->_getDateTime();
+                if(isset($id_barcode))
+                {
+                    $form->getData()->barcode = $id_barcode;
+                }
+                else
+                {
+                    $form->getData()->barcode = $product_barcode;
+                }
                 $this->getProductTable()->saveProduct($form->getData());
 
                 return $this->redirect()->toRoute('product', array(
                     'action' => 'detail',
-                    'id'     => $id,
+                    'id'     => $id_product,
                 ));
             }
         }
@@ -146,7 +291,8 @@ class ProductController extends AbstractActionController
             'user' => $cur_user,
             'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'form' => $form,
-            'id' => $id,
+            'id' => $id_product,
+            'barcode_path' => $barcode_path,
         ));
     }
 
@@ -166,6 +312,15 @@ class ProductController extends AbstractActionController
             $this->userTable = $sm->get('User\Model\UserTable');
         }
         return $this->userTable;
+    }
+
+    public function getBarcodeTable()
+    {
+        if (!$this->barcodeTable) {
+        $sm = $this->getServiceLocator();
+        $this->barcodeTable = $sm->get('Attachment\Model\BarcodeTable');
+        }
+        return $this->barcodeTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

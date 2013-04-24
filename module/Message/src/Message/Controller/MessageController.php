@@ -24,6 +24,7 @@ class MessageController extends AbstractActionController
         $session_user = $this->session->username;
         return new ViewModel(array(
             'messages' => $this->getMessageTable()->getMessageToUser($session_user),
+            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
         /*
 	    return new ViewModel(array(

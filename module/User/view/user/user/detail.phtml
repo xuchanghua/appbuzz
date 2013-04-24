@@ -43,10 +43,10 @@
                         <td><?php echo $target_user->username;?></td>
                     </tr>
                     <tr>
+                        <td>电子邮箱：</td>
+                        <td><?php echo $target_user->email;?></td>
                         <td>密码：</td>
-                        <td><?php echo $target_user->password;?></td>
-                        <td>真实姓名：</td>
-                        <td><?php echo $target_user->real_name;?></td>
+                        <td><?php echo $target_user->password;?></td>                        
                     </tr>
                     <tr>
                         <td>用户类型：</td>
@@ -62,8 +62,26 @@
                             }
                             ?>
                         </td>
-                        <td>电子邮箱：</td>
-                        <td><?php echo $target_user->email;?></td>
+                        <td>
+                            <?php
+                            if($target_user->fk_user_type == 2)
+                            {
+                                echo "是否自由撰稿人：";
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                            $arr_is_writer = array(
+                                '1' => 'Yes',
+                                '0' => 'No',
+                            );
+                            if($target_user->fk_user_type == 2)
+                            {
+                                echo $arr_is_writer[$target_user->is_writer];
+                            }
+                            ?>
+                        </td>
                     </tr>
                     <tr>
                         <td>创建人：</td>

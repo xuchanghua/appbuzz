@@ -59,12 +59,14 @@ class EnterpriseForm extends Form
         ));
         $this->add(array(
             'name' => 'invoice_type',
-            'attributes' => array(
-                'type'  => 'text',
-                'placeholder' => '发票类型',
-            ),
+            'type'  => 'Zend\Form\Element\Select',
             'options' => array(
                 'label' => '',
+                'value_options' => array(
+                    '' => '请选择发票类型',
+                    '1'   => '普通发票',
+                    '2' => '增值税发票',
+                ),
             ),
         ));
         $this->add(array(
@@ -98,10 +100,80 @@ class EnterpriseForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'contacter_mobile',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '手机',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
             'name' => 'contacter_email',
             'attributes' => array(
                 'type'  => 'text',
                 'placeholder' => '邮箱',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'ent_full_name',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '公司全称',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'tex_registry_number',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '税务登记证号',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'bank_name',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '公司银行开户行名称',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'bank_account',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '公司银行账号',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'ent_address',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '公司地址',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'ent_phone_number',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '公司电话',
             ),
             'options' => array(
                 'label' => '',
