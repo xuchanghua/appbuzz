@@ -169,6 +169,15 @@ class MediaController extends AbstractActionController
         ));
     }
 
+    public function myorderAction()
+    {
+        //媒体用户首页->我的订单
+        $arr_type_allowed = array(2);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        
+    }
+
     public function topicpublishAction()
     {
     }

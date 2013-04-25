@@ -117,6 +117,5 @@ class UserForm extends Form
 				'class' => 'btn btn-primary',
 				),
 			));
-
 	}
 }

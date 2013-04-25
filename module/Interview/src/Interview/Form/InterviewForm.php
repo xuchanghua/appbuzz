@@ -39,6 +39,7 @@ class InterviewForm extends Form
             'attributes' => array(
                 'type' => 'text',
                 'placeholder' => 'YYYY-MM-DD',
+                'id' => 'f_date_ETA',
             ),
             'options' => array(
                 'label' => '',

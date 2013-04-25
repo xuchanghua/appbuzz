@@ -128,6 +128,7 @@ class UserController extends AbstractActionController
                 if($user->password == $user->confirmpassword)
                 {
                     $user->fk_user_type = 1;//enterprise user
+                    $user->is_writer = 0;
                     $user->created_at = $this->_getDateTime();
                     $user->created_by = $user->username;
                     $user->updated_at = $this->_getDateTime();
@@ -170,6 +171,8 @@ class UserController extends AbstractActionController
                         die("no such user type!");
                 }
                 //return $this->redirect()->toRoute('enterprise');
+            }else{
+                //die(var_dump($form->getMessages()));
             }
         }
         return array('form' => $form);
@@ -362,7 +365,7 @@ class UserController extends AbstractActionController
         $tu_created_by    = $target_user->created_by;
         $tu_fk_enterprise = $target_user->fk_enterprise;
         $tu_fk_media      = $target_user->fk_media;
-
+        //$tu_is_writer     = $target_user->is_writer;
         $form = new UserForm();
         $form->bind($target_user);
         $form->get('submit')->setAttribute('value','保存');
@@ -378,6 +381,7 @@ class UserController extends AbstractActionController
                 $form->getData()->fk_media      = $tu_fk_media;
                 $form->getData()->updated_at    = $this->_getDateTime();
                 $form->getData()->updated_by    = $cur_user;
+
                 $this->getUserTable()->saveUser($form->getData());
                 return $this->redirect()->toRoute('user', array(
                     'action' => 'detail',

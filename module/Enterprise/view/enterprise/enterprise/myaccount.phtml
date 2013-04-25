@@ -86,7 +86,7 @@
                             <th>交易日期</th>
                             <th>经办人</th>
                         </tr>
-                        <?php foreach($creditlog as $log): ?>
+                        <?php foreach($paginator as $log): ?>
                         <tr>
                             <td><?php echo $log->order_no; ?></td>
                             <td><?php echo $arr_service_type[$log->fk_service_type]; ?></td>
@@ -104,6 +104,9 @@
                         </tr>
                         <?php endforeach; ?>
                     </table>
+                    <?php
+                    echo $this->paginationControl($this->paginator, 'Sliding', 'entpagination/search.phtml');
+                    ?>
                 </div>
                 </div>
             </div>

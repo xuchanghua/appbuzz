@@ -117,7 +117,6 @@ class UserTable
 		$row = $rowset->current();
 		if(!$row){
 			return false;
-
 		}
 		else
 		{

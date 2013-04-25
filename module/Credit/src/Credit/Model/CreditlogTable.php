@@ -111,29 +111,32 @@ class CreditlogTable
      * @return \Zend\Paginator\Paginator
      */
     public function getPaginator(
-            $keyword = NULL, 
-            $page = 1, 
-            $itemsPerPage = 10, 
-            $order = self::ORDER_DEFAULT)
+        $fk_credit = NULL,
+        $keyword = NULL, 
+        $page = 1, 
+        $itemsPerPage = 10, 
+        $order = self::ORDER_DEFAULT)
     {
         //新建select对象
-        $select = new Select('credit');
+        $select = new Select('creditlog');
         //构建查询条件
-        $closure = function (Where $where) use($keyword) {
+        $closure = function (Where $where) use ($keyword, $fk_credit) {
                     if ($keyword != '') {
                         $where->like('title', '%' . $keyword . '%');//查询符合特定关键词的结果
                     }
+                    if (!$fk_credit) {
+                        $where->equalTo('fk_credit', $fk_credit);
+                    }
                 };
-        $select->columns(array('id', 'title', 'artist'))
-                ->where($closure);
+        $select->where($closure);
         if ($order == self::ORDER_LATEST) {
-            $select->order('id DESC');//按时间倒排序
+            $select->order('id_creditlog DESC');//按id倒排序
         } else {
-            $select->order('title ASC');//按标题排序
+            $select->order('created_at DESC');//按created_at倒排序
         }
-        //将返回的结果设置为Ablum的实例
+        //将返回的结果设置为Creditlog的实例
         $resultSetPrototype = new ResultSet();
-        $resultSetPrototype->setArrayObjectPrototype(new Credit());
+        $resultSetPrototype->setArrayObjectPrototype(new Creditlog());
         //创建分页用的适配器，第2个参数为数据库adapter，使用全局默认的即可        
         $adapter = new DbSelect($select, $this->tableGateway->getAdapter(), $resultSetPrototype);
         //新建分页

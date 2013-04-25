@@ -69,21 +69,6 @@ class User implements InputFilterAwareInterface
 					array('name' => 'Int'),
 					),
 				)));
-
-			/*$inputFilter->add($factory->createInput(array(
-				'name' => 'fk_user_type',
-				'required' => true,
-				'filters'  => array(
-					array('name' => 'Int'),
-					),
-				'validators' => array(
-					array(
-						'name' => 'GreaterThan',
-						'_min' => 0,
-						),
-					),
-				)));*/
-
 			$inputFilter->add($factory->createInput(array(
 				'name'     => 'username',
 				'required' => true,
@@ -102,28 +87,7 @@ class User implements InputFilterAwareInterface
 							),
 						),
 					),
-				)));
-			/*
-			$inputFilter->add($factory->createInput(array(
-				'name'     => 'real_name',
-				'required' => true,
-				'unique'   => true,
-				'filters'  => array(
-					array('name' => 'StripTags'),
-					array('name' => 'StringTrim'),
-					),
-				'validators' => array(
-					array(
-						'name' => 'StringLength',
-						'options' => array(
-							'encoding' => 'UTF-8',
-							'min'      => 1,
-							'max'      => 150,
-							),
-						),
-					),
-				)));
-			*/
+				)));			
 			$inputFilter->add($factory->createInput(array(
 				'name'     => 'email',
 				'required' => true,
@@ -137,7 +101,6 @@ class User implements InputFilterAwareInterface
 						),
 					),
 				)));
-
 			$inputFilter->add($factory->createInput(array(
 				'name'     => 'password',
 				'required' => true,
@@ -156,26 +119,6 @@ class User implements InputFilterAwareInterface
 						),
 					),
 				)));
-			/*
-			$inputFilter->add($factory->createInput(array(
-				'name'     => 'confirmpassword',
-				'required' => true,
-				'filters'  => array(
-					array('name' => 'StripTags'),
-					array('name' => 'StringTrim'),
-					),
-				'validators' => array(
-					array(
-						'name' => 'StringLength',
-						'options' => array(
-							'encoding' => 'UTF-8',
-							'min'      => 6,
-							'max'      => 32,
-							),
-						),
-					),
-				)));
-			*/
 			$this->inputFilter = $inputFilter;
 		}
 

@@ -164,6 +164,7 @@ class EnterpriseController extends AbstractActionController
         //企业用户首页->我的账户
         $arr_type_allowed = array(1);        
         $cur_user = $this->_auth($arr_type_allowed);
+
         $user = $this->getUserTable()->getUserByName($cur_user);
         $credit = $this->getCreditTable()->getCreditByFkUser($user->id);
         $creditlog = $this->getCreditlogTable()->fetchLogByFkCreditLimit5($credit->id_credit);
@@ -172,6 +173,7 @@ class EnterpriseController extends AbstractActionController
             'user' => $cur_user,
             'credit' => $credit,
             'creditlog' => $creditlog,
+            'paginator' => $this->getCreditlogTable()->getPaginator($credit->id_credit, null, 1, 5, 1),
         ));
     }
 
