@@ -7,6 +7,10 @@ use Admin\Model\Admin;          // <-- Add this import
 use Admin\Form\AdminForm;       // <-- Add this import
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
+use Zend\Mail\Message;
+use Zend\Mail\Transport\Sendmail as SendmailTransport;
+use Zend\Mail\Transport\Smtp as SmtpTransport;
+use Zend\Mail\Transport\SmtpOptions;
 
 class AdminController extends AbstractActionController
 {
@@ -25,6 +29,19 @@ class AdminController extends AbstractActionController
 
     public function loginAction()
     {
+    }
+
+    public function mailAction()
+    {
+        //test send email from zf2
+        $message = new Message();
+        $message->addTo('joecheng511@gmail.com')
+                ->addFrom('joe@furnihome.asia')
+                ->setSubject('Greetings and Salutations!')
+                ->setBody("Sorry, I'm going to be late today!");
+
+        $transport = new SendmailTransport();
+        $transport->send($message);
     }
 
     public function getAdminTable()

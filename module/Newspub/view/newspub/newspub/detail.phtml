@@ -136,9 +136,7 @@
                                             <th>媒体</th>
                                             <th>状态</th>
                                             <th>新闻链接</th>
-                                            <th style="display:<?php echo ($user_type==3)?'':'none';?>">
-                                                操作
-                                            </th>
+                                            <th>操作</th>
                                         </tr>
                                         <?php foreach($npmedia as $nm): ?>
                                         <tr>
@@ -150,6 +148,16 @@
                                             </td>
                                             <td>
                                                 <?php echo $nm->news_link ;?>
+                                            </td>
+                                            <td style="display:<?php echo ($user_type==1)?'':'none';?>">
+                                                <div style="display:<?php echo ($nm->fk_npmedia_status==4)?'':'none';?>">
+                                                    <div class="linkbtns">
+                                                        <form action="<?php echo $this->url('newspub',
+                                                        array('action' => 'score', 'id' => $nm->id_npmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary btn-mini" value="评分">
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td style="display:<?php echo ($user_type==3)?'':'none';?>">
                                                 <div style="display:<?php echo ($nm->fk_npmedia_status==1)?'':'none';?>">
@@ -193,6 +201,22 @@
                                 </div>
                             </div>
                         </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">创建日期</td>
+                        <td><?php echo $this->escapeHtml($np->created_at);?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">创建人</td>
+                        <td><?php echo $this->escapeHtml($np->created_by);?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">修改日期</td>
+                        <td><?php echo $this->escapeHtml($np->updated_at);?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">修改人</td>
+                        <td><?php echo $this->escapeHtml($np->updated_by);?></td>
                     </tr>
                     <tr>
                         <td></td>

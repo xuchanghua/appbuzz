@@ -1,0 +1,41 @@
+<div class="row">
+    <div class="span12">
+        <h2>Form Tests</h2>
+ 
+        <?php
+        // Init Form
+        $form = $this->form;
+        $form->prepare();
+        ?>
+        <?php echo $this->form()->openTag($form); ?>
+            <?php echo $this->formHidden($form->get('csrf')); ?>
+            <div>
+                <?php $elem = $form->get('my-file'); ?>
+                <?php echo $this->formLabel($elem); ?>
+                <?php echo $this->formFile($elem); ?>
+                <?php echo $this->formElementErrors($elem); ?>
+            </div>
+ 
+            <?php $collection = $form->get('collection'); ?>
+            <?php foreach ($collection as $elem) { ?>
+            <div>
+                <?php echo $this->formLabel($elem); ?>
+                <?php echo $this->formFile($elem); ?>
+                <?php echo $this->formElementErrors($elem); ?>
+            </div>
+            <?php } ?>
+ 
+            <button class="btn btn-primary">Submit</button>
+ 
+        <?php echo $this->form()->closeTag($form); ?>
+ 
+        <?php
+        if (!empty($this->data)) {
+            ?><h3><?php echo ($this->isValid) ? 'Valid Data' : 'Invalid Data'; ?></h3>
+            <pre><?php
+            print_r($this->data);
+            ?></pre><?php
+        }
+        ?>
+    </div>
+</div>

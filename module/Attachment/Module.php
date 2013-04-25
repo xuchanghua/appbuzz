@@ -5,6 +5,8 @@ use Attachment\Model\Attachment;
 use Attachment\Model\AttachmentTable;
 use Attachment\Model\Barcode;
 use Attachment\Model\BarcodeTable;
+use Attachment\Model\Screenshot;
+use Attachment\Model\ScreenshotTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -54,6 +56,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Barcode());
                     return new TableGateway('barcode', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Attachment\Model\ScreenshotTable' =>  function($sm) {
+                    $tableGateway = $sm->get('ScreenshotTableGateway');
+                    $table = new ScreenshotTable($tableGateway);
+                    return $table;
+                },
+                'ScreenshotTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Screenshot());
+                    return new TableGateway('screenshot', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );

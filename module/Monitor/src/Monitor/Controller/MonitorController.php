@@ -60,6 +60,7 @@ class MonitorController extends AbstractActionController
         return new ViewModel(array(
             'user' => $cur_user,
             'monitors' => $this->getMonitorTable()->fetchAllDesc(),
+            'mntjoinkw' => $this->getMonitorTable()->fetchAllJoinLeftKeywordDesc(),
             'all_users' => $this->getUserTable()->fetchAll(),
         ));
     }

@@ -94,7 +94,13 @@
                     <tr>
                         <td class="tdlabel">建议媒体采用的产品截图：</td>
                         <td>
-                            
+                            <?php foreach($screenshots as $ss): ?>
+                            <img src="<?php echo substr($ss->path.$ss->filename,6);?>" height="300" width="300">
+                            <form action="<?php echo $this->url('evaluate', 
+                            array('action' => 'deletescreenshot', 'id' => $ss->id_screenshot)) ;?>">
+                                <input type="submit" class="btn btn-danger btn-mini" value="删除图片">
+                            </form>
+                            <?php endforeach; ?>
                         </td>
                     </tr>
                     <tr>
@@ -173,6 +179,22 @@
                                 </div>
                             </div>
                         </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">创建日期</td>
+                        <td><?php echo $this->escapeHtml($evaluate->created_at);?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">创建人</td>
+                        <td><?php echo $this->escapeHtml($evaluate->created_by);?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">修改日期</td>
+                        <td><?php echo $this->escapeHtml($evaluate->updated_at);?></td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">修改人</td>
+                        <td><?php echo $this->escapeHtml($evaluate->updated_by);?></td>
                     </tr>
                     <tr>
                         <td></td>

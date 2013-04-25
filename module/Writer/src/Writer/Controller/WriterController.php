@@ -29,7 +29,7 @@ class WriterController extends AbstractActionController
 
     public function indexAction()
     {     
-        $arr_type_allowed = array(1, 3);
+        $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $request = $this->getRequest();
@@ -164,7 +164,8 @@ class WriterController extends AbstractActionController
 
     public function detailAction()
     {
-        $cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
         $id = (int)$this->params()->fromRoute('id',0);        
         if (!$id) {
@@ -173,10 +174,11 @@ class WriterController extends AbstractActionController
             ));
         }
         $writer = $this->getWriterTable()->getWriter($id);
+        $owner = $this->getUserTable()->getUserByName($writer->created_by);
         if($writer->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
-            $barcode_path = '/upload/'.$cur_user.'/writer/'.$id.'/'.$barcode->filename;
+            $barcode_path = '/upload/'.$owner->username.'/writer/'.$id.'/'.$barcode->filename;
         }
         else
         {
@@ -197,6 +199,7 @@ class WriterController extends AbstractActionController
         return new ViewModel(array(
             'writer' => $writer,
             'user' => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'allusers' => $this->getUserTable()->fetchAll(),
             'id' => $id,
             'product' => $this->getProductTable()->getProduct($writer->fk_product),
@@ -208,7 +211,8 @@ class WriterController extends AbstractActionController
 
     public function editAction()
     {
-        $cur_user = $this->_authenticateSession(1);
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
 
         $id_writer = (int)$this->params()->fromRoute('id',0);
         if(!$id_writer){
@@ -217,10 +221,11 @@ class WriterController extends AbstractActionController
             ));
         }
         $writer = $this->getWriterTable()->getWriter($id_writer);
+        $owner = $this->getUserTable()->getUserByName($writer->created_by);
         if($writer->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
-            $barcode_path = '/upload/'.$cur_user.'/writer/'.$id_writer.'/'.$barcode->filename;
+            $barcode_path = '/upload/'.$owner->username.'/writer/'.$id_writer.'/'.$barcode->filename;
         }
         else
         {
@@ -257,7 +262,7 @@ class WriterController extends AbstractActionController
                     //check if the path exists
                     //path format: /public/upload/user_name/module_name/id_module_name/
                     $path_0    = 'public/upload/';
-                    $path_1    = $path_0.$cur_user.'/';
+                    $path_1    = $path_0.$owner->username.'/';
                     $path_2    = $path_1.'writer/';
                     $path_full = $path_2.$id_writer.'/';
                     if(!is_dir($path_1))
@@ -334,6 +339,7 @@ class WriterController extends AbstractActionController
             //'writer' => $this->getWriterTable()->getWriter($id),
             'order_no' => $wrt_order_no,
             'user'     => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'form'     => $form,
             'id'       => $id_writer,
             'product'  => $product,

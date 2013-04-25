@@ -35,6 +35,23 @@ class MonitorTable
         return $resultSet;
     }
 
+    public function fetchAllJoinLeftKeywordDesc()
+    {
+         $resultSet = $this->tableGateway->select(function(Select $select){
+            $select->join(
+                array('kw' => 'keyword'), //table name
+                'kw.fk_monitor = monitor.id_monitor', //on
+                array(
+                    'kw_keyword' => 'keyword', 
+                    'kw_fk_keyword_type' => 'fk_keyword_type',
+                ), //columns
+                'left'
+                );
+            $select->order('id_keyword DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchMonitorByFkEntUser($fk_enterprise_user)
     {
         $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_enterprise_user){

@@ -33,6 +33,8 @@ class Monitor implements InputFilterAwareInterface
         $this->created_by         = (isset($data['created_by']))         ? $data['created_by']         : null;
         $this->updated_at         = (isset($data['updated_at']))         ? $data['updated_at']         : null;
         $this->updated_by         = (isset($data['updated_by']))         ? $data['updated_by']         : null;
+        $this->kw_keyword         = (isset($data['kw_keyword']))         ? $data['kw_keyword']         : null;
+        $this->kw_fk_keyword_type = (isset($data['kw_fk_keyword_type'])) ? $data['kw_fk_keyword_type'] : null;
     }
 
     // Add the following method:

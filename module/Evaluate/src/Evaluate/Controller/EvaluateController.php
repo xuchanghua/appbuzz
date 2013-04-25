@@ -14,8 +14,10 @@ use DateTime;
 use Evaluate\Model\Evamedia;
 use Evaluate\Form\EvamediaForm;
 use Attachment\Model\Barcode;
+use Attachment\Model\Screenshot;
 use Credit\Model\Credit;
 use Credit\Model\Creditlog;
+use Evaluate\Form\FileUploadForm;//test multiple upload files
 
 class EvaluateController extends AbstractActionController
 {
@@ -24,6 +26,7 @@ class EvaluateController extends AbstractActionController
     protected $productTable;
     protected $evamediaTable;
     protected $barcodeTable;
+    protected $screenshotTable;
     protected $creditTable;
     protected $creditlogTable;
 
@@ -202,6 +205,7 @@ class EvaluateController extends AbstractActionController
             //'media_assignees' => $arr_media_assignees,
             'evamedias' => $this->getEvamediaTable()->fetchEmExRejByMedByFkEva($id),//not include those rejected by the media
             'barcode_path' => $barcode_path,
+            'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkEva($id),
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }    
@@ -241,6 +245,7 @@ class EvaluateController extends AbstractActionController
         $request = $this->getRequest();
         if($request->isPost()){
             //upload start
+            //1. barcode
             $file = $this->params()->fromFiles('barcode');
             if(!$file['name'])
             {
@@ -294,6 +299,49 @@ class EvaluateController extends AbstractActionController
                     }
                 }
             }
+            //2. screen shot
+            $screen_shot = $this->params()->fromFiles('screen_shot');
+            foreach($screen_shot as $ss)
+            {
+                $adapter = new FileHttp();
+                $path_0    = 'public/upload/';
+                $path_1    = $path_0.$owner->username.'/';
+                $path_2    = $path_1.'evaluate/';
+                $path_3    = $path_2.$id_evaluate.'/';
+                $path_full = $path_3.'screenshot/';
+                if(!is_dir($path_1))
+                {
+                    mkdir($path_1);
+                }
+                if(!is_dir($path_2))
+                {
+                    mkdir($path_2);
+                }
+                if(!is_dir($path_3))
+                {
+                    mkdir($path_3);
+                }
+                if(!is_dir($path_full))
+                {
+                    mkdir($path_full);
+                }
+                $adapter->setDestination($path_full);
+                if(!$adapter->receive($ss['name'])){
+                    echo implode("\n", $adapter->getMessages());
+                }
+                else
+                {
+                    //create a record in the table 'screenshot'
+                    $screenshot = new Screenshot();
+                    $screenshot->filename = $ss['name'];
+                    $screenshot->path = $path_full;
+                    $screenshot->fk_evaluate = $id_evaluate;
+                    $screenshot->created_by = $cur_user;
+                    $screenshot->created_at = $this->_getDateTime();
+                    $this->getScreenshotTable()->saveScreenshot($screenshot);
+                }   
+                unset($adapter);
+            }
             //upload end
 
             $form->setInputFilter($evaluate->getInputFilter());
@@ -343,6 +391,7 @@ class EvaluateController extends AbstractActionController
             'product'  => $product,
             //'media_assignees' => $arr_media_assignees,
             'barcode_path' => $barcode_path,
+            'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkEva($id_evaluate),
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
@@ -384,6 +433,7 @@ class EvaluateController extends AbstractActionController
                     );
 
                 //upload start
+                //1. barcode
                 $file = $this->params()->fromFiles('barcode');
                 $max = 400000;//单位比特
                 $sizeObj = new FileSize(array("max"=>$max));
@@ -428,6 +478,61 @@ class EvaluateController extends AbstractActionController
                         //md5() the file name
                         //rename($file['name'], md5($file['name']));
                     }
+                }
+                unset($adapter);
+                //2. screen shot
+                $screen_shot = $this->params()->fromFiles('screen_shot');
+                foreach($screen_shot as $ss)
+                {
+                    $adapter = new FileHttp();
+                    /*$max = 400000;//单位比特
+                    $sizeObj = new FileSize(array("max"=>$max));
+                    $extObj = new FileExt(array("jpeg","jpg","gif","png"));
+                    $adapter->setValidators(array($sizeObj, $extObj),$ss['name']);
+                    if(!$adapter->isValid()){
+                        echo implode("\n",$dataError = $adapter->getMessages());
+                    }else{
+                        */
+                        //check if the path exists
+                        //path format: /public/upload/user_name/module_name/id_module_name/
+                        $path_0    = 'public/upload/';
+                        $path_1    = $path_0.$cur_user.'/';
+                        $path_2    = $path_1.'evaluate/';
+                        $path_3    = $path_2.$id_evaluate.'/';
+                        $path_full = $path_3.'screenshot/';
+                        if(!is_dir($path_1))
+                        {
+                            mkdir($path_1);
+                        }
+                        if(!is_dir($path_2))
+                        {
+                            mkdir($path_2);
+                        }
+                        if(!is_dir($path_3))
+                        {
+                            mkdir($path_3);
+                        }
+                        if(!is_dir($path_full))
+                        {
+                            mkdir($path_full);
+                        }
+                        $adapter->setDestination($path_full);
+                        if(!$adapter->receive($ss['name'])){
+                            echo implode("\n", $adapter->getMessages());
+                        }
+                        else
+                        {
+                            //create a record in the table 'screenshot'
+                            $screenshot = new Screenshot();
+                            $screenshot->filename = $ss['name'];
+                            $screenshot->path = $path_full;
+                            $screenshot->fk_evaluate = $id_evaluate;
+                            $screenshot->created_by = $cur_user;
+                            $screenshot->created_at = $this->_getDateTime();
+                            $this->getScreenshotTable()->saveScreenshot($screenshot);
+                        }   
+                    //}
+                    unset($adapter);
                 }
                 //upload end
 
@@ -790,6 +895,71 @@ class EvaluateController extends AbstractActionController
         ));
     }
 
+    public function formUploadAction()
+    {
+        //测试上传多文件
+        $isValid = false;
+ 
+        $form = new FileUploadForm('file-form');
+        $form->setAttributes(array(
+             'action' => $this->url()->fromRoute(
+                 'evaluate',
+                 array('action' => 'form-upload')
+             ),
+        ));
+ 
+        if ($this->getRequest()->isPost()) {
+            // Postback
+            $data = array_merge(
+                $this->getRequest()->getPost()->toArray(),
+                $this->getRequest()->getFiles()->toArray()
+            );
+ 
+            $form->setData($data);
+            if ($form->isValid()) {
+                $data = $form->getData();
+                $isValid = true;
+ 
+                // You can do your own move, or use Zend\Validator\File\Rename
+                if (!empty($data['my-file'])) {
+                    ErrorHandler::start();
+                    move_uploaded_file($data['my-file'], '/private/tmp/my-test-file');
+                    ErrorHandler::stop(true);
+                }
+            }
+        } else {
+            $data = array();
+        }
+ 
+        $view = new ViewModel(array(
+           'form'    => $form,
+           'data'    => $data,
+           'isValid' => $isValid,
+        ));
+        return $view;
+    }
+
+    public function deletescreenshotAction()
+    {
+        //删除产品截图
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_screenshot = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_screenshot) {
+            return $this->redirect()->toRoute('application', array(
+                'action' => 'index',
+            ));
+        }
+        $screenshot = $this->getScreenshotTable()->getScreenshot($id_screenshot);
+        $fk_evaluate = $screenshot->fk_evaluate;
+        $this->getScreenshotTable()->deleteScreenshot($id_screenshot);
+        return $this->redirect()->toRoute('evaluate', array(
+            'action' => 'detail',
+            'id'     => $fk_evaluate,
+        ));
+    }
+
     public function getEvaluateTable()
     {
         if (!$this->evaluateTable) {
@@ -833,6 +1003,15 @@ class EvaluateController extends AbstractActionController
             $this->barcodeTable = $sm->get('Attachment\Model\BarcodeTable');
         }
         return $this->barcodeTable;
+    }
+
+    public function getScreenshotTable()
+    {
+        if (!$this->screenshotTable) {
+            $sm = $this->getServiceLocator();
+            $this->screenshotTable = $sm->get('Attachment\Model\ScreenshotTable');
+        }
+        return $this->screenshotTable;
     }
 
     public function getCreditTable()

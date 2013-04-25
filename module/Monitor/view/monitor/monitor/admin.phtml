@@ -32,6 +32,10 @@
                 {
                     $arr_id_user[$u->id] = $u->username;
                 }
+                $arr_fk_keyword_type = array(
+                    '1' => '自产品',
+                    '2' => '竞争产品',
+                );
             ?>
             <div id="pubmgmt" class="widget-box">
                 <div class="widget-title">
@@ -44,15 +48,19 @@
                         <th>服务周期</th>
                         <th>开始日期</th>
                         <th>结束日期</th>
+                        <th>关键词</th>
+                        <th>关键词类型</th>
                         <th>购买人</th>
                         <th>操作</th>
                     </tr>
-                    <?php foreach($monitors as $mt): ?>
+                    <?php foreach($mntjoinkw as $mt): ?>
                     <tr>
                         <td><?php echo $this->escapeHtml($mt->order_no);?></td>
                         <td><?php echo $this->escapeHtml($mt->duration)." 个月";?></td>
-                        <td><?php echo $this->escapeHtml($mt->start_date);?></td>
-                        <td><?php echo $this->escapeHtml($mt->end_date);?></td>
+                        <td><?php echo $this->escapeHtml(substr($mt->start_date,0,10));?></td>
+                        <td><?php echo $this->escapeHtml(substr($mt->end_date,0,10));?></td>
+                        <td><?php echo $this->escapeHtml($mt->kw_keyword); ?></td>
+                        <td><?php echo $this->escapeHtml($arr_fk_keyword_type[$mt->kw_fk_keyword_type]); ?></td>
                         <td><?php echo $this->escapeHtml($arr_id_user[$mt->fk_enterprise_user]);?></td>
                         <td></td>
                     </tr>

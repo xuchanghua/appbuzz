@@ -119,7 +119,7 @@ class TopicController extends AbstractActionController
 
     public function editAction()
     {
-        $arr_type_allowed = array(2);
+        $arr_type_allowed = array(2, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id = (int)$this->params()->fromRoute('id', 0);
@@ -158,6 +158,7 @@ class TopicController extends AbstractActionController
         return new ViewModel(array(
             'topic' => $this->getTopicTable()->getTopic($id),
             'user'  => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'form'  => $form,
             'id'    => $id,
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
@@ -468,7 +469,7 @@ class TopicController extends AbstractActionController
     public function contactinfoAction()
     {
         //媒体->选题管理->查看(单个企业提交的“我要联系”订单)
-        $arr_type_allowed = array(2);
+        $arr_type_allowed = array(2, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_tpcontact = (int)$this->params()->fromRoute('id', 0);
@@ -494,6 +495,7 @@ class TopicController extends AbstractActionController
 
         return new ViewModel(array(
             'user'       => $cur_user,
+            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'tpcontact'  => $tpcontact,
             'topic'      => $topic,
             'product'    => $product,
