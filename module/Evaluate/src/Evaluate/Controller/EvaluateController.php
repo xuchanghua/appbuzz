@@ -960,6 +960,27 @@ class EvaluateController extends AbstractActionController
         ));
     }
 
+    public function deletescreenshotfromeditAction()
+    {
+        //删除产品截图
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_screenshot = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_screenshot) {
+            return $this->redirect()->toRoute('application', array(
+                'action' => 'index',
+            ));
+        }
+        $screenshot = $this->getScreenshotTable()->getScreenshot($id_screenshot);
+        $fk_evaluate = $screenshot->fk_evaluate;
+        $this->getScreenshotTable()->deleteScreenshot($id_screenshot);
+        return $this->redirect()->toRoute('evaluate', array(
+            'action' => 'edit',
+            'id'     => $fk_evaluate,
+        ));
+    }
+
     public function getEvaluateTable()
     {
         if (!$this->evaluateTable) {

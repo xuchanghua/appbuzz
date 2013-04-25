@@ -97,6 +97,14 @@ class WriterForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'screen_shot',
+            'type' => 'file',
+            'attributes' => array(
+                'id' => 'screen_shot',
+                'multiple' => true
+            ),
+        ));
+        $this->add(array(
             'name' => 'wrtmedia',
             'attributes' => array(
                 'type'  => 'text',

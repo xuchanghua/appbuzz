@@ -87,12 +87,17 @@
                         <?php echo $this->formRow($form->get('hint')); ?>
                     </td>
                 </tr>
-                <!--<tr>
-                    <td class="tdlabel">建议媒体采用的产品截图：</td>
+                <tr>
+                    <td class="tdlabel">撰稿配图：</td>
                     <td>
-                        
+                        <?php foreach($screenshots as $ss): ?>
+                        <img src="<?php echo substr($ss->path.$ss->filename,6);?>" height="300" width="300">
+                        <a href="/writer/deletescreenshotfromedit/<?php echo $ss->id_screenshot; ?>" 
+                            class="btn btn-danger btn-mini">删除图片</a>
+                        <?php endforeach; ?>       
+                        <?php echo $this->formRow($form->get('screen_shot')); ?>                 
                     </td>
-                </tr>-->
+                </tr>
                 <!--<tr>
                     <td class="tdlabel">评测媒体：</td>
                     <td>

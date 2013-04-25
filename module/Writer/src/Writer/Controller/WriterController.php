@@ -14,6 +14,7 @@ use Zend\Validator\File\Extension as FileExt;
 use DateTime;
 use Writer\Model\Wrtmedia;
 use Attachment\Model\Barcode;
+use Attachment\Model\Screenshot;
 use Credit\Model\Credit;
 use Credit\Model\Creditlog;
 
@@ -24,6 +25,7 @@ class WriterController extends AbstractActionController
     protected $productTable;
     protected $wrtmediaTable;
     protected $barcodeTable;
+    protected $screenshotTable;
     protected $creditTable;
     protected $creditlogTable;
 
@@ -206,6 +208,7 @@ class WriterController extends AbstractActionController
             //'media_assignees' => $arr_media_assignees,
             'wrtmedias' => $this->getWrtmediaTable()->fetchWmExRejByMedByFkWrt($id),//not include those rejected by the media
             'barcode_path' => $barcode_path,
+            'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkWrt($id),
         ));
     }    
 
@@ -243,6 +246,7 @@ class WriterController extends AbstractActionController
         $request = $this->getRequest();
         if($request->isPost()){   
             //upload start
+            //1. barcode
             $file = $this->params()->fromFiles('barcode');
             if(!$file['name'])
             {
@@ -296,6 +300,49 @@ class WriterController extends AbstractActionController
                     }
                 }
             }
+            //2. screenshot
+            $screen_shot = $this->params()->fromFiles('screen_shot');
+            foreach($screen_shot as $ss)
+            {
+                $adapter = new FileHttp();
+                $path_0    = 'public/upload/';
+                $path_1    = $path_0.$owner->username.'/';
+                $path_2    = $path_1.'writer/';
+                $path_3    = $path_2.$id_writer.'/';
+                $path_full = $path_3.'screenshot/';
+                if(!is_dir($path_1))
+                {
+                    mkdir($path_1);
+                }
+                if(!is_dir($path_2))
+                {
+                    mkdir($path_2);
+                }
+                if(!is_dir($path_3))
+                {
+                    mkdir($path_3);
+                }
+                if(!is_dir($path_full))
+                {
+                    mkdir($path_full);
+                }
+                $adapter->setDestination($path_full);
+                if(!$adapter->receive($ss['name'])){
+                    echo implode("\n", $adapter->getMessages());
+                }
+                else
+                {
+                    //create a record in the table 'screenshot'
+                    $screenshot = new Screenshot();
+                    $screenshot->filename = $ss['name'];
+                    $screenshot->path = $path_full;
+                    $screenshot->fk_writer = $id_writer;
+                    $screenshot->created_by = $cur_user;
+                    $screenshot->created_at = $this->_getDateTime();
+                    $this->getScreenshotTable()->saveScreenshot($screenshot);
+                }   
+                unset($adapter);
+            }
             //upload end
             $form->setInputFilter($writer->getInputFilter());
             $form->setData($request->getPost());
@@ -344,7 +391,8 @@ class WriterController extends AbstractActionController
             'id'       => $id_writer,
             'product'  => $product,
             //'media_assignees' => $arr_media_assignees,
-            'barcode_path' => $barcode_path,
+            'barcode_path' => $barcode_path,            
+            'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkWrt($id_writer),
         ));
     }
 
@@ -385,6 +433,7 @@ class WriterController extends AbstractActionController
                     );
 
                 //upload start
+                //1. barcode
                 $file = $this->params()->fromFiles('barcode');
                 $max = 400000;//单位比特
                 $sizeObj = new FileSize(array("max"=>$max));
@@ -429,6 +478,49 @@ class WriterController extends AbstractActionController
                         //md5() the file name
                         //rename($file['name'], md5($file['name']));
                     }
+                }
+                //2. screen shot
+                $screen_shot = $this->params()->fromFiles('screen_shot');
+                foreach($screen_shot as $ss)
+                {
+                    $adapter = new FileHttp();
+                        $path_0    = 'public/upload/';
+                        $path_1    = $path_0.$cur_user.'/';
+                        $path_2    = $path_1.'writer/';
+                        $path_3    = $path_2.$id_writer.'/';
+                        $path_full = $path_3.'screenshot/';
+                        if(!is_dir($path_1))
+                        {
+                            mkdir($path_1);
+                        }
+                        if(!is_dir($path_2))
+                        {
+                            mkdir($path_2);
+                        }
+                        if(!is_dir($path_3))
+                        {
+                            mkdir($path_3);
+                        }
+                        if(!is_dir($path_full))
+                        {
+                            mkdir($path_full);
+                        }
+                        $adapter->setDestination($path_full);
+                        if(!$adapter->receive($ss['name'])){
+                            echo implode("\n", $adapter->getMessages());
+                        }
+                        else
+                        {
+                            //create a record in the table 'screenshot'
+                            $screenshot = new Screenshot();
+                            $screenshot->filename = $ss['name'];
+                            $screenshot->path = $path_full;
+                            $screenshot->fk_writer = $id_writer;
+                            $screenshot->created_by = $cur_user;
+                            $screenshot->created_at = $this->_getDateTime();
+                            $this->getScreenshotTable()->saveScreenshot($screenshot);
+                        }
+                    unset($adapter);
                 }
                 //upload end
 
@@ -1028,6 +1120,48 @@ class WriterController extends AbstractActionController
         )); 
     }
 
+    public function deletescreenshotAction()
+    {
+        //删除撰稿配图
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_screenshot = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_screenshot) {
+            return $this->redirect()->toRoute('application', array(
+                'action' => 'index',
+            ));
+        }
+        $screenshot = $this->getScreenshotTable()->getScreenshot($id_screenshot);
+        $fk_writer = $screenshot->fk_writer;
+        $this->getScreenshotTable()->deleteScreenshot($id_screenshot);
+        return $this->redirect()->toRoute('writer', array(
+            'action' => 'detail',
+            'id'     => $fk_writer,
+        ));
+    }
+
+    public function deletescreenshotfromeditAction()
+    {
+        //删除撰稿配图
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_screenshot = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_screenshot) {
+            return $this->redirect()->toRoute('application', array(
+                'action' => 'index',
+            ));
+        }
+        $screenshot = $this->getScreenshotTable()->getScreenshot($id_screenshot);
+        $fk_writer = $screenshot->fk_writer;
+        $this->getScreenshotTable()->deleteScreenshot($id_screenshot);
+        return $this->redirect()->toRoute('writer', array(
+            'action' => 'edit',
+            'id'     => $fk_writer,
+        ));
+    }
+
     public function getWriterTable()
     {
         if (!$this->writerTable) {
@@ -1071,6 +1205,15 @@ class WriterController extends AbstractActionController
             $this->barcodeTable = $sm->get('Attachment\Model\BarcodeTable');
         }
         return $this->barcodeTable;
+    }
+
+    public function getScreenshotTable()
+    {
+        if (!$this->screenshotTable) {
+            $sm = $this->getServiceLocator();
+            $this->screenshotTable = $sm->get('Attachment\Model\ScreenshotTable');
+        }
+        return $this->screenshotTable;
     }
 
     public function getCreditTable()

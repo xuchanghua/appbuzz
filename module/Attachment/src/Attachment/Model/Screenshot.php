@@ -13,6 +13,7 @@ class Screenshot implements InputFilterAwareInterface
     public $filename;
     public $path;
     public $fk_evaluate;
+    public $fk_writer;
     public $created_by;
     public $created_at;
     protected $inputFilter;                       // <-- Add this variable
@@ -23,6 +24,7 @@ class Screenshot implements InputFilterAwareInterface
         $this->filename      = (isset($data['filename']))      ? $data['filename']      : null;
         $this->path          = (isset($data['path']))          ? $data['path']          : null;
         $this->fk_evaluate   = (isset($data['fk_evaluate']))   ? $data['fk_evaluate']   : null;
+        $this->fk_writer     = (isset($data['fk_writer']))     ? $data['fk_writer']     : null;
         $this->created_by    = (isset($data['created_by']))    ? $data['created_by']    : null;
         $this->created_at    = (isset($data['created_at']))    ? $data['created_at']    : null;
     }

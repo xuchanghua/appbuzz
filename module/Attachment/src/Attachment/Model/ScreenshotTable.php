@@ -36,6 +36,15 @@ class ScreenshotTable
         return $resultSet;
     }
 
+    public function fetchScreenshotByFkWrt($fk_writer)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use($fk_writer){
+            $select->where->equalTo('fk_writer', $fk_writer);
+            $select->order('id_screenshot DESC');
+        });
+        return $resultSet;
+    }
+
     public function getScreenshot($id)
     {
         $id  = (int) $id;
@@ -66,6 +75,7 @@ class ScreenshotTable
             'filename'    => $screenshot->filename,
             'path'        => $screenshot->path,
             'fk_evaluate' => $screenshot->fk_evaluate,
+            'fk_writer'   => $screenshot->fk_writer,
             'created_by'  => $screenshot->created_by,
             'created_at'  => $screenshot->created_at,
         );

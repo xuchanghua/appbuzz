@@ -90,6 +90,18 @@
                             <?php echo $this->escapeHtml($writer->hint);?>
                         </td>
                     </tr>
+                    <tr>
+                        <td class="tdlabel">撰稿配图：</td>
+                        <td>
+                            <?php foreach($screenshots as $ss): ?>
+                            <img src="<?php echo substr($ss->path.$ss->filename,6);?>" height="300" width="300">
+                            <form action="<?php echo $this->url('writer', 
+                            array('action' => 'deletescreenshot', 'id' => $ss->id_screenshot)) ;?>">
+                                <input type="submit" class="btn btn-danger btn-mini" value="删除图片">
+                            </form>
+                            <?php endforeach; ?>
+                        </td>
+                    </tr>
                     <!--<tr>
                         <td class="tdlabel">评测媒体：</td>
                         <td>
