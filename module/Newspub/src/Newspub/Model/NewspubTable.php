@@ -40,7 +40,16 @@ class NewspubTable
             $select->where->equalTo('created_by', $created_by);
             $select->order('id_newspub DESC');
         });
-        //die(var_dump($rowset));
+        return $rowset;
+    }
+
+    public function getNewspubByUserLimit5($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use ($created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->order('id_newspub DESC');
+            $select->limit(5);
+        });
         return $rowset;
     }
 

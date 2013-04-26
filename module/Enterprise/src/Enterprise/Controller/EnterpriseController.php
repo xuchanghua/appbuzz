@@ -18,6 +18,10 @@ class EnterpriseController extends AbstractActionController
     protected $evaluateTable;
     protected $creditTable;
     protected $creditlogTable;
+    protected $monitorTable;
+    protected $writerTable;
+    protected $tpcontactTable;
+    protected $interviewTable;
 
     public function indexAction()
     {
@@ -183,11 +187,27 @@ class EnterpriseController extends AbstractActionController
         $arr_type_allowed = array(1, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
+        $target_user = $this->getUserTable()->getUserByName($cur_user);
+        $products    = $this->getProductTable()->fetchProductByUser($cur_user);
+        $all_users   = $this->getUserTable()->fetchAll();
+
+        $monitor5   = $this->getMonitorTable()->fetchMonitorByFkEntUserLimit5($target_user->id);
+        $newspub5   = $this->getNewspubTable()->getNewspubByUserLimit5($cur_user);
+        $evaluate5  = $this->getEvaluateTable()->fetchEvaluateByUserLimit5($cur_user);
+        $writer5    = $this->getWriterTable()->fetchWriterByUserLimit5($cur_user);
+        $tpcontact5 = $this->getTpcontactTable()->fetchTpcontactByUserLimit5($cur_user);
+        $interview5 = $this->getInterviewTable()->fetchIntviewByFkEntUserLimit5($target_user->id);
+
         return new ViewModel(array(
-            'user' => $cur_user,
-            'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
-            'products' => $this->getProductTable()->fetchProductByUser($cur_user),
-            'evaluate' => $this->getEvaluateTable()->fetchEvaluateByUser($cur_user),
+            'user'       => $cur_user,
+            'products'   => $products,
+            'all_users'  => $all_users,
+            'monitor5'   => $monitor5,
+            'newspub5'   => $newspub5,
+            'evaluate5'  => $evaluate5,
+            'writer5'    => $writer5,
+            'tpcontact5' => $tpcontact5,
+            'interview5' => $interview5,
         ));
     }
 
@@ -272,6 +292,42 @@ class EnterpriseController extends AbstractActionController
             $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
         }
         return $this->creditlogTable;
+    }
+
+    public function getMonitorTable()
+    {
+        if(!$this->monitorTable){
+            $sm = $this->getServiceLocator();
+            $this->monitorTable = $sm->get('Monitor\Model\MonitorTable');
+        }
+        return $this->monitorTable;
+    }
+
+    public function getWriterTable()
+    {
+        if(!$this->writerTable){
+            $sm = $this->getServiceLocator();
+            $this->writerTable = $sm->get('Writer\Model\WriterTable');
+        }
+        return $this->writerTable;
+    }
+
+    public function getTpcontactTable()
+    {
+        if(!$this->tpcontactTable){
+            $sm = $this->getServiceLocator();
+            $this->tpcontactTable = $sm->get('Topic\Model\TpcontactTable');
+        }
+        return $this->tpcontactTable;
+    }
+
+    public function getInterviewTable()
+    {
+        if(!$this->interviewTable){
+            $sm = $this->getServiceLocator();
+            $this->interviewTable = $sm->get('Interview\Model\InterviewTable');
+        }
+        return $this->interviewTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

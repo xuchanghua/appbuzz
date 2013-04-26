@@ -44,6 +44,19 @@
                             'id'     => $target_user->id,
                         )
                     ));
+                    $form->add(array(
+                        'name' => 'is_writer',
+                        'type' => 'Zend\Form\Element\Select',
+                        'attributes' => array(
+                            'id' => 'is_writer'
+                        ),
+                        'options' => array(
+                            'value_options' => array(
+                                '0' => '该媒体用户不是自由撰稿人',
+                                '1' => '该媒体用户是自由撰稿人',
+                            ),
+                        ),
+                    ));
                     $form->prepare();
                     echo $this->form()->openTag($form);
                     echo $this->formHidden($form->get('id'));
@@ -114,6 +127,10 @@
     </div>
     </div>
 </div>
+
+<script>
+document.getElementById("is_writer").value=<?php echo $target_user->is_writer;?>;
+</script>
 
 <style>
 div#userinfo

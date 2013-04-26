@@ -64,6 +64,16 @@ class WriterTable
         return $rowset;
     }
 
+    public function fetchWriterByUserLimit5($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->order('id_writer DESC');
+            $select->limit(5);
+        });
+        return $rowset;
+    }
+
     public function getWriter($id)
     {
         $id  = (int) $id;

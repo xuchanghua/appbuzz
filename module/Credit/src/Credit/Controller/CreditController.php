@@ -24,57 +24,68 @@ class CreditController extends AbstractActionController
 
     public function addAction()
     {
-        /*$form = new CreditForm();
-        $form->get('submit')->setValue('Add');
-
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $credit = new Credit();
-            $form->setInputFilter($credit->getInputFilter());
-            $form->setData($request->getPost());
-
-            if ($form->isValid()) {
-                $credit->exchangeArray($form->getData());
-                $this->getCreditTable()->saveCredit($credit);
-
-                // Redirect to list of credits
-                return $this->redirect()->toRoute('credit');
-            }
-        }
-        return array('form' => $form);*/
     }
 
     public function editAction()
-    {        
-        /*$id = (int) $this->params()->fromRoute('id', 0);
-        if (!$id) {
-            return $this->redirect()->toRoute('credit', array(
-                'action' => 'add'
-            ));
+    {
+    }
+
+    public function exportlogAction()
+    {
+        //所有用户->导出所有交易记录
+        //$arr_type_allowed = array(1, 2, 3);
+        //$cur_user = $this->_auth($arr_type_allowed);
+
+        $id_credit = (int) $this->params()->fromRoute('id', 0);
+        if (!$id_credit) {
+            return $this->redirect()->toRoute('/');
         }
-        $credit = $this->getCreditTable()->getCredit($id);
 
-        $form  = new CreditForm();
-        $form->bind($credit);
-        $form->get('submit')->setAttribute('value', 'Edit');
+        $logs = $this->getCreditlogTable()->fetchExportLogByFkCredit($id_credit);
+        $headings = array(
+            'id', '', '', '', '', '交易时间', 
+            '交易金额', '是否为支付', '是否为充值', '订单号', '创建时间', '创建人', '服务类型', '付款人', '收款人'
+        );
 
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $form->setInputFilter($credit->getInputFilter());
-            $form->setData($request->getPost());
+        require './vendor/Classes/PHPExcel.php';
+        if($logs){
+            $objPHPExcel = new \PHPExcel();
+            $objPHPExcel->getActiveSheet()->setTitle('我的交易记录');
 
-            if ($form->isValid()) {
-                $this->getCreditTable()->saveCredit($form->getData());
-
-                // Redirect to list of credits
-                return $this->redirect()->toRoute('credit');
+            $rowNumber = 1;
+            $col = 'A';
+            foreach($headings as $heading){
+                $objPHPExcel->getActiveSheet()->setCellValue($col.$rowNumber,$heading);
+                $col++;
             }
+
+            $rowNumber = 2;
+            foreach($logs as $row){
+                $col = 'A';
+                foreach($row as $cell) {
+                    $objPHPExcel->getActiveSheet()->setCellValue($col.$rowNumber,$cell);
+                    $col++;
+                }
+                $rowNumber++;
+            }   
+
+            // Freeze pane so that the heading line will not scroll
+            $objPHPExcel->getActiveSheet()->freezePane('A2');
+
+            //删除空的4列
+            $objPHPExcel->getActiveSheet()->removeColumn('B', 4);
+
+            // Save as an Excel BIFF (xls) file
+            $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="我的交易记录.xls"');
+            header('Cache-Control: max-age=0');
+
+            $objWriter->save('php://output');
+            exit();
         }
 
-        return array(
-            'id' => $id,
-            'form' => $form,
-        );*/
     }
 
     public function chargeAction()

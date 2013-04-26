@@ -30,7 +30,7 @@
         <div id="mid" class="span8 mid">
             <div>
                 <div class="linkbtns">
-                    <form action="/media/mediainfo">
+                    <form action="/">
                         <input type="submit" class="btn btn-primary linkbtn" value="媒体资料">
                     </form>
                 </div>
@@ -63,14 +63,12 @@
                             <tr>
                                 <td>
                                     用户名：
-                                    <?php echo $user;?>&nbsp;&nbsp;<a href="">修改密码</a>
+                                    <?php echo $user;?>&nbsp;&nbsp;<a href="/user/changepassword/<?php echo $id_user;?>">修改密码</a>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     电子邮箱：
-                                </td>
-                                <td>
                                     <?php echo $email;?>
                                 </td>
                             </tr>

@@ -103,7 +103,7 @@ class MonitorController extends AbstractActionController
 
         $id_monitor = $this->getMonitorTable()->getId($monitor->created_at, $monitor->created_by);
         $monitor2 = $this->getMonitorTable()->getMonitor($id_monitor);
-        $monitor2->order_no = 51000000 + $id_monitor;
+        $monitor2->order_no = 01000000 + $id_monitor;
         $this->getMonitorTable()->saveMonitor($monitor2);
 
         //update the user's credit
@@ -187,7 +187,7 @@ class MonitorController extends AbstractActionController
 
         $id_monitor = $this->getMonitorTable()->getId($monitor->created_at, $monitor->created_by);
         $monitor2 = $this->getMonitorTable()->getMonitor($id_monitor);
-        $monitor2->order_no = 51000000 + $id_monitor;
+        $monitor2->order_no = 01000000 + $id_monitor;
         $this->getMonitorTable()->saveMonitor($monitor2);
 
         //update the user's credit
@@ -325,7 +325,7 @@ class MonitorController extends AbstractActionController
         $str_keyword_2 = $keyword2->keyword;
 
         //connect to the monitor database
-        $con = mysql_connect("localhost:3306", "root", "rocket2012");
+        $con = mysql_connect("localhost:3306", "root", "");
         mysql_set_charset('utf8', $con);
         $charset = mysql_client_encoding($con);
         mysql_select_db("article", $con);
@@ -437,7 +437,7 @@ class MonitorController extends AbstractActionController
         $str_keyword_2 = $keyword2->keyword;
 
         //connect to the monitor database
-        $con = mysql_connect("localhost:3306", "root", "rocket2012");
+        $con = mysql_connect("localhost:3306", "root", "");
         mysql_set_charset('utf8', $con);
         $charset = mysql_client_encoding($con);
         mysql_select_db("article", $con);
@@ -530,7 +530,7 @@ class MonitorController extends AbstractActionController
         // connection with the database
         $dbhost = "localhost";
         $dbuser = "root";
-        $dbpass = "rocket2012";
+        $dbpass = "";
         $dbname = "article";
 
         $con = mysql_connect($dbhost,$dbuser,$dbpass);
@@ -621,7 +621,7 @@ class MonitorController extends AbstractActionController
         $str_keyword_2 = $keyword2->keyword;
 
         //connect to the monitor database
-        $con = mysql_connect("localhost:3306", "root", "rocket2012");
+        $con = mysql_connect("localhost:3306", "root", "");
         mysql_set_charset('utf8', $con);
         $charset = mysql_client_encoding($con);
         mysql_select_db("article", $con);

@@ -33,6 +33,16 @@ class TpcontactTable
         return $rowset;
     }
 
+    public function fetchTpcontactByUserLimit5($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use ($created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->order('id_tpcontact DESC');
+            $select->limit(5);
+        });
+        return $rowset;
+    }
+
     public function fetchTpcontactByFkTopic($fk_topic)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use ($fk_topic){

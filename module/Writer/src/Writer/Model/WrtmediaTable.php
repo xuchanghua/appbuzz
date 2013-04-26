@@ -52,6 +52,16 @@ class WrtmediaTable
         return $rowset;
     }
 
+    public function fetchWrtmediaByUserLimit5($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->order('id_wrtmedia DESC');
+            $select->limit(5);
+        });
+        return $rowset;
+    }
+
     public function fetchWmExRejByMedByFkWrt($fk_writer)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($fk_writer){

@@ -41,6 +41,16 @@ class InterviewTable
         return $rowset;
     }
 
+    public function fetchInterviewByUserLimit5($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->order('id_interview DESC');
+            $select->limit(5);
+        });
+        return $rowset;
+    }
+
     public function fetchCurrentInterview($created_by = null)
     {
         date_default_timezone_set("Asia/Shanghai");
@@ -101,6 +111,25 @@ class InterviewTable
                 $select->where->equalTo('fk_enterprise_user', $fk_enterprise_user);
             }
             $select->order('id_interview DESC');
+        });
+        return $rowset;
+    }
+
+    public function fetchIntviewByFkEntUser($fk_enterprise_user)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($fk_enterprise_user){
+            $select->where->equalTo('fk_enterprise_user', $fk_enterprise_user);
+            $select->order('id_interview DESC');
+        });
+        return $rowset;
+    }
+
+    public function fetchIntviewByFkEntUserLimit5($fk_enterprise_user)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($fk_enterprise_user){
+            $select->where->equalTo('fk_enterprise_user', $fk_enterprise_user);
+            $select->order('id_interview DESC');
+            $select->limit(5);
         });
         return $rowset;
     }

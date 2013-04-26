@@ -33,6 +33,16 @@ class TopicTable
         return $rowset;
     }
 
+    public function fetchTopicByUserLimit5($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use ($created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->order('id_topic DESC');
+            $select->limit(5);
+        });
+        return $rowset;
+    }
+
     public function fetchAllJoinLeftTpcontactDesc()
     {
          $resultSet = $this->tableGateway->select(function(Select $select){

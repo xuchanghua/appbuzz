@@ -15,7 +15,7 @@ class TimerangepickerForm extends Form
             'attributes' => array(
                 'type' => 'text',
                 'placeholder' => 'YYYY-MM-DD',
-                //'id' => 'f_date_ETA',
+                'id' => 'start_date',
             ),
             'options' => array(
                 'label' => '',
@@ -26,7 +26,7 @@ class TimerangepickerForm extends Form
             'attributes' => array(
                 'type' => 'text',
                 'placeholder' => 'YYYY-MM-DD',
-                //'id' => 'f_date_ETA',
+                'id' => 'end_date',
             ),
             'options' => array(
                 'label' => '',

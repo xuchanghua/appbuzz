@@ -37,6 +37,10 @@ class Creditlog implements InputFilterAwareInterface
         $this->order_no        = (isset($data['order_no']))        ? $data['order_no']        : null;
         $this->created_at      = (isset($data['created_at']))      ? $data['created_at']      : null;
         $this->created_by      = (isset($data['created_by']))      ? $data['created_by']      : null;
+        //join
+        $this->st_description  = (isset($data['st_description']))  ? $data['st_description']  : null;
+        $this->u1_username     = (isset($data['u1_username']))     ? $data['u1_username']     : null;
+        $this->u2_username     = (isset($data['u2_username']))     ? $data['u2_username']     : null;
     }
 
     // Add the following method:

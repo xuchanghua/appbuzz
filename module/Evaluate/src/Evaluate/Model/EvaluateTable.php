@@ -98,6 +98,16 @@ class EvaluateTable
         return $rowset;
     }
 
+    public function fetchEvaluateByUserLimit5($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->order('id_evaluate DESC');
+            $select->limit(5);
+        });
+        return $rowset;
+    }
+
     public function getEvaluate($id)
     {
         $id  = (int) $id;

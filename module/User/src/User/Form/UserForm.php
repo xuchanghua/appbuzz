@@ -94,19 +94,12 @@ class UserForm extends Form
 				'type' => 'hidden'
 				)
 			));
+		
 		$this->add(array(
 			'name' => 'is_writer',
-			'type' => 'Zend\Form\Element\Select',
 			'attributes' => array(
-				'id' => 'is_writer'
-				),
-			'options' => array(
-				'value_options' => array(
-					''  => '*是否自由撰稿人？',
-					'1' => '我是自由撰稿人',
-					'0' => '我不是自由撰稿人',
-					),
-				),
+				'type' => 'hidden'
+				)
 			));
 		$this->add(array(
 			'name' => 'submit',

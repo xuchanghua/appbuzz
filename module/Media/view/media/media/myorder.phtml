@@ -1,0 +1,256 @@
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <h1>企业用户首页</h1>  
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span2 left">
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_media.phtml'; 
+        ?>
+        </div>
+        <div id="mid" class="span8 mid">
+            <div>
+                <div class="linkbtns">
+                    <form action="/">
+                        <input type="submit" class="btn btn-primary linkbtn" value="媒体资料">
+                    </form>
+                </div>
+                <div class="linkbtns">
+                    <form action="/media/myaccount">
+                        <input type="submit" class="btn btn-primary linkbtn" value="我的账户">
+                    </form>
+                </div>
+                <div>
+                    <form action="/media/myorder">
+                        <input type="submit" class="btn btn-primary linkbtn" value="我的订单">
+                    </form>
+                </div>
+                <div>                    
+                    <div id="evamedia" class="widget-box">
+                        <div class="widget-title">
+                            <h4>最新产品评测订单——</h4>
+                        </div>
+                        <div class="widget-content nopadding">
+                            <?php
+                            $arr_id_user = array();
+                            foreach($all_users as $au)
+                            {
+                                $arr_id_user[$au->id] = $au->username;
+                            }
+                            $arr_id_evaluate = array();
+                            foreach($evaluates as $eva)
+                            {
+                                $arr_id_evaluate[$eva->id_evaluate] = $eva;
+                            }
+                            $arr_id_product = array();
+                            foreach($products as $pd)
+                            {
+                                $arr_id_product[$pd->id_product] = $pd;
+                            }
+                            ?>
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>APP产品</th>
+                                    <th>企业名称</th>
+                                    <th>有效日期</th>
+                                </tr>
+                                <?php foreach($evamedia5 as $em): ?>
+                                <tr>
+                                    <td>
+                                        <a href="/evaluate/evainfo/<?php echo $em->fk_evaluate; ?>">
+                                            <?php echo $em->order_no; ?>
+                                        </a>
+                                    </td>
+                                    <td><?php echo $arr_id_product[$arr_id_evaluate[$em->fk_evaluate]->fk_product]->name; ?></td>
+                                    <td><?php echo $arr_id_user[$em->fk_enterprise_user]; ?></td>
+                                    <td><?php echo $arr_id_evaluate[$em->fk_evaluate]->due_date; ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                        <div>
+                            <form action="/evaluate/mgmt">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有产品评测订单">
+                            </form>
+                        </div>
+                    </div>                    
+                    <div id="wrtmedia" class="widget-box">
+                        <div class="widget-title">
+                            <h4>最新撰稿订单——</h4>
+                        </div>
+                        <div class="widget-content nopadding">       
+                            <?php
+                            $arr_id_writer = array();
+                            foreach($writers as $wt)
+                            {
+                                $arr_id_writer[$wt->id_writer] = $wt;
+                            }
+                            ?>                     
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>APP产品</th>
+                                    <th>企业名称</th>
+                                    <th>订单状态</th>
+                                </tr>
+                                <?php foreach($wrtmedia5 as $wm): ?>
+                                <tr>
+                                    <td>
+                                        <a href="/writer/wrtinfo/<?php echo $wm->fk_writer; ?>">
+                                            <?php echo $wm->order_no; ?>
+                                        </a>
+                                    </td>
+                                    <td><?php echo $arr_id_product[$arr_id_writer[$wm->fk_writer]->fk_product]->name; ?></td>
+                                    <td><?php echo $arr_id_user[$wm->fk_enterprise_user]; ?></td>
+                                    <td><?php echo $wm->fk_wrtmedia_status; ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                        <div>
+                            <form action="/writer/mgmt">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有撰稿订单">
+                            </form>
+                        </div>
+                    </div>
+                    <div id="topic" class="widget-box">
+                        <div class="widget-title">
+                            <h4>最新发布选题——</h4>
+                        </div>
+                        <div class="widget-content nopadding">
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>选题类型</th>
+                                    <th>APP类型</th>
+                                    <th>有效日期</th>
+                                </tr>
+                                <?php foreach($topic5 as $tp): ?>
+                                <tr>
+                                    <td>
+                                        <a href="/topic/detail/<?php echo $tp->id_topic; ?>">
+                                            <?php echo $tp->order_no; ?>
+                                        </a>
+                                    </td>
+                                    <td><?php echo $tp->topic_type; ?></td>
+                                    <td><?php echo $tp->app_type; ?></td>
+                                    <td><?php echo $tp->due_date; ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                        <div>
+                            <form action="/topic/index">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有发布选题">
+                            </form>
+                        </div>
+                    </div>
+                    <div id="interview" class="widget-box">
+                        <div class="widget-title">
+                            <h4>最新采访邀约——</h4>
+                        </div>
+                        <div class="widget-content nopadding">
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>APP产品</th>
+                                    <th>企业名称</th>
+                                    <th>采访日期</th>
+                                </tr>
+                                <?php foreach($interview5 as $itv): ?>
+                                <tr>
+                                    <td>
+                                        <a href="/interview/detail/<?php echo $itv->id_interview; ?>">
+                                            <?php echo $itv->order_no; ?>
+                                        </a>
+                                    </td>
+                                    <td><?php echo $arr_id_product[$itv->fk_product]->name; ?></td>
+                                    <td><?php echo $arr_id_user[$itv->fk_enterprise_user]; ?></td>
+                                    <td><?php echo $itv->date_time; ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                        <div>
+                            <form action="/interview/index">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有采访邀约">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <div id="right" class="span4 right">
+                SPAN4 RIGHT
+                <div id="mediarank" class="mediarank">
+                    APP媒体曝光排名
+                </div>
+                <div id="latestapp" class="latestapp">
+                    最新注册APP
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+div.user, .mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 70%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>
+
+            <script src="js/excanvas.min.js"></script>
+            <script src="js/jquery.min.js"></script>
+            <script src="js/jquery.ui.custom.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script src="js/jquery.flot.min.js"></script>
+            <script src="js/jquery.flot.resize.min.js"></script>
+            <script src="js/jquery.peity.min.js"></script>
+            <script src="js/fullcalendar.min.js"></script>
+            <script src="js/unicorn.js"></script>
+            <script src="js/unicorn.dashboard.js"></script>

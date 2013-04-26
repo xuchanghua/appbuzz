@@ -84,6 +84,19 @@
     </div>
 </div>
 
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css" />
+<script>
+$(document).ready(function(){
+    $( "#start_date" ).datepicker();
+    $( "#start_date" ).datepicker("option","dateFormat","yy-mm-dd");    
+    $( "#end_date" ).datepicker();
+    $( "#end_date" ).datepicker("option","dateFormat","yy-mm-dd"); 
+});
+</script>
+
 <style>
 div.user,.mid
 {

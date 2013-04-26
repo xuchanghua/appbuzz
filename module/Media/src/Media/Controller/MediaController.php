@@ -15,6 +15,13 @@ class MediaController extends AbstractActionController
     protected $mediaTable;
     protected $creditTable;
     protected $creditlogTable;
+    protected $topicTable;
+    protected $evamediaTable;
+    protected $interviewTable;
+    protected $wrtmediaTable;
+    protected $productTable;
+    protected $evaluateTable;
+    protected $writerTable;
 
     public function indexAction()
     {
@@ -55,6 +62,7 @@ class MediaController extends AbstractActionController
         return new ViewModel(array(
             'user' => $cur_user,
             'email' => $email,
+            'id_user' => $this->getUserTable()->getUserByName($cur_user)->id,
             'fk_media' => $fk_media,
             'media' => (isset($fk_media))? $this->getMediaTable()->getMedia($fk_media) : null,
             'form' => $form,
@@ -175,7 +183,27 @@ class MediaController extends AbstractActionController
         $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
-        
+        $all_users = $this->getUserTable()->fetchAll();
+        $products  = $this->getProductTable()->fetchAll();
+        $evaluates = $this->getEvaluateTable()->fetchAll();
+        $writers   = $this->getWriterTable()->fetchAll();
+
+        $topic5     = $this->getTopicTable()->fetchTopicByUserLimit5($cur_user);
+        $evamedia5  = $this->getEvamediaTable()->fetchEvamediaByUserDescLimit5($cur_user);
+        $interview5 = $this->getInterviewTable()->fetchInterviewByUserLimit5($cur_user);
+        $wrtmedia5  = $this->getWrtmediaTable()->fetchWrtmediaByUserLimit5($cur_user);
+
+        return new ViewModel(array(
+            'user'       => $cur_user,
+            'all_users'  => $all_users,
+            'products'   => $products,
+            'evaluates'  => $evaluates,
+            'writers'    => $writers,
+            'topic5'     => $topic5,
+            'evamedia5'  => $evamedia5,
+            'interview5' => $interview5,
+            'wrtmedia5'  => $wrtmedia5,
+        ));        
     }
 
     public function topicpublishAction()
@@ -228,6 +256,69 @@ class MediaController extends AbstractActionController
             $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
         }
         return $this->creditlogTable;
+    }
+
+    public function getTopicTable()
+    {
+        if(!$this->topicTable){
+            $sm = $this->getServiceLocator();
+            $this->topicTable = $sm->get('Topic\Model\TopicTable');
+        }
+        return $this->topicTable;
+    }
+
+    public function getEvamediaTable()
+    {
+        if(!$this->evamediaTable){
+            $sm = $this->getServiceLocator();
+            $this->evamediaTable = $sm->get('Evaluate\Model\EvamediaTable');
+        }
+        return $this->evamediaTable;
+    }
+
+    public function getInterviewTable()
+    {
+        if(!$this->interviewTable){
+            $sm = $this->getServiceLocator();
+            $this->interviewTable = $sm->get('Interview\Model\InterviewTable');
+        }
+        return $this->interviewTable;
+    }
+
+    public function getWrtmediaTable()
+    {
+        if(!$this->wrtmediaTable){
+            $sm = $this->getServiceLocator();
+            $this->wrtmediaTable = $sm->get('Writer\Model\WrtmediaTable');
+        }
+        return $this->wrtmediaTable;
+    }
+
+    public function getProductTable()
+    {
+        if(!$this->productTable){
+            $sm = $this->getServiceLocator();
+            $this->productTable = $sm->get('Product\Model\ProductTable');
+        }
+        return $this->productTable;
+    }
+
+    public function getEvaluateTable()
+    {
+        if(!$this->evaluateTable){
+            $sm = $this->getServiceLocator();
+            $this->evaluateTable = $sm->get('Evaluate\Model\EvaluateTable');
+        }
+        return $this->evaluateTable;
+    }
+
+    public function getWriterTable()
+    {
+        if(!$this->writerTable){
+            $sm = $this->getServiceLocator();
+            $this->writerTable = $sm->get('Writer\Model\WriterTable');
+        }
+        return $this->writerTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

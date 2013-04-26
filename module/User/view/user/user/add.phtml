@@ -53,6 +53,19 @@ $form->add(array(
         ),
     ),
 ));
+$form->add(array(
+            'name' => 'is_writer',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'is_writer',
+                ),
+            'options' => array(
+                'value_options' => array(
+                    '0' => '该媒体用户不是自由撰稿人',
+                    '1' => '该媒体用户是自由撰稿人',
+                    ),
+                ),
+            ));
 $form->prepare();
 
 echo $this->form()->openTag($form);
@@ -97,7 +110,7 @@ function show_is_writer()
     var is_writer = document.getElementById("is_writer");
     if(user_type == 2)
     {
-        is_writer.style.display = "";
+        is_writer.style.display = "inline";
     }
     else
     {
@@ -108,6 +121,10 @@ function show_is_writer()
 </script>
 
 <style>
+#is_writer
+{
+    display:none;
+}
 div.user,.mid
 {
     border:1px black solid;

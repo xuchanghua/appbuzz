@@ -61,6 +61,16 @@ class MonitorTable
         return $resultSet;
     }
 
+    public function fetchMonitorByFkEntUserLimit5($fk_enterprise_user)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_enterprise_user){
+            $select->where->equalTo('fk_enterprise_user', $fk_enterprise_user);
+            $select->order('id_monitor DESC');
+            $select->limit(5);
+        });
+        return $resultSet;
+    }
+
     public function fetchValidMonitorByFkEntUser($fk_enterprise_user)
     {
         date_default_timezone_set("Asia/Shanghai");

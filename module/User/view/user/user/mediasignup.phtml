@@ -2,6 +2,19 @@
 
 $form = $this->form;
 $form->setAttribute('action', $this->url('user', array('action' => 'mediasignup')));
+$form->add(array(
+			'name' => 'is_writer',
+			'type' => 'Zend\Form\Element\Select',
+			'attributes' => array(
+				'id' => 'is_writer'
+				),
+			'options' => array(
+				'value_options' => array(
+					'1' => '我是自由撰稿人',
+					'0' => '我不是自由撰稿人',
+					),
+				),
+			));
 $form->prepare();
 ?>
 <h1>媒体用户注册：</h1>

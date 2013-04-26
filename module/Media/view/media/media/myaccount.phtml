@@ -28,7 +28,7 @@
         <div id="mid" class="span8 mid">
             <div>
                 <div class="linkbtns">
-                    <form action="/media/mediainfo">
+                    <form action="/">
                         <input type="submit" class="btn btn-primary linkbtn" value="媒体资料">
                     </form>
                 </div>
@@ -101,6 +101,11 @@
                         </tr>
                         <?php endforeach; ?>
                     </table>
+                </div>
+                <div class="linkbtns">
+                    <form action="/credit/exportlog/<?php echo $credit->id_credit ;?>">
+                        <input type="submit" class="btn btn-primary" value="导出全部交易记录">
+                    </form>
                 </div>
                 </div>
             </div>

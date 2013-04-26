@@ -172,7 +172,7 @@ class UserController extends AbstractActionController
                 }
                 //return $this->redirect()->toRoute('enterprise');
             }else{
-                //die(var_dump($form->getMessages()));
+                die(var_dump($form->getMessages()));
             }
         }
         return array('form' => $form);
@@ -387,8 +387,6 @@ class UserController extends AbstractActionController
                     'action' => 'detail',
                     'id'     => $target_user->id,
                 ));
-            }else{
-                die(var_dump($form->getMessages()));
             }
         }
         return new ViewModel(array(

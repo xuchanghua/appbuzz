@@ -19,41 +19,13 @@
 </BR>
     <div id="main" class="container" style="width:1170px;">
     <div id="row" class="row">
-        <!--
         <div id="left" class="span2 left">
-            <div id="user" class="user">
-                用户: <?php echo $user;?>
-                <a href="/user/logout">退出</a>
-            </br>
-                <a href="">企业资料</a>
-            </br>
-                <a href="">我的账户</a>
-            </br>
-                <a href="">我的订单</a>
-            </br>
-                <a href="">APP新闻助手</a>           
-            </div>
-            <div id="netmonitor" class="netmonitor">
-                <a href="netmonitor">网络监测</a>
-            </div>
-            <div id="newspublish" class="newspublish">
-                <a href="/newspub/index">新闻发布</a>
-            </div>
-            <div id="appevaluating" class="appevaluating">
-                <a href="appevaluating">产品评测</a>
-            </div>
-            <div id="newsedit" class="newsedit">
-                <a href="newsedit">新闻撰写</a>
-            </div>
-            <div id="topic" class="topic">
-                <a href="topic">媒体选题</a>
-            </div>
-            <div id="interview" class="interview">
-                <a href="interview">媒体采访</a>
-            </div>
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_enterprise.phtml'; 
+        ?>
         </div>
-        -->
-        <div id="mid" class="span12">
+        <div id="mid" class="span8">
             <div>
                 <div class="linkbtns">
                     <form action="/enterprise/enterpriseinfo">
@@ -76,9 +48,37 @@
                     </form>
                 </div>
                 <div>
+                    <div id="monitororder" class="widget-box">
+                        <div class="widget-title">
+                            <h4>最新网络监测订单——</h4>
+                        </div>
+                        <div class="widget-content nopadding">
+                            <table id="monitortable" class="table table-bordered table-striped">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>服务周期</th>
+                                    <th>开始日期</th>
+                                    <th>结束日期</th>
+                                </tr>
+                                <?php foreach($monitor5 as $mnt): ?>
+                                <tr>
+                                    <td><?php echo $mnt->order_no; ?></td>
+                                    <td><?php echo $mnt->duration.'个月'; ?></td>
+                                    <td><?php echo $mnt->start_date; ?></td>
+                                    <td><?php echo $mnt->end_date; ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                        <div>
+                            <form action="/monitor/mgmt">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有网络监测订单">
+                            </form>
+                        </div>
+                    </div>
                     <div id="appinfo" class="widget-box">
                         <div class="widget-title">
-                            <h4>新闻发布订单——</h4>
+                            <h4>最新新闻发布订单——</h4>
                         </div>
                         <div class="widget-content nopadding">
                         <?php
@@ -90,101 +90,194 @@
                             $arr_product_description[$p->id_product] = $p->description;
                         }
                         ?>
-                        <table id="tbappinfo" class="table table-bordered table-striped">
-                            <th>
-                                <td>产品</td>
-                                <td>标题</td>
-                                <td>正文</td>
-                                <td>产品描述</td>
-                                <td>web下载链接</td>
-                            <!--<td>Appstore下载链接</td>
-                                <td>安卓市场下载链接</td>-->
-                                <td>发布方式及费用</td>
-                            </th>
-                            <?php foreach($newspub as $eva) :  ;?>
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <?php 
-                                    if(array_key_exists($eva->fk_product, $arr_product_name))
-                                    {
-                                        echo $arr_product_name[$eva->fk_product];
-                                    }
-                                    else
-                                    {
-                                        echo "未关联产品";
-                                    }
-                                    ?>
-                                </td>
-                                <td>
-                                    <a href="/newspub/detail/<?php echo $eva->id_newspub ;?>"><?php echo $eva->title; ?></a>
-                                </td>
-                                <td>
-                                    <?php echo $eva->body; ?>
-                                </td>
-                                <td>
-                                    <?php 
-                                    if(array_key_exists($eva->fk_product, $arr_product_description))
-                                    {
-                                        echo $arr_product_description[$eva->fk_product];
-                                    }
-                                    else
-                                    {
-                                        echo "未关联产品";
-                                    }
-                                    ?>
-
-                                </td>
-                                <td>
-                                    <?php echo $eva->download_link; ?>
-                                </td>
-                            <!--<td>
-                                    <?php echo $eva->appstore_links; ?>
-                                </td>
-                                <td>
-                                    <?php echo $eva->androidmkt_link; ?>
-                                </td>-->
-                                <td>
-                                    <?php echo $eva->fk_pub_mode; ?>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </table>
+                            <table id="tbappinfo" class="table table-bordered table-striped">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>产品名称</th>
+                                    <th>标题</th>
+                                    <th>发布方式及费用</th>
+                                </tr>
+                                <?php foreach($newspub5 as $np) :  ;?>
+                                <tr>
+                                    <td>
+                                        <a href="/newspub/detail/<?php echo $np->id_newspub ;?>">
+                                            <?php echo $np->order_no; ?>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <?php 
+                                        if(array_key_exists($np->fk_product, $arr_product_name))
+                                        {
+                                            echo $arr_product_name[$np->fk_product];
+                                        }
+                                        else
+                                        {
+                                            echo "未关联产品";
+                                        }
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $np->title; ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $np->fk_pub_mode; ?>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                        <div>
+                            <form action="/newspub/index">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有新闻发布订单">
+                            </form>
                         </div>
                     </div>
                     <div id="appinfo" class="widget-box">
                         <div class="widget-title">
-                            <h4>产品评测订单——</h4>
+                            <h4>最新产品评测订单——</h4>
                         </div>
                         <div class="widget-content nopadding">
                         <table id="tbappinfo" class="table table-bordered table-striped">
-                            <th>
-                                <td>App产品</td>
-                                <td>产品卖点</td>
-                                <td>web下载链接</td>
-                            </th>
-                            <?php foreach($evaluate as $eva) :  ;?>
                             <tr>
-                                <td></td>
+                                <th>订单号</th>
+                                <th>产品名称</th>
+                                <th>产品卖点</th>
+                                <th>有效日期</th>
+                            </tr>
+                            <?php foreach($evaluate5 as $eva) :  ;?>
+                            <tr>
                                 <td>
-                                    
+                                    <a href="/evaluate/detail/<?php echo $eva->id_evaluate ;?>">
+                                        <?php echo $eva->order_no; ?>
+                                    </a>
                                 </td>
                                 <td>
-                                    <a href="/evaluate/detail/<?php echo $eva->id_evaluate ;?>"><?php echo $eva->highlight; ?></a>
+                                    <?php echo $arr_product_name[$eva->fk_product]; ?>
                                 </td>
                                 <td>
-                                    <?php echo $eva->web_link; ?>
+                                    <?php echo $eva->highlight; ?>
+                                </td>
+                                <td>
+                                    <?php echo $eva->due_date; ?>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
                         </table>
                         </div>
+                        <div>
+                            <form action="/evaluate/index">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有产品评测订单">
+                            </form>
+                        </div>
                     </div>
-
+                    <div id="writerorder" class="widget-box">
+                        <div class="widget-title">
+                            <h4>最新撰稿外包订单——</h4>
+                        </div>
+                        <div class="widget-content nopadding">
+                            <table id="writertable" class="table table-bordered table-striped">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>产品名称</th>
+                                    <th>撰稿要求</th>
+                                    <th>创建日期</th>
+                                </tr>
+                                <?php foreach($writer5 as $wrt): ?>
+                                <tr>
+                                    <td>
+                                        <a href="/writer/detail/<?php echo $wrt->id_writer ;?>">
+                                            <?php echo $wrt->order_no; ?>
+                                        </a>
+                                    </td>
+                                    <td><?php echo $arr_product_name[$wrt->fk_product]; ?></td>
+                                    <td><?php echo $wrt->requirement; ?></td>
+                                    <td><?php echo $wrt->created_at; ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                        <div>
+                            <form action="/writer/index">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有撰稿外包订单">
+                            </form>
+                        </div>
+                    </div>
+                    <div id="tpcontactorder" class="widget-box">
+                        <div class="widget-title">
+                            <h4>最新媒体选题订单——</h4>
+                        </div>
+                        <div class="widget-content nopadding">
+                            <?php
+                            $arr_id_user = array();
+                            foreach($all_users as $au)
+                            {
+                                $arr_id_user[$au->id] = $au->username;
+                            }
+                            ?>
+                            <table id="tpcontacttable" class="table table-bordered table-striped">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>媒体名称</th>
+                                    <th>产品名称</th>
+                                    <th>创建日期</th>
+                                </tr>
+                                <?php foreach($tpcontact5 as $tpc): ?>
+                                <tr>
+                                    <td>
+                                        <a href="/topic/viewcontact/<?php echo $tpc->fk_topic ;?>">
+                                            <?php echo $tpc->order_no; ?>
+                                        </a>
+                                    </td>
+                                    <td><?php echo $arr_id_user[$tpc->fk_media_user]; ?></td>
+                                    <td><?php echo $arr_product_name[$tpc->fk_product]; ?></td>
+                                    <td><?php echo $tpc->created_at; ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                        <div>
+                            <form action="/topic/mgmt">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有媒体选题订单">
+                            </form>
+                        </div>
+                    </div>
+                    <div id="intervieworder" class="widget-box">
+                        <div class="widget-title">
+                            <h4>最新媒体采访订单——</h4>
+                        </div>
+                        <div class="widget-content nopadding">
+                            <table id="interviewtable" class="table table-bordered table-striped">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>媒体名称</th>
+                                    <th>产品名称</th>
+                                    <th>采访日期</th>
+                                    <th>订单状态</th>
+                                </tr>
+                                <?php foreach($interview5 as $itv): ?>
+                                <tr>
+                                    <td>
+                                        <a href="/interview/entdetail/<?php echo $itv->id_interview ;?>">
+                                            <?php echo $itv->order_no; ?>
+                                        </a>
+                                    </td>
+                                    <td><?php echo $arr_id_user[$itv->fk_media_user]; ?></td>
+                                    <td><?php echo $arr_product_name[$itv->fk_product]; ?></td>
+                                    <td><?php echo $itv->date_time; ?></td>
+                                    <td><?php echo $itv->fk_interview_status; ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                        <div>
+                            <form action="/interview/entcurrent">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有媒体采访邀约">
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <!--
         <div id="right" class="span4 right">
             SPAN4 RIGHT
             <div id="mediarank" class="mediarank">
@@ -194,7 +287,6 @@
                 最新注册APP
             </div>
         </div>
-        -->
     </div>
     </div>
 </div>

@@ -42,6 +42,16 @@ class EvamediaTable
         return $rowset;
     }
 
+    public function fetchEvamediaByUserDescLimit5($created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->order('id_evamedia DESC');
+            $select->limit(5);
+        });
+        return $rowset;
+    }
+
     public function fetchEvamediaByFkEva($fk_evaluate)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($fk_evaluate){

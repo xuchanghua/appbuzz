@@ -46,6 +46,41 @@ class CreditlogTable
         return $resultSet;
     }
 
+    public function fetchExportLogByFkCredit($fk_credit)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_credit){
+            $select->columns(array('id_creditlog', 'order_no', 'date_time',  
+                'amount', 'is_pay', 'is_charge', 'created_at', 'created_by'));
+            $select->join(
+                array('st' => 'service_type'),
+                'st.id_service_type = creditlog.fk_service_type',
+                array(
+                    'st_description' => 'description',
+                ),
+                'left'
+            );
+            $select->join(
+                array('u1' => 'user'),
+                'u1.id = creditlog.fk_from',
+                array(
+                    'u1_username' => 'username',
+                ),
+                'left'
+            );
+            $select->join(
+                array('u2' => 'user'),
+                'u2.id = creditlog.fk_to',
+                array(
+                    'u2_username' => 'username',
+                ),
+                'left'
+            );
+            $select->where->equalTo('fk_credit', $fk_credit);
+            $select->order('id_creditlog DESC');
+        });
+        return $resultSet;
+    }
+
     public function getCreditlog($id)
     {
         $id  = (int) $id;
