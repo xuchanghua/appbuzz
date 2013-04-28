@@ -4,6 +4,7 @@ return array(
         'Admin',
         'Album',
         'Application',
+        'Article',
         'Attachment',
         'Credit',
 	    'Enterprise',

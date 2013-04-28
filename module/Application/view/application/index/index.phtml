@@ -77,7 +77,36 @@
 				摘要
 			</div>
 			<div id="news" class="news">
-				新闻与评测
+				<?php 
+				$arr_articles = array();
+				foreach($articles as $artl)
+				{
+					$arr_articles[$artl->id_article] = $artl; 
+				}
+				$arr_rank_article = array();
+				$arr_rank_article[1] = $arr_articles[$rank->fk_no_1];
+				$arr_rank_article[2] = $arr_articles[$rank->fk_no_2];
+				$arr_rank_article[3] = $arr_articles[$rank->fk_no_3];
+				$arr_rank_article[4] = $arr_articles[$rank->fk_no_4];
+				$arr_rank_article[5] = $arr_articles[$rank->fk_no_5];
+				$arr_rank_article[6] = $arr_articles[$rank->fk_no_6];
+				$arr_rank_article[7] = $arr_articles[$rank->fk_no_7];
+				$arr_rank_article[8] = $arr_articles[$rank->fk_no_8];
+				$arr_rank_article[9] = $arr_articles[$rank->fk_no_9];
+				$arr_rank_article[10] = $arr_articles[$rank->fk_no_10];
+				?>
+				<table>
+					<?php foreach($arr_rank_article as $ara): ?>
+					<tr>
+						<td>
+							<a href="/article/pubview/<?php echo $ara->id_article; ?>">
+								<?php echo $ara->title; ?>
+							</a>
+						</td>
+						<td><?php echo $ara->author; ?></td>
+					</tr>
+					<?php endforeach; ?>
+				</table>
 			</div>
 		</div>
 		<div id="right" class="span4 right">

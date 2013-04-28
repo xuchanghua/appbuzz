@@ -1,5 +1,5 @@
 <?php
-namespace Product\Model;
+namespace Article\Model;
 
 use Zend\Db\TableGateway\TableGateway;      
 use Zend\Db\Sql\Select;
@@ -8,7 +8,7 @@ use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Db\ResultSet\ResultSet;
 
-class ProductTable
+class ArticleTable
 {
     const ORDER_DEFAULT = 0;
     const ORDER_LATEST  = 1;
@@ -29,24 +29,15 @@ class ProductTable
     public function fetchAllDesc()
     {
         $resultSet = $this->tableGateway->select(function(Select $select){
-            $select->order('id_product DESC');
+            $select->order('id_article DESC');
         });
         return $resultSet;
     }
 
-    public function fetchProductByUser($created_by)
-    {        
-        $rowset = $this->tableGateway->select(function(Select $select) use ($created_by){
-            $select->where->equalTo('created_by', $created_by);
-            $select->order('id_product DESC');
-        });
-        return $rowset;
-    }
-
-    public function getProduct($id)
+    public function getArticle($id)
     {
         $id  = (int) $id;
-        $rowset = $this->tableGateway->select(array('id_product' => $id));
+        $rowset = $this->tableGateway->select(array('id_article' => $id));
         $row = $rowset->current();
         if (!$row) {
             throw new \Exception("Could not find row $id");
@@ -62,42 +53,43 @@ class ProductTable
         ));
         $row = $rowset->current();
         if (!$row) {
-            throw new \Exception("Could not find row $id");
+            throw new \Exception("Could not find row $created_at and $created_by");
         }
-        return $row->id_product;
+        return $row->id_article;
     }
 
-    public function saveProduct(Product $product)
+    public function saveArticle(Article $article)
     {
         $data = array(
-            'name'            => $product->name,
-            'description'     => $product->description,
-            'type'            => $product->type,
-            'appstore_link'   => $product->appstore_link,
-            'androidmkt_link' => $product->androidmkt_link,
-            'web_link'        => $product->web_link,
-            'barcode'         => $product->barcode,
-            'created_by'      => $product->created_by,
-            'created_at'      => $product->created_at,
-            'updated_by'      => $product->updated_by,
-            'updated_at'      => $product->updated_at,
+            'label'        => $article->label,
+            'title'        => $article->title,
+            'body'         => $article->body,
+            'abstract'     => $article->abstract,
+            'author'       => $article->author,
+            'pub_date'     => $article->pub_date,
+            'rank'         => $article->rank,
+            'is_featuring' => $article->is_featuring,
+            'created_at'   => $article->created_at,
+            'created_by'   => $article->created_by,
+            'updated_at'   => $article->updated_at,
+            'updated_by'   => $article->updated_by,
         );
 
-        $id = (int)$product->id_product;
+        $id = (int)$article->id_article;
         if ($id == 0) {
             $this->tableGateway->insert($data);
         } else {
-            if ($this->getProduct($id)) {
-                $this->tableGateway->update($data, array('id_product' => $id));
+            if ($this->getArticle($id)) {
+                $this->tableGateway->update($data, array('id_article' => $id));
             } else {
                 throw new \Exception('Form id does not exist');
             }
         }
     }
 
-    public function deleteProduct($id)
+    public function deleteArticle($id)
     {
-        $this->tableGateway->delete(array('id_product' => $id));
+        $this->tableGateway->delete(array('id_article' => $id));
     }
 
     /**
@@ -114,7 +106,7 @@ class ProductTable
             $order = self::ORDER_DEFAULT)
     {
         //新建select对象
-        $select = new Select('product');
+        $select = new Select('article');
         //构建查询条件
         $closure = function (Where $where) use($keyword) {
                     if ($keyword != '') {
@@ -130,7 +122,7 @@ class ProductTable
         }
         //将返回的结果设置为Ablum的实例
         $resultSetPrototype = new ResultSet();
-        $resultSetPrototype->setArrayObjectPrototype(new Product());
+        $resultSetPrototype->setArrayObjectPrototype(new Article());
         //创建分页用的适配器，第2个参数为数据库adapter，使用全局默认的即可        
         $adapter = new DbSelect($select, $this->tableGateway->getAdapter(), $resultSetPrototype);
         //新建分页

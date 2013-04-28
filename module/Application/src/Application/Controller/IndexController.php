@@ -19,15 +19,22 @@ use User\Model\User;
 class IndexController extends AbstractActionController
 {
     protected $userTable;
+    protected $rankTable;
+    protected $articleTable;
 
     public function indexAction()
     {
         //redirect to the enterprise/media/admin index page if session is authorized.
         $this->_authenticateSession();
 
-        $user = $this->_getSessionUser();        
+        $user = $this->_getSessionUser();    
+        //content 
+        $articles = $this->getArticleTable()->fetchAll();
+        $rank = $this->getRankTable()->getRankByObj('article');
         return new ViewModel(array(
             'session_user' => $user,
+            'articles' => $articles,
+            'rank' => $rank,
         ));        
     }
 
@@ -56,6 +63,24 @@ class IndexController extends AbstractActionController
             $this->userTable = $sm->get('User\Model\UserTable');
         }
         return $this->userTable;
+    }
+
+    public function getArticleTable()
+    {
+        if (!$this->articleTable) {
+        $sm = $this->getServiceLocator();
+        $this->articleTable = $sm->get('Article\Model\ArticleTable');
+        }
+        return $this->articleTable;
+    }
+
+    public function getRankTable()
+    {
+        if (!$this->rankTable) {
+        $sm = $this->getServiceLocator();
+        $this->rankTable = $sm->get('Article\Model\RankTable');
+        }
+        return $this->rankTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

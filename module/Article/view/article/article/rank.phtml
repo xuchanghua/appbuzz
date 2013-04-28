@@ -1,0 +1,218 @@
+<h1>首页管理</h1>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span2 left">
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_admin.phtml'; 
+        ?>
+        </div>
+        <div id="mid" class="span8 mid">
+            <div id="addarticle" class="widget-box">
+                <div class="widget-title">
+                    <h4>首页文章排序——</h4>
+                </div>
+                <div class="widget-content nopadding">
+                    <?php
+                    $arr_id_article = array();
+                    foreach($articles as $artl)
+                    {
+                        $arr_id_article[$artl->id_article] = $artl;
+                    }
+                    ?>
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <th>序号</th>
+                            <th>标题</th>
+                            <th>作者</th>
+                            <th>发表日期</th>
+                        </tr>
+                        <tr>
+                            <td>#1：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_1, $arr_id_article))?$arr_id_article[$rank->fk_no_1]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_1, $arr_id_article))?$arr_id_article[$rank->fk_no_1]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_1, $arr_id_article))?$arr_id_article[$rank->fk_no_1]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#2：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_2, $arr_id_article))?$arr_id_article[$rank->fk_no_2]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_2, $arr_id_article))?$arr_id_article[$rank->fk_no_2]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_2, $arr_id_article))?$arr_id_article[$rank->fk_no_2]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#3：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_3, $arr_id_article))?$arr_id_article[$rank->fk_no_3]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_3, $arr_id_article))?$arr_id_article[$rank->fk_no_3]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_3, $arr_id_article))?$arr_id_article[$rank->fk_no_3]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#4：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_4, $arr_id_article))?$arr_id_article[$rank->fk_no_4]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_4, $arr_id_article))?$arr_id_article[$rank->fk_no_4]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_4, $arr_id_article))?$arr_id_article[$rank->fk_no_4]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#5：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_5, $arr_id_article))?$arr_id_article[$rank->fk_no_5]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_5, $arr_id_article))?$arr_id_article[$rank->fk_no_5]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_5, $arr_id_article))?$arr_id_article[$rank->fk_no_5]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#6：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_6, $arr_id_article))?$arr_id_article[$rank->fk_no_6]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_6, $arr_id_article))?$arr_id_article[$rank->fk_no_6]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_6, $arr_id_article))?$arr_id_article[$rank->fk_no_6]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#7：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_7, $arr_id_article))?$arr_id_article[$rank->fk_no_7]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_7, $arr_id_article))?$arr_id_article[$rank->fk_no_7]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_7, $arr_id_article))?$arr_id_article[$rank->fk_no_7]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#8：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_8, $arr_id_article))?$arr_id_article[$rank->fk_no_8]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_8, $arr_id_article))?$arr_id_article[$rank->fk_no_8]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_8, $arr_id_article))?$arr_id_article[$rank->fk_no_8]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#9：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_9, $arr_id_article))?$arr_id_article[$rank->fk_no_9]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_9, $arr_id_article))?$arr_id_article[$rank->fk_no_9]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_9, $arr_id_article))?$arr_id_article[$rank->fk_no_9]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#10：</td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_10, $arr_id_article))?$arr_id_article[$rank->fk_no_10]->title:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_10, $arr_id_article))?$arr_id_article[$rank->fk_no_10]->author:null; ?>
+                            </td>
+                            <td>
+                                <?php echo (array_key_exists($rank->fk_no_10, $arr_id_article))?$arr_id_article[$rank->fk_no_10]->pub_date:null; ?>
+                            </td>
+                        </tr>
+                    </table>
+                                <div>
+                                    <form action="/article/editrank">
+                                        <input type="submit" class="btn btn-primary" value="调整排序">
+                                    </form>
+                                </div>
+                </div>
+            </div>
+        </div>
+        <div id="right" class="span3 right">
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div.user,.mid,#userinfo
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+{
+    width: 70%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea, select, .password
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>
