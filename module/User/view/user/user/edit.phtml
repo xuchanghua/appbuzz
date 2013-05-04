@@ -31,7 +31,8 @@
                 $arr_user_type = array(
                     '1' => '企业用户',
                     '2' => '媒体用户',
-                    '3' => '管理员用户',
+                    '3' => '普通管理员用户',
+                    '4' => '超级管理员用户',
                     );
                 ?>
                 <table>
@@ -55,6 +56,14 @@
                                 '0' => '该媒体用户不是自由撰稿人',
                                 '1' => '该媒体用户是自由撰稿人',
                             ),
+                        ),
+                    ));
+                    $form->add(array(
+                        'name' => 'password',
+                        'type' => 'text',
+                        'attributes' => array(
+                            'id' => 'text_pw',
+                            'value' => $target_user->password,
                         ),
                     ));
                     $form->prepare();
@@ -81,7 +90,18 @@
                     </tr>-->
                     <tr>
                         <td>用户类型：</td>
-                        <td><?php echo $arr_user_type[$target_user->fk_user_type];?></td>
+                        <td>
+                            <?php 
+                            if(array_key_exists($target_user->fk_user_type, $arr_user_type))
+                            {
+                                echo $arr_user_type[$target_user->fk_user_type];
+                            }
+                            else
+                            {
+                                echo '用户类型错误！';
+                            }
+                            ?>
+                        </td>
                     </tr>
                     <tr>
                         <td>电子邮箱：</td>

@@ -20,7 +20,27 @@ class AdminController extends AbstractActionController
     public function indexAction()
     {
         //Authenticate the user information from the session
-        $cur_user = $this->_authenticateSession();
+        //$cur_user = $this->_authenticateSession();
+        $this->session = new SessionContainer('userinfo');
+        $username = $this->session->username;
+        $password = $this->session->password;
+        if((!$username)||(!$password)||(!$this->getUserTable()->checkUser($username)))
+        {
+            $this->redirect()->toRoute('admin',array('action'=>'login'));
+        }        
+        $target_user = $this->getUserTable()->getUserByName($username);        
+        if(!($target_user->fk_user_type == 3 || $target_user->fk_user_type == 4))
+        {
+            $this->redirect()->toRoute('admin',array('action'=>'login'));
+        }
+        //check if the username and the password are corresponded:
+        if($this->getUserTable()->getUserByName($username)->password != $password)
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("Incorrect Password");
+        }
+        echo "Welcome, ".$username;
+        $cur_user = $target_user->username;
 
         return new ViewModel(array(
             'user' => $cur_user,

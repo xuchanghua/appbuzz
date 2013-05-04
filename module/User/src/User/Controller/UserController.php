@@ -89,12 +89,34 @@ class UserController extends AbstractActionController
         $postUser = $_POST['username'];
         $postPass = $_POST['password'];
         //Authorize the user:
-        $this->_authorizeUser('3', $postUser, $postPass);
+        //$this->_authorizeUser('3', $postUser, $postPass);
+        if((!$postUser)||(!$postPass))
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("Username or Password cannot be empty!");
+        }
+        if((!$this->getUserTable()->checkUser($postUser))/*
+            ||($this->getUserTable()->getUserByName($postUser)->fk_user_type != $type)*/)
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("The user was not exist.");
+        }
+        $target_user = $this->getUserTable()->getUserByName($postUser);
+        if(!($target_user->fk_user_type == 3 || $target_user->fk_user_type == 4))
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("Incorrect Usertype!");
+        }
+        if($this->getUserTable()->getUserByName($postUser)->password != $postPass)
+        {
+            echo "<a href='/'>Back</a></br>";
+            die("Incorrect Password");
+        }
         //Set Session for the authorized user:
         $this->session = new SessionContainer('userinfo');
-        $this->session->username = $postUser;
-        $this->session->password = $postPass;
-        $this->session->usertype = 3;
+        $this->session->username = $target_user->username;
+        $this->session->password = $target_user->password;
+        $this->session->usertype = $target_user->fk_user_type;
         //Set Cookies for the authorized user:
         setcookie(
             "username",
