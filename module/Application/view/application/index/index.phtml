@@ -2,122 +2,237 @@
 <link rel="stylesheet" type="text/css" href="css/style.css">
 
 
-<div id="indexpage" class="indexpage">
-	<h1>APPBUZZ首页</h1>
+<div id="indexheader" class="indexheader">
 	<div id="header" class="container" style="width:1170px;"> 
-	CONTAINER
-	<div class="row">
-		ROW
-		<div id="logo" class="span2 logo">
-			APPBUZZ LOGO
-		</div>
-		<div id="banner" class="span8 banner">
-			BANNER
-		</div>
-	</div>
-	</div>
-</BR>
-	<div id="main" class="container" style="width:1170px;">
-		CONTAINER
-	<div id="row" class="row">
-		ROW
-		<div id="left" class="span4 left">
-			SPAN4 LEFT
-			<div id="user" class="user">
-				USER
-				<div id="enterpriseuser" class="enterpriseuser">
-					<!--<a href="/enterprise/index">企业用户</a>-->
-					<form id='login' action="user/checkenterpriseuser" method='post' accept-charset='UTF-8'>
-						<h4>企业用户登录</h4>
-    					<input name="username" type="text" placeholder="用户名"/>
-    					<input name="password" type="password" placeholder="密码"/>
-    					<div class="remember">
-        					<div class="left">
-            					<input id="remember_me" type="checkbox">
-            					<label for="remember_me">记住我</label>
-        					</div>
-        					<div class="right">
-            					<a href="">忘记密码</a>
-        					</div>
-    					</div>
-    					<input type="submit" class="btn" value="登录"/>
-    					<a href="user/signup">注册</a>
-					</form>
-				</div>
-				<div id="mediauser" class="mediauser">
-					<!--<a href="/media/index">媒体用户</a>-->
-					<form id='login' action="user/checkmediauser" method='post' accept-charset='UTF-8'>
-						<h4>媒体用户登录</h4>
-    					<input name="username" type="text" placeholder="用户名"/>
-    					<input name="password" type="password" placeholder="密码"/>
-    					<div class="remember">
-        					<div class="left">
-            					<input id="remember_me" type="checkbox">
-            					<label for="remember_me">记住我</label>
-        					</div>
-        					<div class="right">
-            					<a href="">忘记密码</a>
-        					</div>
-    					</div>
-    					<input type="submit" class="btn" value="登录"/>
-    					<a href="user/mediasignup">注册</a>
-					</form>
-				</div>
+		<div>
+			<div id="logo" class="span2 logo">
+				<img src="img/appbuzz_logo.jpg">
 			</div>
-			<div id="medialogos" class="medialogos">
-				合作媒体
+			<div id="banner" class="span8 banner">
+				BANNER
 			</div>
 		</div>
-		<div id="mid" class="span4 mid">
-			SPAN4 MID
-			<div id="slides" class="slides">
-				焦点推荐图
-			</div>
-			<div id="abstract" class="abstract">
-				摘要
-			</div>
-			<div id="news" class="news">
-				<?php 
-				$arr_articles = array();
-				foreach($articles as $artl)
-				{
-					$arr_articles[$artl->id_article] = $artl; 
-				}
-				$arr_rank_article = array();
-				$arr_rank_article[1] = $arr_articles[$rank->fk_no_1];
-				$arr_rank_article[2] = $arr_articles[$rank->fk_no_2];
-				$arr_rank_article[3] = $arr_articles[$rank->fk_no_3];
-				$arr_rank_article[4] = $arr_articles[$rank->fk_no_4];
-				$arr_rank_article[5] = $arr_articles[$rank->fk_no_5];
-				$arr_rank_article[6] = $arr_articles[$rank->fk_no_6];
-				$arr_rank_article[7] = $arr_articles[$rank->fk_no_7];
-				$arr_rank_article[8] = $arr_articles[$rank->fk_no_8];
-				$arr_rank_article[9] = $arr_articles[$rank->fk_no_9];
-				$arr_rank_article[10] = $arr_articles[$rank->fk_no_10];
-				?>
-				<table>
-					<?php foreach($arr_rank_article as $ara): ?>
-					<tr>
-						<td>
-							<a href="/article/pubview/<?php echo $ara->id_article; ?>">
-								<?php echo $ara->title; ?>
-							</a>
-						</td>
-						<td><?php echo $ara->author; ?></td>
-					</tr>
-					<?php endforeach; ?>
-				</table>
-			</div>
-		</div>
-		<div id="right" class="span4 right">
-			SPAN4 RIGHT
-			<div id="mediarank" class="mediarank">
-				APP媒体曝光排名
-			</div>
-			<div id="latestapp" class="latestapp">
-				最新注册APP
-			</div>
-		</div>
-	</div>
 	</div>
 </div>
+</BR>
+<div id="indexbody" class="indexbody">
+	<div id="main" class="container" style="width:1170px;">
+		<div id="row" class="row">
+			<div id="left" class="span4 left">
+				<div id="user" class="user">
+					<h4 class="login">快速登录</h4>				
+					<h5>
+						<span id="ent-login" class="ent-login" onclick="ent_alert();">企业用户</span>
+						<span id="med-login" class="med-login" onclick="med_alert();">媒体用户</span>
+					</h5>
+					<div id="enterpriseuser" class="enterpriseuser">
+						<form id='login' action="user/checkenterpriseuser" method='post' accept-charset='UTF-8'>
+							<!--<h4>企业用户登录</h4>-->
+							<div class="login-inputs">
+								<div class="mid-it">
+								<table>
+									<tr>
+										<td class="tdlabel">用户名：</td>
+										<td>
+		    								<input name="username" type="text"/>
+		    							</td>
+		    						</tr>
+		    						<tr>
+		    							<td class="tdlabel">密&nbsp;&nbsp;&nbsp;码：</td>
+		    							<td>
+		    								<input name="password" type="password"/>
+		    							</td>
+		    						</tr>
+		    					</table>
+		    					</div>
+    						</div>
+    						<div class="login-btns">
+    							<div class="mid-it">
+        						<div class="forget-password">
+            						<a href="">忘记密码</a>
+	        					</div>
+	    						<input type="submit" class="btn" value="登录"/>
+    							<a href="user/signup">注册</a>
+    							</div>
+    						</div>
+						</form>
+					</div>
+					<div id="mediauser" class="mediauser">
+						<form id='login' action="user/checkmediauser" method='post' accept-charset='UTF-8'>
+							<!--<h4>媒体用户登录</h4>-->
+							<div class="login-inputs">
+								<div class="mid-it">
+    							<table>
+									<tr>
+										<td class="tdlabel">用户名：</td>
+										<td>
+		    								<input name="username" type="text"/>
+		    							</td>
+		    						</tr>
+		    						<tr>
+		    							<td class="tdlabel">密&nbsp;&nbsp;&nbsp;码：</td>
+		    							<td>
+		    								<input name="password" type="password"/>
+		    							</td>
+		    						</tr>
+		    					</table>
+		    					</div>
+    						</div>
+    						<div class="login-btns">
+    							<div class="mid-it">
+	        					<div class="forget-password">
+    	        					<a href="">忘记密码</a>
+        						</div>
+	 	   						<input type="submit" class="btn" value="登录"/>
+    							<a href="user/mediasignup">注册</a>
+    							</div>
+    						</div>
+						</form>
+					</div>
+				</div>
+				<div id="medialogos" class="medialogos">
+					合作媒体
+				</div>
+			</div>
+			<div id="mid" class="span4 mid">
+				SPAN4 MID
+				<div id="slides" class="slides">
+					焦点推荐图
+				</div>
+				<div id="abstract" class="abstract">
+					摘要
+				</div>
+				<div id="news" class="news">
+					<?php 
+					$arr_articles = array();
+					foreach($articles as $artl)
+					{
+						$arr_articles[$artl->id_article] = $artl; 
+					}
+					$arr_rank_article = array();
+					$arr_rank_article[1] = $arr_articles[$rank->fk_no_1];
+					$arr_rank_article[2] = $arr_articles[$rank->fk_no_2];
+					$arr_rank_article[3] = $arr_articles[$rank->fk_no_3];
+					$arr_rank_article[4] = $arr_articles[$rank->fk_no_4];
+					$arr_rank_article[5] = $arr_articles[$rank->fk_no_5];
+					$arr_rank_article[6] = $arr_articles[$rank->fk_no_6];
+					$arr_rank_article[7] = $arr_articles[$rank->fk_no_7];
+					$arr_rank_article[8] = $arr_articles[$rank->fk_no_8];
+					$arr_rank_article[9] = $arr_articles[$rank->fk_no_9];
+					$arr_rank_article[10] = $arr_articles[$rank->fk_no_10];
+					?>
+					<table>
+						<?php foreach($arr_rank_article as $ara): ?>
+						<tr>
+							<td>
+								<a href="/article/pubview/<?php echo $ara->id_article; ?>">
+									<?php echo $ara->title; ?>
+								</a>
+							</td>
+							<td><?php echo $ara->author; ?></td>
+						</tr>
+						<?php endforeach; ?>
+					</table>
+				</div>
+			</div>
+			<div id="right" class="span4 right">
+				SPAN4 RIGHT
+				<div id="mediarank" class="mediarank">
+					APP媒体曝光排名
+				</div>
+				<div id="latestapp" class="latestapp">
+					最新注册APP
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+function ent_alert()
+{
+	var div_ent = document.getElementById("enterpriseuser");
+	var div_med = document.getElementById("mediauser");
+	var span_ent = document.getElementById("ent-login");
+	var span_med = document.getElementById("med-login");
+	div_ent.style.display = "inline";
+	div_med.style.display = "none";
+	span_ent.style.backgroundColor = "#000000";
+	span_med.style.backgroundColor = "grey";
+	//alert("企业用户！");	
+}
+function med_alert()
+{
+	var div_ent = document.getElementById("enterpriseuser");
+	var div_med = document.getElementById("mediauser");
+	var span_ent = document.getElementById("ent-login");
+	var span_med = document.getElementById("med-login");
+	div_ent.style.display = "none";
+	div_med.style.display = "inline";
+	span_ent.style.backgroundColor = "grey";
+	span_med.style.backgroundColor = "#000000";
+	//alert("媒体用户！");
+}
+</script>
+
+<style>
+div.navbar
+{
+	display: none;
+}
+.indexheader
+{
+	background-color: #f4f4f4;
+}
+.indexbody
+{
+	border-top: 4px solid #7c9726;
+}
+.login
+{
+	color:#90b33f;
+}
+span.ent-login
+{
+	color:#ffffff;
+	background-color: #000000;
+	cursor: pointer;
+	padding: 2px;
+}
+span.med-login
+{
+	color:#ffffff;
+	background-color: grey;
+	cursor: pointer;
+	padding: 2px;
+}
+div.login-inputs, div.login-btns
+{
+	background-color: #f4f4f4;
+}
+div.mid-it
+{
+	margin-left: auto;
+	margin-right: auto;
+	width: 200px;	
+}
+div.enterpriseuser, div.mediauser
+{	
+}
+div.mediauser
+{
+	display: none;
+}
+div.login-btns
+{
+	border-top: 1px solid #ffffff;
+}
+input
+{
+	width: 100px;
+}
+td.tdlabel
+{
+    vertical-align: top;
+}
+</style>

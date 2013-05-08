@@ -65,7 +65,7 @@ class EvamediaTable
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($fk_evaluate){
             $select->where->equalTo('fk_evaluate', $fk_evaluate);
-            $select->where->notequalTo('fk_evaluate_status',2);
+            $select->where->notequalTo('fk_evamedia_status',2);
             $select->order('id_evamedia DESC');
         });
         return $rowset;
@@ -118,7 +118,7 @@ class EvamediaTable
             'created_at'         => $evamedia->created_at,
             'updated_by'         => $evamedia->updated_by,
             'updated_at'         => $evamedia->updated_at,
-            'fk_evaluate_status' => $evamedia->fk_evaluate_status,
+            'fk_evamedia_status' => $evamedia->fk_evamedia_status,
             'news_link'          => $evamedia->news_link,
             'order_no'           => $evamedia->order_no,
         );

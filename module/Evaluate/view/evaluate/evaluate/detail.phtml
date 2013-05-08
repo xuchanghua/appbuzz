@@ -53,7 +53,7 @@
                     {
                         $arr_id_user[$u->id] = $u->username;
                     }
-                    $arr_evaluate_status = array(
+                    $arr_evamedia_status = array(
                         1 => '新订单',
                         2 => '媒体拒绝',
                         3 => '媒体接受',
@@ -89,6 +89,23 @@
                         <td class="tdlabel">有效时间：</td>
                         <td>
                             <?php echo $this->escapeHtml($evaluate->due_date);?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">订单状态：</td>
+                        <td>
+                            <?php 
+                            $arr_evaluate_status = array(
+                                '1' => '草稿',
+                                '2' => '订单确认',
+                                '3' => '订单完成',
+                            );
+                            if(array_key_exists($evaluate->fk_evaluate_status, $arr_evaluate_status)){
+                                echo $this->escapeHtml($arr_evaluate_status[$evaluate->fk_evaluate_status]); 
+                            }else{
+                                echo '订单状态错误！';
+                            }                            
+                            ?>
                         </td>
                     </tr>
                     <tr>
@@ -129,8 +146,16 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="tdlabel">最大邀约数量</td>
+                        <td>
+                            <?php echo $this->escapeHtml($evaluate->order_limit);?>
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="tdlabel">媒体评测费用</td>
-                        <td>评测撰稿及发布，2000元/篇</td>
+                        <td>
+                            <?php echo '评测撰稿及发布，2000 元/篇 × ',$evaluate->order_limit,' 篇 = ',2000*(int)$evaluate->order_limit,' 元'; ?>                             
+                        </td>
                     </tr>
                     <tr>
                         <td class="tdlabel">接受评测的媒体：</td>
@@ -151,11 +176,11 @@
                                             <td><?php echo $arr_id_user[$em->fk_media_user]; ?></td>
                                             <td>
                                                 <div class="linkbtns">
-                                                    <?php echo $arr_evaluate_status[$em->fk_evaluate_status]; ?>
+                                                    <?php echo $arr_evamedia_status[$em->fk_evamedia_status]; ?>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div id="btns" style="display:<?php echo ($em->fk_evaluate_status==3)?"inline":"none";?>">
+                                                <div id="btns" style="display:<?php echo ($em->fk_evamedia_status==3)?"inline":"none";?>">
                                                     <div class="linkbtns">
                                                         <form action="<?php echo $this->url('evaluate',
                                                         array('action' => 'entacc', 'id' => $em->id_evamedia)) ;?>">
@@ -199,10 +224,18 @@
                     <tr>
                         <td></td>
                         <td>
-                            <form action="<?php echo $this->url('evaluate',
+                            <div class="linkbtns">
+                                <form action="<?php echo $this->url('evaluate',
                                 array('action' => 'edit', 'id' => $evaluate->id_evaluate)) ;?>">
-                                <input type="submit" class="btn btn-primary" value="修改订单">
-                            </form>
+                                    <input type="submit" class="btn btn-primary" value="修改订单">
+                                </form>
+                            </div>
+                            <div style="display:<?php echo ($evaluate->fk_evaluate_status==1)?"":"none";?>">
+                                <form action="<?php echo $this->url('evaluate',
+                                array('action'=>'confirm', 'id' => $evaluate->id_evaluate)) ;?>">
+                                    <input type="submit" class="btn btn-primary" value="确认订单">
+                                </form>
+                            </div>
                         </td>
                     </tr>                    
                 </table>

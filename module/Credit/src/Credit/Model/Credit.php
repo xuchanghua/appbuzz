@@ -17,6 +17,7 @@ class Credit implements InputFilterAwareInterface
     public $updated_at;
     public $updated_by;
     public $chargeamount;
+    public $deposit;
     protected $inputFilter;                       // <-- Add this variable
 
     public function exchangeArray($data)
@@ -30,6 +31,7 @@ class Credit implements InputFilterAwareInterface
         $this->updated_at   = (isset($data['updated_at']))   ? $data['updated_at']   : null;
         $this->updated_by   = (isset($data['updated_by']))   ? $data['updated_by']   : null;
         $this->chargeamount = (isset($data['chargeamount'])) ? $data['chargeamount'] : null;
+        $this->deposit      = (isset($data['deposit']))      ? $data['deposit']      : null;
     }
 
     // Add the following method:

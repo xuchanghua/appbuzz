@@ -52,7 +52,7 @@
                     $arr_em_req = array();  //array[fk_evaluate] = requirement
                     $arr_em_due = array();  //array[fk_evaluate] = due_date
                     $arr_em_link = array(); //array[fk_evaluate] = news_link
-                    $arr_em_stat = array(); //array[fk_evaluate] = fk_evaluate_status
+                    $arr_em_stat = array(); //array[fk_evaluate] = fk_evamedia_status
                     $arr_eva_order = array(); //array[fk_evaluate] = order_no
                     foreach ($evamedia as $em)
                     {
@@ -60,10 +60,10 @@
                         //$arr_em_req[$em->fk_evaluate]  = $em->requirement;
                         //$arr_em_due[$em->fk_evaluate]  = $em->due_date;
                         $arr_em_link[$em->fk_evaluate] = $em->news_link;
-                        $arr_em_stat[$em->fk_evaluate] = $em->fk_evaluate_status;
+                        $arr_em_stat[$em->fk_evaluate] = $em->fk_evamedia_status;
                         $arr_eva_order[$em->fk_evaluate] = $em->order_no;
                     }
-                    $arr_evaluate_status = array(
+                    $arr_evamedia_status = array(
                         1 => '新订单',
                         2 => '媒体拒绝',
                         3 => '媒体接受，等待企业回复',
@@ -103,7 +103,7 @@
                                 新订单
                             </div>
                             <div id="status" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_eva_em)?"inline":"none";?>"> 
-                                <?php echo $this->escapeHtml($arr_evaluate_status[$arr_em_stat[$eva->id_evaluate]]);?>
+                                <?php echo $this->escapeHtml($arr_evamedia_status[$arr_em_stat[$eva->id_evaluate]]);?>
                             </div>
                         </td>
                         <td>

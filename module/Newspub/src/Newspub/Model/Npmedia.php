@@ -31,6 +31,8 @@ class Npmedia implements InputFilterAwareInterface
         $this->created_by        = (isset($data['created_by']))        ? $data['created_by']        : null;
         $this->updated_at        = (isset($data['updated_at']))        ? $data['updated_at']        : null;
         $this->updated_by        = (isset($data['updated_by']))        ? $data['updated_by']        : null;
+        //count
+        $this->count_nm          = (isset($data['count_nm']))          ? $data['count_nm']          : null;
     }
 
     public function getArrayCopy()

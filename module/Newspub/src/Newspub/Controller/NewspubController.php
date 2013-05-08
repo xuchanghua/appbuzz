@@ -77,7 +77,7 @@ class NewspubController extends AbstractActionController
                 }
 
                 //对企业应收账款如下：
-                if($newspub->fk_pub_mode == 1){
+                /*if($newspub->fk_pub_mode == 1){
                     $price = count($newspub->sel_right) * 350;//单篇发布：每篇350元
                 }else{
                     $price = 1500;//打包发布：一共1500元
@@ -88,7 +88,7 @@ class NewspubController extends AbstractActionController
                 {
                     echo "<a href='/newspub/add'>Back</a></br>";
                     die("Insufficient Credit! Please Charge Your Account!");
-                }
+                }*/
                 $newspub->created_by = $cur_user;
                 $newspub->created_at = $this->_getDateTime();
                 $newspub->updated_by = $cur_user;
@@ -155,16 +155,19 @@ class NewspubController extends AbstractActionController
                 $this->getNewspubTable()->saveNewspub($newspub2);
 
                 //update the user's credit
-                $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
-                $originamount = $credit->amount;
-                $credit->amount = $originamount - $price;
+                /*$credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+                //$originamount = $credit->amount;
+                $origindeposit = $credit->deposit;
+                //$credit->amount = $originamount - $price;
+                $credit->deposit = $origindeposit + $price;                
                 $credit->updated_at = $this->_getDateTime();
                 $credit->updated_by = $cur_user;
                 $this->getCreditTable()->saveCredit($credit);
+                $credit2 = $this->getCreditTable()->getCredit($credit->id_credit);*/
 
                 //create creditlog record;
-                $creditlog = new Creditlog();
-                $creditlog->fk_credit = $credit->id_credit;
+                /*$creditlog = new Creditlog();
+                $creditlog->fk_credit = $credit2->id_credit;
                 if($newspub2->fk_pub_mode == 1){
                     $creditlog->fk_service_type = 2;//新闻发布->单篇发布
                 }else{
@@ -173,13 +176,18 @@ class NewspubController extends AbstractActionController
                 $creditlog->fk_from = $fk_user;
                 $creditlog->fk_to = null;
                 $creditlog->date_time = $this->_getDateTime();
-                $creditlog->amount = $price;
-                $creditlog->is_pay = 1;//is pay
-                $creditlog->is_charge = 0;//not charge
+                $creditlog->amount = 0;//do not pay any money here
+                $creditlog->remaining_balance = $credit2->amount;
+                $creditlog->is_pay = 0;//is not pay
+                $creditlog->is_charge = 0;//is not charge
+                $creditlog->deposit = $price;
+                $creditlog->is_pay_deposit = 0;//is not pay the deposit
+                $creditlog->is_charge_deposit = 1;//is charge the deposit
+                $creditlog->remaining_deposit = $credit2->deposit;
                 $creditlog->order_no = $newspub2->order_no;
                 $creditlog->created_at = $this->_getDateTime();
                 $creditlog->created_by = $cur_user;
-                $this->getCreditlogTable()->saveCreditlog($creditlog);
+                $this->getCreditlogTable()->saveCreditlog($creditlog);*/
 
                 //save npmedia for single payment newspub
                 if($newspub->fk_pub_mode == 1)
@@ -216,6 +224,82 @@ class NewspubController extends AbstractActionController
             'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'medias' => $this->getUserTable()->fetchUserByFkType(2),
         ));        
+    }
+
+    public function confirmAction()
+    {
+        //企业用户->订单详情->确认草稿状态的订单(将会冻结与服务价格等额的资金)
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_newspub = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_newspub) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'index'
+            ));
+        }
+        $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
+        $target_user = $this->getUserTable()->getUserByName($newspub->created_by);
+        $fk_user = $target_user->id;
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+        $count = $this->getNpmediaTable()->getCountNmByFkNewspub($id_newspub);
+        //对企业应收账款如下：
+        if($newspub->fk_pub_mode == 1){
+            $price = $count * 350;//单篇发布：每篇350元
+        }else{
+            $price = 1500;//打包发布：一共1500元
+        }
+        $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
+        if(!$is_sufficient)
+        {
+            echo "<a href='/newspub/add'>Back</a></br>";
+            die("Insufficient Credit! Please Charge Your Account!");
+        }
+        else
+        {
+            //update the $newspub, change the $fk_newspub_status to 2 (frozen)
+            $newspub->fk_newspub_status = 2;
+            $newspub->updated_by = $cur_user;
+            $newspub->updated_at = $this->_getDateTime();
+            $this->getNewspubTable()->saveNewspub($newspub);
+            //update the $credit->deposit
+            $origindeposit = $credit->deposit;
+            $credit->deposit = $origindeposit + $price;
+            $credit->updated_by = $cur_user;
+            $credit->updated_at = $this->_getDateTime();
+            $this->getCreditTable()->saveCredit($credit);
+            //log the change
+            $creditlog = new Creditlog();
+            $creditlog->fk_credit = $credit->id_credit;
+            if($newspub->fk_pub_mode == 1){
+                $creditlog->fk_service_type = 2;//新闻发布->单篇发布
+            }else{
+                $creditlog->fk_service_type = 3;//新闻发布->打包发布
+            }
+            $creditlog->fk_from = $fk_user;
+            $creditlog->fk_to = null;
+            $creditlog->date_time = $this->_getDateTime();
+            $creditlog->amount = 0;//do not pay any money here
+            $creditlog->remaining_balance = $credit->amount;
+            $creditlog->is_pay = 0;//is not pay
+            $creditlog->is_charge = 0;//is not charge
+            $creditlog->deposit = $price;
+            $creditlog->remaining_deposit = $credit->deposit;
+            $creditlog->is_pay_deposit = 0;//is not pay the deposit
+            $creditlog->is_charge_deposit = 1;//is charge the deposit
+            $creditlog->order_no = $newspub->order_no;
+            $creditlog->created_at = $this->_getDateTime();
+            $creditlog->created_by = $cur_user;
+            $this->getCreditlogTable()->saveCreditlog($creditlog);
+
+            return $this->redirect()->toRoute('newspub', array(
+                'action'=>'detail',
+                'id'    => $id_newspub,
+            ));
+        }
+
+        
+
     }
 
     public function detailAction()

@@ -56,6 +56,8 @@
                                 <td><?php echo $user; ?></td>
                                 <td>账户余额：</td>
                                 <td><?php echo '人民币 '.$credit->amount.' 元'; ?></td>
+                                <td>被冻结资金：</td>
+                                <td><?php echo '人民币 '.$credit->deposit.' 元'; ?></td>
                             </tr>                            
                         </table>
                     </div>
@@ -83,6 +85,9 @@
                             <th>订单号</th>
                             <th>交易类型</th>
                             <th>交易金额</th>
+                            <th>余额</th>
+                            <th>冻结资金</th>
+                            <th>全部冻结资金</th>
                             <th>交易日期</th>
                             <th>经办人</th>
                         </tr>
@@ -93,11 +98,26 @@
                             <td>
                                 <?php 
                                 $sign = '';
-                                if($log->fk_service_type==1){
+                                if($log->is_charge==1){
                                     $sign = '+';
                                 }
                                 echo $sign.$log->amount.'元'; 
                                 ?>
+                            </td>
+                            <td>
+                                <?php echo $log->remaining_balance.'元'; ?>
+                            </td>
+                            <td>
+                                <?php 
+                                $sign_deposit = '';
+                                if($log->is_charge_deposit==1){
+                                    $sign_deposit = '+';
+                                }
+                                echo $sign_deposit.$log->deposit.'元'; 
+                                ?>
+                            </td>
+                            <td>
+                                <?php echo $log->remaining_deposit.'元'; ?>
                             </td>
                             <td><?php echo $log->date_time; ?></td>
                             <td><?php echo $log->created_by; ?></td>

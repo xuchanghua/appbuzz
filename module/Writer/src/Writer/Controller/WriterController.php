@@ -413,15 +413,16 @@ class WriterController extends AbstractActionController
             if($form->isValid()){
                 $writer->exchangeArray($form->getData());
 
-                $price = 1500;//对企业用户应收1500元的新闻撰写费用
+                /*$price = 1500;//对企业用户应收1500元的新闻撰写费用
                 $fk_user = $this->getUserTable()->getUserByName($cur_user)->id;
                 $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
                 if(!$is_sufficient)
                 {
                     echo "<a href='/writer/add'>Back</a></br>";
                     die("Insufficient Credit! Please Charge Your Account!");
-                }
+                }*/
 
+                $writer->fk_writer_status = 1; //draft deal.
                 $writer->created_by = $cur_user;
                 $writer->created_at = $this->_getDateTime();
                 $writer->updated_by = $cur_user;
@@ -530,10 +531,10 @@ class WriterController extends AbstractActionController
                 $this->getWriterTable()->saveWriter($writer2);
 
                 //update the user's credit
-                $credit = $this->consume($fk_user, $price);
+                //$credit = $this->consume($fk_user, $price);
 
                 //create creditlog record;
-                $creditlog = new Creditlog();
+                /*$creditlog = new Creditlog();
                 $creditlog->fk_credit = $credit->id_credit;
                 $creditlog->fk_service_type = 6;//企业->我要撰稿
                 $creditlog->fk_from = $fk_user;
@@ -545,7 +546,7 @@ class WriterController extends AbstractActionController
                 $creditlog->order_no = $writer2->order_no;
                 $creditlog->created_at = $this->_getDateTime();
                 $creditlog->created_by = $cur_user;
-                $this->getCreditlogTable()->saveCreditlog($creditlog);
+                $this->getCreditlogTable()->saveCreditlog($creditlog);*/
 
                 return $this->redirect()->toRoute('writer',array(
                     'action'=>'detail',
@@ -561,6 +562,70 @@ class WriterController extends AbstractActionController
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
         ));                
+    }
+
+    public function confirmAction()
+    {
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_writer = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_writer) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'index'
+            ));
+        }
+        $writer = $this->getWriterTable()->getWriter($id_writer);
+        $target_user = $this->getUserTable()->getUserByName($writer->created_by);
+        $fk_user = $target_user->id;
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+
+        //对企业用户应收$price = $order_limit * 1500元的撰稿费用
+        $price = $writer->order_limit * 1500;
+        $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
+        if(!$is_sufficient)
+        {
+            echo "<a href='/evaluate/add'>Back</a></br>";
+            die("Insufficient Credit! Please Charge Your Account!");
+        }
+        else
+        {
+            //update the $writer, change the $fk_writer_status to 2 (frozen)
+            $writer->fk_writer_status = 2;
+            $writer->updated_by = $cur_user;
+            $writer->updated_at = $this->_getDateTime();
+            $this->getWriterTable()->saveWriter($writer);
+            //update the $credit->deposit
+            $origindeposit = $credit->deposit;
+            $credit->deposit = $origindeposit + $price;
+            $credit->updated_by = $cur_user;
+            $credit->updated_at = $this->_getDateTime();
+            $this->getCreditTable()->saveCredit($credit);
+            //log the changes
+            $creditlog = new Creditlog();
+            $creditlog->fk_credit = $credit->id_credit;
+            $creditlog->fk_service_type = 6;//企业->我要撰稿
+            $creditlog->fk_from = $fk_user;
+            $creditlog->fk_to = null;
+            $creditlog->date_time = $this->_getDateTime();
+            $creditlog->amount = 0;//do not pay any money here
+            $creditlog->remaining_balance = $credit->amount;
+            $creditlog->is_pay = 0;//is not pay
+            $creditlog->is_charge = 0; //is not charge
+            $creditlog->deposit = $price;
+            $creditlog->remaining_deposit = $credit->deposit;
+            $creditlog->is_pay_deposit = 0;//is not pay the deposit
+            $creditlog->is_charge_deposit = 1;//is charge the deposit
+            $creditlog->order_no = $writer->order_no;
+            $creditlog->created_at = $this->_getDateTime();
+            $creditlog->created_by = $cur_user;
+            $this->getCreditlogTable()->saveCreditlog($creditlog);
+
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'detail',
+                'id'     => $id_writer,
+            ));
+        }
     }
 
     public function reqlistAction()

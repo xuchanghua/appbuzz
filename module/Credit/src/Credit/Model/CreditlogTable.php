@@ -108,17 +108,22 @@ class CreditlogTable
     public function saveCreditlog(Creditlog $creditlog)
     {
         $data = array(
-            'fk_credit'       => $creditlog->fk_credit,
-            'fk_service_type' => $creditlog->fk_service_type,
-            'fk_from'         => $creditlog->fk_from,
-            'fk_to'           => $creditlog->fk_to,
-            'date_time'       => $creditlog->date_time,
-            'amount'          => $creditlog->amount,
-            'is_pay'          => $creditlog->is_pay,
-            'is_charge'       => $creditlog->is_charge,
-            'order_no'        => $creditlog->order_no,
-            'created_at'      => $creditlog->created_at,
-            'created_by'      => $creditlog->created_by,
+            'fk_credit'         => $creditlog->fk_credit,
+            'fk_service_type'   => $creditlog->fk_service_type,
+            'fk_from'           => $creditlog->fk_from,
+            'fk_to'             => $creditlog->fk_to,
+            'date_time'         => $creditlog->date_time,
+            'amount'            => $creditlog->amount,
+            'is_pay'            => $creditlog->is_pay,
+            'is_charge'         => $creditlog->is_charge,
+            'order_no'          => $creditlog->order_no,
+            'remaining_balance' => $creditlog->remaining_balance,
+            'deposit'           => $creditlog->deposit,
+            'remaining_deposit' => $creditlog->remaining_deposit,
+            'is_pay_deposit'    => $creditlog->is_pay_deposit,
+            'is_charge_deposit' => $creditlog->is_charge_deposit,
+            'created_at'        => $creditlog->created_at,
+            'created_by'        => $creditlog->created_by,
         );
 
         $id = (int)$creditlog->id_creditlog;

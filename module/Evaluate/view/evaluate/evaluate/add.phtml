@@ -59,7 +59,7 @@
                 }
                 $form->add(array(
                     'name' => 'fk_product',
-                    'type'  => 'Zend\Form\Element\Select',
+                    'type' => 'Zend\Form\Element\Select',
                     'attributes' => array(
                         'id' => 'appproduct',
                         'onchange' => "change_product();",
@@ -67,7 +67,19 @@
                     'options' => array(
                         'value_options' => $arr_products,
                         ),
-                ));                
+                ));      
+                /*$arr_1_to_100 = array();
+                for($i = 1; $i < 101; $i++)
+                {
+                    $arr_1_to_100[$i] = $i;
+                }       
+                $form->add(array(
+                    'name' => 'order_limit',
+                    'type' => 'Zend\Form\Element\Select',
+                    'options' => array(
+                        'value_options' => $arr_1_to_100,
+                        ),
+                ));*/
                 $form->prepare();
                 echo $this->form()->openTag($form);
                 echo $this->formHidden($form->get('id_evaluate'));
@@ -94,6 +106,14 @@
                     <td class="tdlabel">有效时间</td>
                     <td>
                         <?php echo $this->formRow($form->get('due_date')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdlabel">最大邀约数量</td>
+                    <td class="td-order-limit">
+                        <?php echo $this->formRow($form->get('order_limit')); ?>
+                        <span id="plus_one" class="plus_one" onclick="plus_one();">+1</span>
+                        <span id="minus_one" class="minus_one" onclick="minus_one();">-1</span>
                     </td>
                 </tr>
                 <tr>
@@ -190,6 +210,24 @@ input[type="text"], textarea
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
     width: 100%;
 }
+span.plus_one
+{
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    padding: 2px;
+}
+span.minus_one
+{
+    background-color: grey;
+    color: white;
+    cursor: pointer;
+    padding: 2px;
+}
+.td-order-limit
+{
+    width: 20%;
+}
 </style>
 
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
@@ -204,6 +242,18 @@ $(document).ready(function(){
 </script>
 
 <script>
+function plus_one()
+{
+    var order_limit = Number(document.getElementById("order_limit").value);
+    document.getElementById("order_limit").value = order_limit + 1;
+}
+function minus_one()
+{
+    var order_limit = Number(document.getElementById("order_limit").value);
+    if(order_limit>1){
+        document.getElementById("order_limit").value = order_limit - 1;
+    }
+}
 function change_product()
 {
     var product = document.getElementById("appproduct").value;

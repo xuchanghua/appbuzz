@@ -7,6 +7,7 @@ use Zend\Db\Sql\Where;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Db\ResultSet\ResultSet;
+use Zend\Db\Sql\Expression as Expr;
 
 class NpmediaTable
 {
@@ -37,6 +38,17 @@ class NpmediaTable
             $select->where->equalTo('fk_newspub', $fk_newspub);
         });
         return $resultSet;
+    }
+
+    public function getCountNmByFkNewspub($fk_newspub)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_newspub){
+            $select->columns(array("count_nm" => new Expr("count(id_npmedia)")));
+            $select->where->equalTo('fk_newspub',$fk_newspub);
+            $select->group(array("fk_newspub"));
+        });
+        $row = $resultSet->current();
+        return $row->count_nm;
     }
 
     public function getNpmediaByUser($created_by)

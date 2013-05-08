@@ -115,6 +115,15 @@ class WriterForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'order_limit',
+            'attributes' => array(
+                'type' => 'text',
+                'value' => 1,
+                'id' => 'order_limit',
+                'class' => 'order_limit',
+            ),
+        ));
+        $this->add(array(
             'name' => 'submit',
             'attributes' => array(
                 'type'  => 'submit',

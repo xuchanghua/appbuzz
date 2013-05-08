@@ -58,6 +58,19 @@ class EvaluateForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'order_limit',
+            'attributes' => array(
+                'type' => 'text',
+                //'placeholder' => '',
+                'id' => 'order_limit',
+                'class' => 'order_limit',
+                'value' => 1,
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
             'name' => 'web_link',
             'attributes' => array(
                 'type'  => 'text',

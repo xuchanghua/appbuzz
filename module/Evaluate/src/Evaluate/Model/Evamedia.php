@@ -16,7 +16,7 @@ class Evamedia implements InputFilterAwareInterface
     public $created_at;
     public $updated_by;
     public $updated_at;
-    public $fk_evaluate_status;
+    public $fk_evamedia_status;
     public $news_link;
     public $order_no;
 
@@ -32,7 +32,7 @@ class Evamedia implements InputFilterAwareInterface
         $this->created_at         = (isset($data['created_at']))         ? $data['created_at']         : null;
         $this->updated_by         = (isset($data['updated_by']))         ? $data['updated_by']         : null;
         $this->updated_at         = (isset($data['updated_at']))         ? $data['updated_at']         : null;
-        $this->fk_evaluate_status = (isset($data['fk_evaluate_status'])) ? $data['fk_evaluate_status'] : null;
+        $this->fk_evamedia_status = (isset($data['fk_evamedia_status'])) ? $data['fk_evamedia_status'] : null;
         $this->news_link          = (isset($data['news_link']))          ? $data['news_link']          : null;
         $this->order_no           = (isset($data['order_no']))           ? $data['order_no']           : null;
     }

@@ -101,18 +101,20 @@ class WriterTable
     public function saveWriter(Writer $writer)
     {
         $data = array(
-            'fk_product'      => $writer->fk_product,
-            'requirement'     => $writer->requirement,
-            'hint'            => $writer->hint,
-            'web_link'        => $writer->web_link,
-            'appstore_link'   => $writer->appstore_link,
-            'androidmkt_link' => $writer->androidmkt_link,
-            'barcode'         => $writer->barcode,
-            'created_by'      => $writer->created_by,
-            'created_at'      => $writer->created_at,
-            'updated_by'      => $writer->updated_by,
-            'updated_at'      => $writer->updated_at,
-            'order_no'        => $writer->order_no,
+            'fk_product'       => $writer->fk_product,
+            'requirement'      => $writer->requirement,
+            'hint'             => $writer->hint,
+            'web_link'         => $writer->web_link,
+            'appstore_link'    => $writer->appstore_link,
+            'androidmkt_link'  => $writer->androidmkt_link,
+            'barcode'          => $writer->barcode,
+            'created_by'       => $writer->created_by,
+            'created_at'       => $writer->created_at,
+            'updated_by'       => $writer->updated_by,
+            'updated_at'       => $writer->updated_at,
+            'order_no'         => $writer->order_no,
+            'fk_writer_status' => $writer->fk_writer_status,
+            'order_limit'      => $writer->order_limit,
         );
 
         $id = (int)$writer->id_writer;

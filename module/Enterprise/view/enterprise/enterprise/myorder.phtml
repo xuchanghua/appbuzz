@@ -96,6 +96,7 @@
                                     <th>产品名称</th>
                                     <th>标题</th>
                                     <th>发布方式及费用</th>
+                                    <th>订单状态</th>
                                 </tr>
                                 <?php foreach($newspub5 as $np) :  ;?>
                                 <tr>
@@ -120,7 +121,31 @@
                                         <?php echo $np->title; ?>
                                     </td>
                                     <td>
-                                        <?php echo $np->fk_pub_mode; ?>
+                                        <?php
+                                        $arr_pub_mode = array(
+                                            '1' => '单篇发布',
+                                            '2' => '打包发布',
+                                        );
+                                        if(array_key_exists($np->fk_pub_mode, $arr_pub_mode)){
+                                            echo $arr_pub_mode[$np->fk_pub_mode];
+                                        }else{
+                                            echo '发布方式不正确！';
+                                        }
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php 
+                                        $arr_newspub_status = array(
+                                            '1' => '草稿',
+                                            '2' => '订单确认',
+                                            '3' => '账款结清',
+                                        );
+                                        if(array_key_exists($np->fk_newspub_status, $arr_newspub_status)){
+                                            echo $arr_newspub_status[$np->fk_newspub_status];
+                                        }else{
+                                            echo '订单状态错误！';
+                                        }
+                                        ?>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -143,6 +168,7 @@
                                 <th>产品名称</th>
                                 <th>产品卖点</th>
                                 <th>有效日期</th>
+                                <th>订单状态</th>
                             </tr>
                             <?php foreach($evaluate5 as $eva) :  ;?>
                             <tr>
@@ -159,6 +185,20 @@
                                 </td>
                                 <td>
                                     <?php echo $eva->due_date; ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    $arr_evaluate_status = array(
+                                        '1' => '草稿',
+                                        '2' => '订单确认',
+                                        '3' => '订单完成',
+                                    );
+                                    if(array_key_exists($eva->fk_evaluate_status, $arr_evaluate_status)){
+                                        echo $this->escapeHtml($arr_evaluate_status[$eva->fk_evaluate_status]); 
+                                    }else{
+                                        echo '订单状态错误！';
+                                    }
+                                    ?>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -181,6 +221,7 @@
                                     <th>产品名称</th>
                                     <th>撰稿要求</th>
                                     <th>创建日期</th>
+                                    <th>订单状态</th>
                                 </tr>
                                 <?php foreach($writer5 as $wrt): ?>
                                 <tr>
@@ -192,6 +233,20 @@
                                     <td><?php echo $arr_product_name[$wrt->fk_product]; ?></td>
                                     <td><?php echo $wrt->requirement; ?></td>
                                     <td><?php echo $wrt->created_at; ?></td>
+                                    <td>
+                                        <?php
+                                        $arr_writer_status = array(
+                                            '1' => '草稿',
+                                            '2' => '订单确认',
+                                            '3' => '订单完成',
+                                        );
+                                        if(array_key_exists($wrt->fk_writer_status, $arr_writer_status)){
+                                            echo $this->escapeHtml($arr_writer_status[$wrt->fk_writer_status]); 
+                                        }else{
+                                            echo '订单状态错误！';
+                                        }
+                                        ?>
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
                             </table>

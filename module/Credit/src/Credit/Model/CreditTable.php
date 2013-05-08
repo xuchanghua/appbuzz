@@ -59,7 +59,9 @@ class CreditTable
         $price = (int)$price;
         $fk_user = (int)$fk_user;
         $credit = $this->getCreditByFkUser($fk_user);
-        if($credit->amount < $price){
+        $amount = $credit->amount;
+        $deposit = $credit->deposit;
+        if($amount - $deposit< $price){
             return false;
         }else{
             return true;
@@ -76,6 +78,7 @@ class CreditTable
             'created_by'   => $credit->created_by,
             'updated_at'   => $credit->updated_at,
             'updated_by'   => $credit->updated_by,
+            'deposit'      => $credit->deposit,
         );
 
         $id = (int)$credit->id_credit;

@@ -89,6 +89,14 @@
                     </td>
                 </tr>
                 <tr>
+                    <td class="tdlabel">最大邀约数量：</td>
+                    <td>
+                        <?php echo $this->formRow($form->get('order_limit')); ?>
+                        <span id="plus_one" class="plus_one" onclick="plus_one();">+1</span>
+                        <span id="minus_one" class="minus_one" onclick="minus_one();">-1</span>
+                    </td>
+                </tr>
+                <tr>
                     <td class="tdlabel">撰稿配图：</td>
                     <td>
                         <?php echo $this->formRow($form->get('screen_shot')); ?>
@@ -155,6 +163,18 @@
 </div>
 
 <script>
+function plus_one()
+{
+    var order_limit = Number(document.getElementById("order_limit").value);
+    document.getElementById("order_limit").value = order_limit + 1;
+}
+function minus_one()
+{
+    var order_limit = Number(document.getElementById("order_limit").value);
+    if(order_limit>1){
+        document.getElementById("order_limit").value = order_limit - 1;
+    }
+}
 function change_product()
 {
     var product = document.getElementById("appproduct").value;
@@ -201,5 +221,19 @@ input[type="text"], textarea
     border: 1px #ffffff;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
     width: 100%;
+}
+span.plus_one
+{
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    padding: 2px;
+}
+span.minus_one
+{
+    background-color: grey;
+    color: white;
+    cursor: pointer;
+    padding: 2px;
 }
 </style>

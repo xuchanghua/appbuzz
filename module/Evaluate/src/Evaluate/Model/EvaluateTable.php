@@ -46,7 +46,7 @@ class EvaluateTable
                     'em_fk_enterprise_user' => 'fk_enterprise_user',
                     'em_fk_media_user' => 'fk_media_user',
                     'em_created_at' => 'created_at',
-                    'em_fk_evaluate_status' => 'fk_evaluate_status',
+                    'em_fk_evamedia_status' => 'fk_evamedia_status',
                 ), //columns
                 'left'
                 );
@@ -135,19 +135,21 @@ class EvaluateTable
     public function saveEvaluate(Evaluate $evaluate)
     {
         $data = array(
-            'fk_product'      => $evaluate->fk_product,
-            'highlight'       => $evaluate->highlight,
-            'web_link'        => $evaluate->web_link,
-            'appstore_link'   => $evaluate->appstore_link,
-            'androidmkt_link' => $evaluate->androidmkt_link,
-            'barcode'         => $evaluate->barcode,
-            'created_by'      => $evaluate->created_by,
-            'created_at'      => $evaluate->created_at,
-            'updated_by'      => $evaluate->updated_by,
-            'updated_at'      => $evaluate->updated_at,
-            'requirement'     => $evaluate->requirement,
-            'due_date'        => $evaluate->due_date,
-            'order_no'        => $evaluate->order_no,
+            'fk_product'         => $evaluate->fk_product,
+            'highlight'          => $evaluate->highlight,
+            'web_link'           => $evaluate->web_link,
+            'appstore_link'      => $evaluate->appstore_link,
+            'androidmkt_link'    => $evaluate->androidmkt_link,
+            'barcode'            => $evaluate->barcode,
+            'created_by'         => $evaluate->created_by,
+            'created_at'         => $evaluate->created_at,
+            'updated_by'         => $evaluate->updated_by,
+            'updated_at'         => $evaluate->updated_at,
+            'requirement'        => $evaluate->requirement,
+            'due_date'           => $evaluate->due_date,
+            'order_no'           => $evaluate->order_no,
+            'order_limit'        => $evaluate->order_limit,
+            'fk_evaluate_status' => $evaluate->fk_evaluate_status,
         );
 
         $id = (int)$evaluate->id_evaluate;

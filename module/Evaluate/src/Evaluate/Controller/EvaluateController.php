@@ -413,15 +413,15 @@ class EvaluateController extends AbstractActionController
             if($form->isValid()){
                 $evaluate->exchangeArray($form->getData());
 
-                $price = 2000;//对企业用户应收2000元的媒体评测费用
+                /*$price = 2000;//对企业用户应收2000元的媒体评测费用
                 $fk_user = $this->getUserTable()->getUserByName($cur_user)->id;
                 $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
                 if(!$is_sufficient)
                 {
                     echo "<a href='/evaluate/add'>Back</a></br>";
                     die("Insufficient Credit! Please Charge Your Account!");
-                }
-
+                }*/
+                $evaluate->fk_evaluate_status = 1;//草稿状态
                 $evaluate->created_by = $cur_user;
                 $evaluate->created_at = $this->_getDateTime();
                 $evaluate->updated_by = $cur_user;
@@ -542,7 +542,7 @@ class EvaluateController extends AbstractActionController
                 $this->getEvaluateTable()->saveEvaluate($evaluate2);
 
                 //update the user's credit
-                $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+                /*$credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
                 $originamount = $credit->amount;
                 $credit->amount = $originamount - $price;
                 $credit->updated_at = $this->_getDateTime();
@@ -562,7 +562,7 @@ class EvaluateController extends AbstractActionController
                 $creditlog->order_no = $evaluate2->order_no;
                 $creditlog->created_at = $this->_getDateTime();
                 $creditlog->created_by = $cur_user;
-                $this->getCreditlogTable()->saveCreditlog($creditlog);
+                $this->getCreditlogTable()->saveCreditlog($creditlog);*/
 
                 return $this->redirect()->toRoute('evaluate',array(
                     'action'=>'detail',
@@ -578,6 +578,70 @@ class EvaluateController extends AbstractActionController
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
         ));        
+    }
+
+    public function confirmAction()
+    {
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_evaluate = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evaluate) {
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'index'
+            ));
+        }
+        $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+        $target_user = $this->getUserTable()->getUserByName($evaluate->created_by);
+        $fk_user = $target_user->id;        
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+        
+        //对企业用户应收$price = $order_limit * 2000元的媒体评测费用
+        $price = $evaluate->order_limit * 2000;
+        $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
+        if(!$is_sufficient)
+        {
+            echo "<a href='/evaluate/add'>Back</a></br>";
+            die("Insufficient Credit! Please Charge Your Account!");
+        }
+        else
+        {
+            //update the $evaluate, change the $fk_evaluate_status to 2 (frozen)
+            $evaluate->fk_evaluate_status = 2;
+            $evaluate->updated_by = $cur_user;
+            $evaluate->updated_at = $this->_getDateTime();
+            $this->getEvaluateTable()->saveEvaluate($evaluate);
+            //update the $credit->deposit
+            $origindeposit = $credit->deposit;
+            $credit->deposit = $origindeposit + $price;
+            $credit->updated_by = $cur_user;
+            $credit->updated_at = $this->_getDateTime();
+            $this->getCreditTable()->saveCredit($credit);
+            //log the changes
+            $creditlog = new Creditlog();
+            $creditlog->fk_credit = $credit->id_credit;
+            $creditlog->fk_service_type = 4;//企业->产品评测
+            $creditlog->fk_from = $fk_user;
+            $creditlog->fk_to = null;
+            $creditlog->date_time = $this->_getDateTime();
+            $creditlog->amount = 0;//do not pay any money here
+            $creditlog->remaining_balance = $credit->amount;
+            $creditlog->is_pay = 0;//is not pay
+            $creditlog->is_charge = 0; //is not charge
+            $creditlog->deposit = $price;
+            $creditlog->remaining_deposit = $credit->deposit;
+            $creditlog->is_pay_deposit = 0;//is not pay the deposit
+            $creditlog->is_charge_deposit = 1;//is charge the deposit
+            $creditlog->order_no = $evaluate->order_no;
+            $creditlog->created_at = $this->_getDateTime();
+            $creditlog->created_by = $cur_user;
+            $this->getCreditlogTable()->saveCreditlog($creditlog);
+
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'detail',
+                'id'     => $id_evaluate,
+            ));
+        }
     }
 
     public function adminAction()
@@ -654,7 +718,7 @@ class EvaluateController extends AbstractActionController
         $evamedia->created_at = $this->_getDateTime();
         $evamedia->updated_by = $cur_user;
         $evamedia->updated_at = $this->_getDateTime();
-        $evamedia->fk_evaluate_status = 3;//accept the order
+        $evamedia->fk_evamedia_status = 3;//accept the order
         $this->getEvamediaTable()->saveEvamedia($evamedia);
         //save the order number
         $id_evamedia = $this->getEvamediaTable()->getId($evamedia->created_at, $evamedia->created_by);
@@ -698,7 +762,7 @@ class EvaluateController extends AbstractActionController
         $evamedia->created_at = $this->_getDateTime();
         $evamedia->updated_by = $cur_user;
         $evamedia->updated_at = $this->_getDateTime();
-        $evamedia->fk_evaluate_status = 2;//reject the order
+        $evamedia->fk_evamedia_status = 2;//reject the order
         $this->getEvamediaTable()->saveEvamedia($evamedia);
         //save the order number
         $id_evamedia = $this->getEvamediaTable()->getId($evamedia->created_at, $evamedia->created_by);
@@ -732,7 +796,7 @@ class EvaluateController extends AbstractActionController
         $evamedia = $this->getEvamediaTable()->getEvamedia($id_evamedia);
         $evamedia->updated_by = $cur_user;
         $evamedia->updated_at = $this->_getDateTime();
-        $evamedia->fk_evaluate_status = 5;//accept the order
+        $evamedia->fk_evamedia_status = 5;//accept the order
         $this->getEvamediaTable()->saveEvamedia($evamedia);
         $fk_user = $evamedia->fk_media_user;
 
@@ -787,7 +851,7 @@ class EvaluateController extends AbstractActionController
         $evamedia = $this->getEvamediaTable()->getEvamedia($id_evamedia);
         $evamedia->updated_by = $cur_user;
         $evamedia->updated_at = $this->_getDateTime();
-        $evamedia->fk_evaluate_status = 4;//reject the order
+        $evamedia->fk_evamedia_status = 4;//reject the order
         $this->getEvamediaTable()->saveEvamedia($evamedia);
 
         return $this->redirect()->toRoute('evaluate',array(
@@ -853,7 +917,7 @@ class EvaluateController extends AbstractActionController
         $em_fk_evaluate        = $evamedia->fk_evaluate;
         $em_fk_enterprise_user = $evamedia->fk_enterprise_user;
         $em_fk_media_user      = $evamedia->fk_media_user;
-        $em_fk_evaluate_status = $evamedia->fk_evaluate_status;
+        $em_fk_evamedia_status = $evamedia->fk_evamedia_status;
         $em_created_by         = $evamedia->created_by;
         $em_created_at         = $evamedia->created_at;
         $em_order_no           = $evamedia->order_no;
@@ -870,7 +934,7 @@ class EvaluateController extends AbstractActionController
                 $form->getData()->fk_evaluate        = $em_fk_evaluate;
                 $form->getData()->fk_enterprise_user = $em_fk_enterprise_user;
                 $form->getData()->fk_media_user      = $em_fk_media_user;
-                $form->getData()->fk_evaluate_status = $em_fk_evaluate_status;
+                $form->getData()->fk_evamedia_status = $em_fk_evamedia_status;
                 $form->getData()->order_no           = $em_order_no;
                 $form->getData()->created_by         = $em_created_by;
                 $form->getData()->created_at         = $em_created_at;
