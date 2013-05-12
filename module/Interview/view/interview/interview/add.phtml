@@ -90,6 +90,20 @@
                             <?php echo $this->formRow($form->get('date_time')); ?>
                         </td>
                     </tr>
+                    <?php for($i=1;$i<11;$i++): ?>
+                    <tr id="<?php echo 'q'.$i;?>">
+                        <td class="tdlabel">问题<?php echo $i; ?>：</td>
+                        <td class="tdinput">
+                            <?php echo $this->formRow($form->get('q'.$i)); ?>
+                        </td>
+                    </td>
+                    <?php endfor; ?>
+                    <tr>
+                        <td>
+                            <a id="add_a_question" class="btn btn-primary btn-mini">增加一个问题</a>
+                        </td>
+                        <td></td>
+                    </tr>
                     <tr>
                         <td></td>
                         <td>
@@ -120,9 +134,23 @@
 <link rel="stylesheet" href="/resources/demos/style.css" />
 <script>
 $(function() {
-    $( "#f_date_ETA" ).datepicker();
+    $( "#f_date_ETA" ).datepicker({minDate:0});
     $( "#f_date_ETA" ).datepicker("option","dateFormat","yy-mm-dd");
 });
+</script>
+
+<script>
+var q_index = 2;
+$(document).ready(function(){
+    for(var i=2; i<11; i++){
+        $("#q"+i).css("display", "none");   
+    }    
+    $("#add_a_question").click(function(){
+        $("#q"+q_index).css("display", "");
+        q_index++;
+    });
+});
+
 </script>
 
 <style>

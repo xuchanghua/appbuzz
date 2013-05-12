@@ -135,6 +135,7 @@ class TopicTable
             'due_date'        => $topic->due_date,
             'fk_topic_status' => $topic->fk_topic_status,
             'order_no'        => $topic->order_no,
+            'topic_link'      => $topic->topic_link,
         );
 
         $id = (int)$topic->id_topic;

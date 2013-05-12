@@ -73,6 +73,21 @@ class InterviewForm extends Form
                 'type'  => 'hidden',
             ),
         ));
+        for($i = 1; $i < 11; $i++)
+        {
+            $this->add(array(
+                'name' => 'q'.$i,
+                'attributes' => array(
+                    'type' => 'text',
+                ),
+            ));
+            $this->add(array(
+                'name' => 'a'.$i,
+                'attributes' => array(
+                    'type' => 'text',
+                ),
+            ));
+        }
         $this->add(array(
             'name' => 'submit',
             'attributes' => array(

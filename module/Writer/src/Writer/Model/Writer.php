@@ -24,6 +24,7 @@ class Writer implements InputFilterAwareInterface
     public $wrtmedia;
     public $order_no;
     public $order_limit;
+    public $due_date;
 
     protected $inputFilter;                       // <-- Add this variable
 
@@ -45,6 +46,7 @@ class Writer implements InputFilterAwareInterface
         $this->order_no         = (isset($data['order_no']))         ? $data['order_no']         : null;
         $this->fk_writer_status = (isset($data['fk_writer_status'])) ? $data['fk_writer_status'] : null;
         $this->order_limit      = (isset($data['order_limit']))      ? $data['order_limit']      : null;
+        $this->due_date         = (isset($data['due_date']))         ? $data['due_date']         : null;
         //leftjoin wrtmedia
         $this->wm_order_no           = (isset($data['wm_order_no']))           ? $data['wm_order_no']           : null;
         $this->wm_fk_enterprise_user = (isset($data['wm_fk_enterprise_user'])) ? $data['wm_fk_enterprise_user'] : null;

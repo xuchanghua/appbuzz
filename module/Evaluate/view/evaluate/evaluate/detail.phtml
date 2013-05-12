@@ -98,7 +98,8 @@
                             $arr_evaluate_status = array(
                                 '1' => '草稿',
                                 '2' => '订单确认',
-                                '3' => '订单完成',
+                                '3' => '订单工作完成',
+                                '4' => '账款结清',
                             );
                             if(array_key_exists($evaluate->fk_evaluate_status, $arr_evaluate_status)){
                                 echo $this->escapeHtml($arr_evaluate_status[$evaluate->fk_evaluate_status]); 
@@ -148,7 +149,21 @@
                     <tr>
                         <td class="tdlabel">最大邀约数量</td>
                         <td>
-                            <?php echo $this->escapeHtml($evaluate->order_limit);?>
+                            <div class="linkbtns">
+                                <?php echo $this->escapeHtml($evaluate->order_limit);?>
+                            </div>
+                            <div class="linkbtns" style="display:<?php echo ($evaluate->fk_evaluate_status==2)?"":"none";?>">
+                                <form action="<?php echo $this->url('evaluate',
+                                array('action'=>'addonelimit', 'id' => $evaluate->id_evaluate)) ;?>">
+                                    <input type="submit" class="btn btn-primary btn-mini" value="邀约+1">
+                                </form>
+                            </div>
+                            <div style="display:<?php echo ($evaluate->fk_evaluate_status==2)?"":"none";?>">
+                                <form action="<?php echo $this->url('evaluate',
+                                array('action'=>'minusonelimit', 'id' => $evaluate->id_evaluate)) ;?>">
+                                    <input type="submit" class="btn btn-danger btn-mini" value="邀约-1">
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     <tr>

@@ -19,6 +19,7 @@ class Topic implements InputFilterAwareInterface
     public $due_date;
     public $order_no;
     public $fk_topic_status;
+    public $topic_link;
     protected $inputFilter;                       // <-- Add this variable
 
     public function exchangeArray($data)
@@ -34,6 +35,7 @@ class Topic implements InputFilterAwareInterface
         $this->due_date        = (isset($data['due_date']))        ? $data['due_date']        : null;
         $this->fk_topic_status = (isset($data['fk_topic_status'])) ? $data['fk_topic_status'] : null;
         $this->order_no        = (isset($data['order_no']))        ? $data['order_no']        : null;
+        $this->topic_link      = (isset($data['topic_link']))      ? $data['topic_link']      : null;
         // leftjoin tpcontact
         $this->tc_order_no            = (isset($data['tc_order_no']))            ? $data['tc_order_no']            : null;
         $this->tc_fk_enterprise_user  = (isset($data['tc_fk_enterprise_user']))  ? $data['tc_fk_enterprise_user']  : null;

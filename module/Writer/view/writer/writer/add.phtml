@@ -66,6 +66,13 @@
                         'value_options' => $arr_products,
                         ),
                 ));
+                $form->add(array(
+                    'name' => 'barcode',
+                    'type' => 'hidden',
+                    'attributes' => array(
+                        'id' => 'barcode',
+                    ),
+                ));   
                 $form->prepare();
                 echo $this->form()->openTag($form);
                 echo $this->formHidden($form->get('id_writer'));
@@ -86,6 +93,12 @@
                     <td class="tdlabel">信息提示：</td>
                     <td class="tdtextarea">
                         <?php echo $this->formRow($form->get('hint')); ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdlabel">有效日期：</td>
+                    <td>
+                        <?php echo $this->formRow($form->get('due_date')); ?>
                     </td>
                 </tr>
                 <tr>
@@ -131,12 +144,13 @@
                 <tr>
                     <td class="tdlabel">下载二维码</td>
                     <td class="tdinput">
+                        <img id="bc_img" src="" height="200" width="200">
                         <?php echo $this->formRow($form->get('barcode')); ?>
                     </td>
                 </tr>
                 <tr>
                     <td class="tdlabel">撰稿费用：</td>
-                    <td>1500元/篇（800字左右）</td>
+                    <td>1200元/篇（800字左右）</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -162,6 +176,17 @@
     </div>
 </div>
 
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css" />
+<script>
+$(document).ready(function(){   
+    $( "#due_date" ).datepicker({minDate:0});
+    $( "#due_date" ).datepicker("option","dateFormat","yy-mm-dd"); 
+});
+</script>
+
 <script>
 function plus_one()
 {
@@ -177,18 +202,29 @@ function minus_one()
 }
 function change_product()
 {
-    var product = document.getElementById("appproduct").value;
-    var product_web = new Array();
-    var product_appstore = new Array();
-    var product_android = new Array();
-    <?php foreach($js_products as $pro): ?>
-    product_web[<?php echo $pro->id_product; ?>] = "<?php echo $pro->web_link; ?>";
-    product_appstore[<?php echo $pro->id_product; ?>] = "<?php echo $pro->appstore_link; ?>";
-    product_android[<?php echo $pro->id_product; ?>] = "<?php echo $pro->androidmkt_link; ?>";
+    var arr_id_barcode = new Array();
+    <?php foreach($barcodes as $bc): ?>
+    var str_temp_path = "<?php echo $bc->path, $bc->filename; ?>";
+    arr_id_barcode[<?php echo $bc->id_barcode; ?>] = str_temp_path.substring(6);
     <?php endforeach; ?>
-    document.getElementById("web_link").value = product_web[product];
-    document.getElementById("appstore_link").value = product_appstore[product];
+    var product = document.getElementById("appproduct").value;
+    var product_web          = new Array();
+    var product_appstore     = new Array();
+    var product_android      = new Array();
+    var product_barcode_id   = new Array();
+    var product_barcode_path = new Array();
+    <?php foreach($js_products as $pro): ?>
+    product_web[<?php echo $pro->id_product; ?>]          = "<?php echo $pro->web_link; ?>";
+    product_appstore[<?php echo $pro->id_product; ?>]     = "<?php echo $pro->appstore_link; ?>";
+    product_android[<?php echo $pro->id_product; ?>]      = "<?php echo $pro->androidmkt_link; ?>";
+    product_barcode_id[<?php echo $pro->id_product; ?>]   = "<?php echo $pro->barcode; ?>";
+    product_barcode_path[<?php echo $pro->id_product; ?>] = arr_id_barcode[<?php echo $pro->barcode; ?>];
+    <?php endforeach; ?>
+    document.getElementById("web_link").value        = product_web[product];
+    document.getElementById("appstore_link").value   = product_appstore[product];
     document.getElementById("androidmkt_link").value = product_android[product];
+    document.getElementById("barcode").value         = product_barcode_id[product];
+    document.getElementById("bc_img").src            = product_barcode_path[product];
 }
 </script>
 

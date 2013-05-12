@@ -32,9 +32,10 @@
                     '2' => '打包发布',
                 );
                 $arr_newspub_status = array(                    
-                    '1' => '未付款',
-                    '2' => '已付款',
-                    '3' => '已发布',
+                    '1' => '草稿',
+                    '2' => '订单确认',
+                    '3' => '订单任务完成',
+                    '4' => '账款结清'
                 );
             ?>
             <div id="pubmgmt" class="widget-box">
@@ -73,14 +74,16 @@
                         </td>
                         <td><?php echo $this->escapeHtml($np->created_by);?></td>
                         <td>
-                            <div id="btns" style="display:<?php echo ($np->fk_newspub_status==1)?"inline":"none";?>">
-                                <form action="<?php echo $this->url('newspub', array('action' => 'paid', 'id' => $np->id_newspub)) ;?>">
-                                    <input type="submit" class="btn btn-primary btn-mini" value="确认付款">
-                                </form>                                   
-                            </div>
                             <div id="btns" style="display:<?php echo ($np->fk_newspub_status==2)?"inline":"none";?>">
-                                <form action="<?php echo $this->url('newspub', array('action' => 'completed', 'id' => $np->id_newspub)) ;?>">
-                                    <input type="submit" class="btn btn-primary btn-mini" value="已发布">
+                                <form action="<?php echo $this->url('newspub', 
+                                array('action' => 'done', 'id' => $np->id_newspub)) ;?>">
+                                    <input type="submit" class="btn btn-primary btn-mini" value="订单完成">
+                                </form>
+                            </div>
+                            <div id="btns" style="display:<?php echo ($np->fk_newspub_status==3)?"inline":"none";?>">
+                                <form action="<?php echo $this->url('newspub', 
+                                array('action' => 'remittance', 'id' => $np->id_newspub)) ;?>">
+                                    <input type="submit" class="btn btn-primary btn-mini" value="确认付款">
                                 </form>                                   
                             </div>
                         </td>

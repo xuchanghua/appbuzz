@@ -180,7 +180,8 @@ class WriterController extends AbstractActionController
         if($writer->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
-            $barcode_path = '/upload/'.$owner->username.'/writer/'.$id.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$owner->username.'/writer/'.$id.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
@@ -228,17 +229,20 @@ class WriterController extends AbstractActionController
         if($writer->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
-            $barcode_path = '/upload/'.$owner->username.'/writer/'.$id_writer.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$owner->username.'/writer/'.$id_writer.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
             $barcode_path = '#';
         }
         $product = $this->getProductTable()->getProduct($writer->fk_product);
-        $wrt_created_by = $writer->created_by;
-        $wrt_created_at = $writer->created_at;
-        $wrt_barcode    = $writer->barcode;
-        $wrt_order_no   = $writer->order_no;
+        $wrt_created_by       = $writer->created_by;
+        $wrt_created_at       = $writer->created_at;
+        $wrt_barcode          = $writer->barcode;
+        $wrt_order_no         = $writer->order_no;
+        $wrt_order_limit      = $writer->order_limit;
+        $wrt_fk_writer_status = $writer->fk_writer_status;
         $form = new WriterForm();
         $form->bind($writer);
         $form->get('submit')->setAttribute('value','保存');
@@ -347,11 +351,13 @@ class WriterController extends AbstractActionController
             $form->setInputFilter($writer->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
-                $form->getData()->created_by = $wrt_created_by;
-                $form->getData()->created_at = $wrt_created_at;
-                $form->getData()->order_no   = $wrt_order_no;
-                $form->getData()->updated_by = $cur_user;
-                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->created_by       = $wrt_created_by;
+                $form->getData()->created_at       = $wrt_created_at;
+                $form->getData()->order_no         = $wrt_order_no;
+                $form->getData()->order_limit      = $wrt_order_limit;
+                $form->getData()->fk_writer_status = $wrt_fk_writer_status;
+                $form->getData()->updated_by       = $cur_user;
+                $form->getData()->updated_at       = $this->_getDateTime();
                 if(isset($id_barcode))
                 {
                     $form->getData()->barcode = $id_barcode;
@@ -434,6 +440,7 @@ class WriterController extends AbstractActionController
                     );
 
                 //upload start
+                /*
                 //1. barcode
                 $file = $this->params()->fromFiles('barcode');
                 $max = 400000;//单位比特
@@ -479,7 +486,7 @@ class WriterController extends AbstractActionController
                         //md5() the file name
                         //rename($file['name'], md5($file['name']));
                     }
-                }
+                }*/
                 //2. screen shot
                 $screen_shot = $this->params()->fromFiles('screen_shot');
                 foreach($screen_shot as $ss)
@@ -526,7 +533,7 @@ class WriterController extends AbstractActionController
                 //upload end
 
                 $writer2 = $this->getWriterTable()->getWriter($id_writer);
-                $writer2->barcode = $id_barcode;
+                //$writer2->barcode = $id_barcode;
                 $writer2->order_no = 31000000 + $id_writer;
                 $this->getWriterTable()->saveWriter($writer2);
 
@@ -561,6 +568,7 @@ class WriterController extends AbstractActionController
             'writer' => $this->getWriterTable()->fetchWriterByUser($cur_user),
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'barcodes' => $this->getBarcodeTable()->fetchBarcodeByUser($cur_user),
         ));                
     }
 
@@ -580,8 +588,8 @@ class WriterController extends AbstractActionController
         $fk_user = $target_user->id;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
 
-        //对企业用户应收$price = $order_limit * 1500元的撰稿费用
-        $price = $writer->order_limit * 1500;
+        //对企业用户应收$price = $order_limit * 1200元的撰稿费用
+        $price = $writer->order_limit * 1200;
         $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
         if(!$is_sufficient)
         {
@@ -626,6 +634,115 @@ class WriterController extends AbstractActionController
                 'id'     => $id_writer,
             ));
         }
+    }
+
+    public function addonelimitAction()
+    {
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_writer = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_writer) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'index'
+            ));
+        }
+        $writer = $this->getWriterTable()->getWriter($id_writer);
+        $target_user = $this->getUserTable()->getUserByName($writer->created_by);
+        $fk_user = $target_user->id;
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+
+        //update the writer, +1 to $writer->order_limit
+        $writer->order_limit++;
+        $writer->updated_by = $cur_user;
+        $writer->updated_at = $this->_getDateTime();
+        $this->getWriterTable()->saveWriter($writer);
+        //update the credit, +1500 to the $credit->deposit
+        $price = 1500;
+        $credit->deposit += $price;
+        $credit->updated_by = $cur_user;
+        $credit->updated_at = $this->_getDateTime();
+        $this->getCreditTable()->saveCredit($credit);
+        //log the credit change;
+        $creditlog = new Creditlog();
+        $creditlog->fk_credit = $credit->id_credit;
+        $creditlog->fk_service_type = 6;//企业->我要撰稿
+        $creditlog->fk_from = $fk_user;
+        $creditlog->fk_to = null;
+        $creditlog->date_time = $this->_getDateTime();
+        $creditlog->amount = 0;//do not pay any money here
+        $creditlog->remaining_balance = $credit->amount;
+        $creditlog->is_pay = 0;//is not pay
+        $creditlog->is_charge = 0; //is not charge
+        $creditlog->deposit = $price;
+        $creditlog->remaining_deposit = $credit->deposit;
+        $creditlog->is_pay_deposit = 0;//is not pay the deposit
+        $creditlog->is_charge_deposit = 1;//is charge the deposit
+        $creditlog->order_no = $writer->order_no;
+        $creditlog->created_at = $this->_getDateTime();
+        $creditlog->created_by = $cur_user;
+        $this->getCreditlogTable()->saveCreditlog($creditlog);
+
+        return $this->redirect()->toRoute('writer', array(
+            'action' => 'detail',
+            'id'     => $id_writer,
+        ));
+    }
+
+    public function minusonelimitAction()
+    {
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_writer = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_writer) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'index'
+            ));
+        }
+        $writer = $this->getWriterTable()->getWriter($id_writer);
+        $target_user = $this->getUserTable()->getUserByName($writer->created_by);
+        $fk_user = $target_user->id;
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+
+        if($writer->order_limit>1)
+        {
+            //update the writer, +1 to $writer->order_limit
+            $writer->order_limit--;
+            $writer->updated_by = $cur_user;
+            $writer->updated_at = $this->_getDateTime();
+            $this->getWriterTable()->saveWriter($writer);
+            //update the credit, +1500 to the $credit->deposit
+            $price = 1500;
+            $credit->deposit -= $price;
+            $credit->updated_by = $cur_user;
+            $credit->updated_at = $this->_getDateTime();
+            $this->getCreditTable()->saveCredit($credit);
+            //log the credit change;
+            $creditlog = new Creditlog();
+            $creditlog->fk_credit = $credit->id_credit;
+            $creditlog->fk_service_type = 6;//企业->我要撰稿
+            $creditlog->fk_from = $fk_user;
+            $creditlog->fk_to = null;
+            $creditlog->date_time = $this->_getDateTime();
+            $creditlog->amount = 0;//do not pay any money here
+            $creditlog->remaining_balance = $credit->amount;
+            $creditlog->is_pay = 0;//is not pay
+            $creditlog->is_charge = 0; //is not charge
+            $creditlog->deposit = $price;
+            $creditlog->remaining_deposit = $credit->deposit;
+            $creditlog->is_pay_deposit = 1;//is pay the deposit
+            $creditlog->is_charge_deposit = 0;//is not charge the deposit
+            $creditlog->order_no = $writer->order_no;
+            $creditlog->created_at = $this->_getDateTime();
+            $creditlog->created_by = $cur_user;
+            $this->getCreditlogTable()->saveCreditlog($creditlog);
+        }
+
+        return $this->redirect()->toRoute('writer', array(
+            'action' => 'detail',
+            'id'     => $id_writer,
+        ));
     }
 
     public function reqlistAction()
@@ -820,7 +937,8 @@ class WriterController extends AbstractActionController
         if($writer->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
-            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
@@ -856,7 +974,8 @@ class WriterController extends AbstractActionController
         if($writer->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
-            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
@@ -928,7 +1047,8 @@ class WriterController extends AbstractActionController
         if($writer->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
-            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
@@ -1005,7 +1125,8 @@ class WriterController extends AbstractActionController
         if($writer->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
-            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
@@ -1083,7 +1204,8 @@ class WriterController extends AbstractActionController
         if($writer->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($writer->barcode);
-            $barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$writer->created_by.'/writer/'.$id_writer.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {

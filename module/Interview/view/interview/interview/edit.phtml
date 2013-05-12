@@ -113,7 +113,7 @@
 <link rel="stylesheet" href="/resources/demos/style.css" />
 <script>
 $(document).ready(function(){
-    $( "#f_date_ETA" ).datepicker();
+    $( "#f_date_ETA" ).datepicker({minDate:0});
     $( "#f_date_ETA" ).datepicker("option","dateFormat","yy-mm-dd"); 
     $( "#f_date_ETA" ).val("<?php echo $interview->date_time; ?>");
 });

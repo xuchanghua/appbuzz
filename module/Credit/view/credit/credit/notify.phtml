@@ -1,0 +1,106 @@
+<h1>用户详细信息：</h1>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+
+<div id="indexpage" class="indexpage">
+    <div id="header" class="container" style="width:1170px;"> 
+    CONTAINER
+    <div class="row">
+        ROW
+        <div id="logo" class="span2 logo">
+            APPBUZZ LOGO
+        </div>
+        <div id="banner" class="span8 banner">
+            BANNER
+        </div>
+    </div>
+    </div>
+</BR>
+    <div id="main" class="container" style="width:1170px;">
+    <div id="row" class="row">
+        <div id="left" class="span2 left">
+        <?php 
+        set_include_path("public/include");        
+        include 'sidebar_enterprise.phtml'; 
+        ?>
+        </div>
+        <div id="mid" class="span8 mid">
+            <div>
+                <div class="linkbtns">
+                    <form action="">
+                        <input type="submit" class="btn btn-primary linkbtn" value="我的账户">
+                    </form>
+                </div>
+                <div>
+                    <form action="">
+                        <input type="submit" class="btn btn-primary linkbtn" value="充值">
+                    </form>
+                </div>
+                <p>本站目前仅提供汇款形式的充值方式，汇款确认到账后充入到用户账号内。到账时间因银行原因或有一定延迟，如有疑问请与客服人员联系。</p>
+                <br>
+                <p>开户银行：</p>
+                <p>汇款账号：</p>
+                <br>
+                <p>如需要合同及发票，请与客服人员联系：</p>
+                <p>客服邮箱：accountservice@uniwaygroup.com</p>
+                <p>客服电话：+ 021 6170 3736-1807</p>
+                <p>传真：+ 021 6170 3739</p>
+                <br>
+                <p>消费说明：</p>
+                <p>1、  在本站内使用付费业务，均需预先充值。</p>
+                <p>2、  发布业务订单后系统会在账户中冻结订单金额部分，用户确认订单完成后从账户中扣除。</p>
+                <p>3、  如业务订单未能完成，或用户取消订单，订单金额即可解冻。</p>
+                <p>4、  已确认并进入到媒体、自由撰稿人、网站运营团队执行过程中的订单，将无法取消。如有特殊情况，请与客服人员联系。</p>
+                <br>
+                <p>退款说明：如用户需要退款，综合所使用业务的折扣及发票税费等因素，统一按账户余额的80%给于退款。</p>
+                <div>
+                    <form action="/enterprise/myaccount">
+                        <input type="submit" class="btn btn-primary" value="返回">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="right" class="span3 right">
+            <div id="mediarank" class="mediarank">
+                APP媒体曝光排名
+            </div>
+            <div id="latestapp" class="latestapp">
+                最新注册APP
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+div.user,.mid
+{
+    border:1px black solid;
+}
+.logout
+{
+    text-align: right;
+}
+table
+{
+    width: 100%;
+}
+.tdinput
+
+{
+    width: 80%;
+}
+.tdlabel
+{
+    vertical-align: top;
+}
+input[type="text"], textarea
+{
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
+    width: 100%;
+}
+</style>

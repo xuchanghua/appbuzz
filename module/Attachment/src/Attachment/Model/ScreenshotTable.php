@@ -8,6 +8,7 @@ use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\DbSelect;
 use Zend\Db\ResultSet\ResultSet;
 use DateTime;
+use Zend\Db\Sql\Expression as Expr;
 
 class ScreenshotTable
 {
@@ -43,6 +44,17 @@ class ScreenshotTable
             $select->order('id_screenshot DESC');
         });
         return $resultSet;
+    }
+
+    public function fetchCountSsByFkEva($fk_evaluate)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_evaluate){
+            $select->columns(array("count_ss" => new Expr("count(id_screenshot)")));
+            $select->where->equalTo('fk_evaluate',$fk_evaluate);
+            $select->group(array("fk_evaluate"));
+        });
+        $row = $resultSet->current();
+        return $row->count_ss;
     }
 
     public function getScreenshot($id)

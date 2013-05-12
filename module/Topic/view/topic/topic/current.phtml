@@ -101,8 +101,11 @@
                                     </form>
                                 </div>
                                 <div style="display:<?php echo (array_key_exists($ct->id_topic, $arr_tp_tc))?'none':'inline'?>;">
-                                    <form action="<?php echo $this->url('topic', array('action' => 'contact', 'id' => $ct->id_topic)) ;?>">
-                                        <input type="submit" class="btn btn-primary btn-mini" value="我要联系">
+                                    <form action="<?php echo $this->url('topic', array('action' =>'contact', 'id' => $ct->id_topic)); ?>">
+                                        <input type="submit" class="btn btn-primary btn-mini" value="有兴趣">
+                                    </form>
+                                    <form action="<?php echo $this->url('topic', array('action' => 'ignore', 'id' => $ct->id_topic)); ?>">
+                                        <input type="submit" class="btn btn-primary btn-mini" value="忽略">
                                     </form>
                                 </div>
                             </td>

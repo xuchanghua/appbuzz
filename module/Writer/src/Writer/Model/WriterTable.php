@@ -115,6 +115,7 @@ class WriterTable
             'order_no'         => $writer->order_no,
             'fk_writer_status' => $writer->fk_writer_status,
             'order_limit'      => $writer->order_limit,
+            'due_date'         => $writer->due_date,
         );
 
         $id = (int)$writer->id_writer;

@@ -81,6 +81,10 @@ class Evaluate implements InputFilterAwareInterface
                 ),
             )));
             $inputFilter->add($factory->createInput(array(
+                'name'     => 'requirement',
+                'required' => true,
+            )));
+            $inputFilter->add($factory->createInput(array(
                 'name'     => 'due_date',
                 'validators' => array(
                     array(

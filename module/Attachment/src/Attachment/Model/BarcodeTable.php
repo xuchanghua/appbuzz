@@ -26,6 +26,14 @@ class BarcodeTable
         return $resultSet;
     }
 
+    public function fetchBarcodeByUser($created_by)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($created_by){
+            $select->where->equalTo('created_by', $created_by);
+        });
+        return $resultSet;
+    }
+
     public function getBarcode($id)
     {
         $id  = (int) $id;

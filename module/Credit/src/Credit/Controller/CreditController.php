@@ -155,6 +155,17 @@ class CreditController extends AbstractActionController
         );
     }
 
+    public function notifyAction()
+    {
+        //企业->充值
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+        ));
+    }
+
     public function deleteAction()
     {
     }

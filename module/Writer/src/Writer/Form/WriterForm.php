@@ -124,6 +124,17 @@ class WriterForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'due_date',
+            'attributes' => array(
+                'type' => 'text',
+                'placeholder' => 'YYYY-MM-DD',
+                'id' => 'due_date',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
             'name' => 'submit',
             'attributes' => array(
                 'type'  => 'submit',

@@ -89,6 +89,40 @@
                              echo $arr_interview_status[$interview->fk_interview_status]; ?>
                         </td>
                     </tr>
+                    <?php        
+                    $end_of_question = 0;             
+                    for($i=10;$i>0;$i--){
+                        $qname = 'q'.$i;
+                        if($interview->$qname){
+                            $end_of_question = $i;
+                            break;
+                        }else{
+                            continue;
+                        }
+                    }                   
+                    ?>
+                    <?php if($end_of_question > 0): ?>
+                        <?php for($j=1;$j<$end_of_question+1;$j++): ?>
+                        <tr>
+                            <td class="tdlabel">问题<?php echo $j; ?>：</td>
+                            <td>
+                                <?php 
+                                $qname = 'q'.$j;
+                                echo $interview->$qname; 
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdlabel">回答<?php echo $j; ?>：</td>
+                            <td>
+                                <?php
+                                $aname = 'a'.$j;
+                                echo $interview->$aname;
+                                ?>
+                            </td>
+                        </tr>
+                        <?php endfor; ?>
+                    <?php endif; ?>
                     <tr>
                         <td></td>
                         <td>

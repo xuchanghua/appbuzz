@@ -27,6 +27,8 @@ class Screenshot implements InputFilterAwareInterface
         $this->fk_writer     = (isset($data['fk_writer']))     ? $data['fk_writer']     : null;
         $this->created_by    = (isset($data['created_by']))    ? $data['created_by']    : null;
         $this->created_at    = (isset($data['created_at']))    ? $data['created_at']    : null;
+        //count
+        $this->count_ss      = (isset($data['count_ss']))      ? $data['count_ss']      : null;
     }
 
     // Add the following method:

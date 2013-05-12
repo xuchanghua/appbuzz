@@ -57,7 +57,7 @@ class NewspubController extends AbstractActionController
     public function addAction()
     {
         //$cur_user = $this->_authenticateSession(1);
-        $arr_type_allowed = array(1, 3);
+        $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
         //handle the form
@@ -101,6 +101,7 @@ class NewspubController extends AbstractActionController
                         $newspub->created_by
                     );
 
+                /*
                 //upload start
                 $file = $this->params()->fromFiles('barcode');
                 $max = 4000000;//单位比特
@@ -148,9 +149,10 @@ class NewspubController extends AbstractActionController
                     }
                 }
                 //upload end
+                */
 
                 $newspub2 = $this->getNewspubTable()->getNewspub($id_newspub);
-                $newspub2->barcode = $id_barcode;
+                //$newspub2->barcode = $id_barcode;
                 $newspub2->order_no = 11000000 + $newspub2->id_newspub;
                 $this->getNewspubTable()->saveNewspub($newspub2);
 
@@ -223,6 +225,7 @@ class NewspubController extends AbstractActionController
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'medias' => $this->getUserTable()->fetchUserByFkType(2),
+            'barcodes' => $this->getBarcodeTable()->fetchBarcodeByUser($cur_user),
         ));        
     }
 
@@ -318,7 +321,8 @@ class NewspubController extends AbstractActionController
         if($np->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($np->barcode);
-            $barcode_path = '/upload/'.$np->created_by.'/newspub/'.$id.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$np->created_by.'/newspub/'.$id.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
@@ -354,7 +358,8 @@ class NewspubController extends AbstractActionController
         if($newspub->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($newspub->barcode);
-            $barcode_path = '/upload/'.$owner->username.'/newspub/'.$id_newspub.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$owner->username.'/newspub/'.$id_newspub.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
@@ -589,9 +594,10 @@ class NewspubController extends AbstractActionController
         ));
     }
 
-    public function paidAction()
+    public function remittanceAction()
     {
         //管理员->新闻发布->确认付款
+        //(从用户被冻结的资金中扣除与服务价格等值的资金)
         $arr_type_allowed = array(3);
         $cur_user = $this->_auth($arr_type_allowed);
 
@@ -603,10 +609,47 @@ class NewspubController extends AbstractActionController
         }
 
         $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
-        $newspub->fk_newspub_status = 2;
+        $fk_user = $this->getUserTable()->getUserByName($newspub->created_by)->id;
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+        if($newspub->fk_pub_mode == 1){
+            $count = $this->getNpmediaTable()->getCountNmByFkNewspub($id_newspub);
+            $price = 350 * $count;
+        }elseif($newspub->fk_pub_mode == 2){
+            $price = 1500;
+        }
+        //update the $newspub, change the fk_newspub_status to 4
+        $newspub->fk_newspub_status = 4;//账款结清
         $newspub->updated_by = $cur_user;
         $newspub->updated_at = $this->_getDateTime();
         $this->getNewspubTable()->saveNewspub($newspub);
+        //update the credit
+        $originamount = $credit->amount;
+        $origindeposit = $credit->deposit;
+        $credit->amount = $originamount - $price;
+        $credit->deposit = $origindeposit - $price;
+        $credit->updated_by = $cur_user;
+        $credit->updated_at = $this->_getDateTime();
+        $this->getCreditTable()->saveCredit($credit);
+        //log the change of the amount
+        $creditlog = New Creditlog();
+        $creditlog->fk_credit = $credit->id_credit;
+        $creditlog->fk_service_type = 10;//新闻发布->单篇发布->结账
+        $creditlog->fk_from = $fk_user;
+        $creditlog->fk_to = null;
+        $creditlog->date_time = $this->_getDateTime();
+        $creditlog->amount = $proce;
+        $creditlog->remaining_balance = $credit->amount;
+        $creditlog->is_pay = 1;//is pay
+        $creditlog->is_charge = 0; //is not charge
+        $creditlog->deposit = $price;
+        $creditlog->remaining_deposit = $credit->deposit;
+        $creditlog->is_pay_deposit = 1;//is pay the deposit
+        $creditlog->is_charge_deposit = 0;//is charge the deposit
+        $creditlog->order_no = $newspub->order_no;
+        $creditlog->created_at = $this->_getDateTime();
+        $creditlog->created_by = $cur_user;
+        $this->getCreditlogTable()->saveCreditlog($creditlog);
+
 
         return $this->redirect()->toRoute('newspub', array(
             'action' => 'admin',
@@ -617,7 +660,7 @@ class NewspubController extends AbstractActionController
         ));
     }
 
-    public function completedAction()
+    public function doneAction()
     {
         //管理员->新闻发布->确认付款
         $arr_type_allowed = array(3);
@@ -631,7 +674,7 @@ class NewspubController extends AbstractActionController
         }
 
         $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
-        $newspub->fk_newspub_status = 3;
+        $newspub->fk_newspub_status = 3;//订单工作任务完成
         $newspub->updated_by = $cur_user;
         $newspub->updated_at = $this->_getDateTime();
         $this->getNewspubTable()->saveNewspub($newspub);

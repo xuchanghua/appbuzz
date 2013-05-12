@@ -69,6 +69,12 @@
                             <?php echo $this->formRow($form->get('abstract')); ?>
                         </td>
                     </tr>
+                    <!--<tr>
+                        <td class="tdlabel">选题链接：</td>
+                        <td class="tdtextarea">
+                            <?php echo $this->formRow($form->get('topic_link')); ?>
+                        </td>
+                    </tr>-->
                     <tr>
                         <td class="tdlabel">征集APP产品类型：</td>
                         <td class="tdinput">
@@ -110,8 +116,10 @@
 <link rel="stylesheet" href="/resources/demos/style.css" />
 <script>
 $(function() {
-    $( "#f_date_ETA" ).datepicker();
-    $( "#f_date_ETA" ).datepicker("option","dateFormat","yy-mm-dd");
+    $( "#f_date_ETA" ).datepicker({
+        minDate: 0,
+        dateFormat: "yy-mm-dd",
+    });
 });
 </script>
 

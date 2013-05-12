@@ -54,21 +54,20 @@
                         </div>
                         <div class="widget-content nopadding">
                         <table id="tbappinfo" class="table table-bordered table-striped">
-                            <th>
-                                <td>名称</td>
-                                <td>描述</td>
-                                <td>类型</td>                                
-                            <!--<td>Appstore链接</td>
-                                <td>安卓市场链接</td>-->
-                                <td>web链接</td>
-                                <!--<td>新闻发布</td>
-                                <td>产品评测</td>
-                                <td>新闻撰写</td>
-                                <td>媒体选题</td>-->
-                            </th>
+                            <tr>
+                                <th>名称</th>
+                                <th>描述</th>
+                                <th>类型</th>                                
+                            <!--<th>Appstore链接</th>
+                                <th>安卓市场链接</th>-->
+                                <th>web链接</th>
+                                <!--<th>新闻发布</th>
+                                <th>产品评测</th>
+                                <th>新闻撰写</th>
+                                <th>媒体选题</th>-->
+                            </tr>
                             <?php foreach($products as $product) :  ;?>
                             <tr>
-                                <td></td>
                                 <td>
                                     <a href="/product/detail/<?php echo $product->id_product;?>"><?php echo $product->name; ?></a>
                                 </td>

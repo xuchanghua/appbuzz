@@ -41,7 +41,7 @@
                 <h4>订单号：<?php echo $this->escapeHtml($evamedia->order_no);?></h4>
                 <table class="pubdetailtable">
                     <?php
-                    $arr_evaluate_status = array(
+                    $arr_evamedia_status = array(
                         1 => '新订单',
                         2 => '媒体拒绝',
                         3 => '媒体接受',
@@ -107,7 +107,7 @@
                             <?php
                             if($evamedia)
                             {
-                                echo $this->escapeHtml($arr_evaluate_status[$evamedia->fk_evaluate_status]);
+                                echo $this->escapeHtml($arr_evamedia_status[$evamedia->fk_evamedia_status]);
                             }
                             else
                             {

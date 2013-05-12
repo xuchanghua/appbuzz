@@ -88,6 +88,12 @@
                     </td>
                 </tr>
                 <tr>
+                    <td class="tdlabel">有效日期：</td>
+                    <td>
+                        <?php echo $this->formRow($form->get('due_date')); ?>
+                    </td>
+                </tr>
+                <tr>
                     <td class="tdlabel">撰稿配图：</td>
                     <td>
                         <?php foreach($screenshots as $ss): ?>
@@ -137,7 +143,7 @@
                 </tr>
                 <tr>
                     <td class="tdlabel">撰稿费用：</td>
-                    <td>1500元/篇（800字左右）</td>
+                    <td>1200元/篇（800字左右）</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -162,6 +168,20 @@
     </div>
     </div>
 </div>
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css" />
+<script>
+$(document).ready(function(){   
+    /*$( "#due_date" ).val("<?php echo $writer->due_date; ?>");*/
+    $( "#due_date" ).datepicker({
+        minDate: 0,
+        dateFormat: "yy-mm-dd",
+    });
+});
+</script>
 
 <style>
 div.user,.mid

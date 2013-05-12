@@ -96,6 +96,7 @@
                             class="btn btn-danger btn-mini">删除图片</a>
                         <?php endforeach; ?>       
                         <?php echo $this->formRow($form->get('screen_shot')); ?>                 
+                        <?php //echo "截图数量：",$count_ss; ?>
                     </td>
                 </tr>
                 <tr>
@@ -152,6 +153,31 @@
     </div>
 </div>
 
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css" />
+<script>
+$(document).ready(function(){
+    $( "#f_date_ETA" ).datepicker({
+        minDate: 0,
+        dateFormat: "yy-mm-dd",
+    });
+    /*$( "#f_date_ETA" ).val("<?php echo $evaluate->due_date; ?>");*/
+});
+</script>
+
+<script>
+document.getElementById('screen_shot').onchange = function(){
+    var count_ss = <?php echo $count_ss; ?>;
+    if(this.files.length + count_ss > 5)
+    {
+        alert('最多上传5个产品截图');
+        document.getElementById('screen_shot').value = null;
+    }
+}
+</script>
+
 <style>
 div.user,.mid
 {
@@ -183,15 +209,3 @@ input[type="text"], textarea
     width: 100%;
 }
 </style>
-
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-<link rel="stylesheet" href="/resources/demos/style.css" />
-<script>
-$(document).ready(function(){
-    $( "#f_date_ETA" ).datepicker();
-    $( "#f_date_ETA" ).datepicker("option","dateFormat","yy-mm-dd"); 
-    $( "#f_date_ETA" ).val("<?php echo $evaluate->due_date; ?>");
-});
-</script>

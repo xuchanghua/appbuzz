@@ -21,6 +21,26 @@ class Interview implements InputFilterAwareInterface
     public $updated_at;
     public $updated_by;
     public $order_no;
+    public $q1;
+    public $a1;
+    public $q2;
+    public $a2;
+    public $q3;
+    public $a3;
+    public $q4;
+    public $a4;
+    public $q5;
+    public $a5;
+    public $q6;
+    public $a6;
+    public $q7;
+    public $a7;
+    public $q8;
+    public $a8;
+    public $q9;
+    public $a9;
+    public $q10;
+    public $a10;
     protected $inputFilter;                       // <-- Add this variable
 
     public function exchangeArray($data)
@@ -38,6 +58,26 @@ class Interview implements InputFilterAwareInterface
         $this->updated_at          = (isset($data['updated_at']))          ? $data['updated_at']          : null;
         $this->updated_by          = (isset($data['updated_by']))          ? $data['updated_by']          : null;
         $this->order_no            = (isset($data['order_no']))            ? $data['order_no']            : null;
+        $this->q1                  = (isset($data['q1']))                  ? $data['q1']                  : null;
+        $this->a1                  = (isset($data['a1']))                  ? $data['a1']                  : null;
+        $this->q2                  = (isset($data['q2']))                  ? $data['q2']                  : null;
+        $this->a2                  = (isset($data['a2']))                  ? $data['a2']                  : null;
+        $this->q3                  = (isset($data['q3']))                  ? $data['q3']                  : null;
+        $this->a3                  = (isset($data['a3']))                  ? $data['a3']                  : null;
+        $this->q4                  = (isset($data['q4']))                  ? $data['q4']                  : null;
+        $this->a4                  = (isset($data['a4']))                  ? $data['a4']                  : null;
+        $this->q5                  = (isset($data['q5']))                  ? $data['q5']                  : null;
+        $this->a5                  = (isset($data['a5']))                  ? $data['a5']                  : null;
+        $this->q6                  = (isset($data['q6']))                  ? $data['q6']                  : null;
+        $this->a6                  = (isset($data['a6']))                  ? $data['a6']                  : null;
+        $this->q7                  = (isset($data['q7']))                  ? $data['q7']                  : null;
+        $this->a7                  = (isset($data['a7']))                  ? $data['a7']                  : null;
+        $this->q8                  = (isset($data['q8']))                  ? $data['q8']                  : null;
+        $this->a8                  = (isset($data['a8']))                  ? $data['a8']                  : null;
+        $this->q9                  = (isset($data['q9']))                  ? $data['q9']                  : null;
+        $this->a9                  = (isset($data['a9']))                  ? $data['a9']                  : null;
+        $this->q10                 = (isset($data['q10']))                 ? $data['q10']                 : null;
+        $this->a10                 = (isset($data['a10']))                 ? $data['a10']                 : null;
     }
 
     // Add the following method:

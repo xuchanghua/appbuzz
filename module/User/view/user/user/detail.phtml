@@ -137,7 +137,20 @@
                         <td>发票抬头：</td>
                         <td><?php echo $enterprise->invoice_title; ?></td>
                         <td>发票类型：</td>
-                        <td><?php echo $enterprise->invoice_type; ?></td>
+                        <td>
+                            <?php 
+                            $arr_invoice_type = array(
+                                '1' => '普通发票',
+                                '2' => '增值税发票',
+                            );
+                            if(array_key_exists($enterprise->invoice_type, $arr_invoice_type)){
+                                echo $arr_invoice_type[$enterprise->invoice_type]; 
+                            }else{
+                                echo '发票类型错误！';
+                            }
+                            
+                            ?>
+                        </td>
                     </tr>
                     <tr>
                         <td>联系人信息：</td>
@@ -283,6 +296,8 @@
                         '7' => '媒体撰稿',
                         '8' => '网络监测(6个月)',
                         '9' => '网络监测(12个月)',
+                        '10' => '新闻发布(单篇)结账',
+                        '11' => '新闻发布(打包)结账',
                     );
                     ?>
                     <table class="table table-bordered table-striped">
@@ -290,6 +305,9 @@
                             <th>订单号</th>
                             <th>交易类型</th>
                             <th>交易金额</th>
+                            <th>余额</th>
+                            <th>冻结资金</th>
+                            <th>全部冻结资金</th>
                             <th>交易日期</th>
                             <th>经办人</th>
                         </tr>
@@ -300,12 +318,23 @@
                             <td>
                                 <?php 
                                 $sign = '';
-                                if($log->fk_service_type==1){
+                                if($log->is_charge==1){
                                     $sign = '+';
                                 }
-                                echo $sign.$log->amount.'元'; 
+                                echo $sign, $log->amount, '元'; 
                                 ?>
                             </td>
+                            <td><?php echo $log->remaining_balance, '元'; ?></td>
+                            <td>
+                                <?php 
+                                $sign = '';
+                                if($log->is_pay_deposit==1){
+                                    $sign = '-';
+                                }
+                                echo $sign, $log->deposit, '元'; 
+                                ?>
+                            </td>
+                            <td><?php echo $log->remaining_deposit, '元'; ?></td>
                             <td><?php echo $log->date_time; ?></td>
                             <td><?php echo $log->created_by; ?></td>
                         </tr>

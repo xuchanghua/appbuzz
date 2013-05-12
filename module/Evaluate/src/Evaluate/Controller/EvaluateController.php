@@ -177,7 +177,8 @@ class EvaluateController extends AbstractActionController
         if($evaluate->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
-            $barcode_path = '/upload/'.$owner->username.'/evaluate/'.$id.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$owner->username.'/evaluate/'.$id.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
@@ -227,17 +228,20 @@ class EvaluateController extends AbstractActionController
         if($evaluate->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
-            $barcode_path = '/upload/'.$owner->username.'/evaluate/'.$id_evaluate.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$owner->username.'/evaluate/'.$id_evaluate.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
             $barcode_path = '#';
         }
         $product = $this->getProductTable()->getProduct($evaluate->fk_product);
-        $eva_created_by = $evaluate->created_by;
-        $eva_created_at = $evaluate->created_at;
-        $eva_barcode    = $evaluate->barcode;
-        $eva_order_no   = $evaluate->order_no;
+        $eva_created_by         = $evaluate->created_by;
+        $eva_created_at         = $evaluate->created_at;
+        $eva_barcode            = $evaluate->barcode;
+        $eva_order_no           = $evaluate->order_no;
+        $eva_order_limit        = $evaluate->order_limit;
+        $eva_fk_evaluate_status = $evaluate->fk_evaluate_status;
         $form = new EvaluateForm();
         $form->bind($evaluate);
         $form->get('submit')->setAttribute('value','保存');
@@ -347,11 +351,13 @@ class EvaluateController extends AbstractActionController
             $form->setInputFilter($evaluate->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
-                $form->getData()->order_no   = $eva_order_no;
-                $form->getData()->created_by = $eva_created_by;
-                $form->getData()->created_at = $eva_created_at;
-                $form->getData()->updated_by = $cur_user;
-                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->order_no           = $eva_order_no;
+                $form->getData()->order_limit        = $eva_order_limit;
+                $form->getData()->fk_evaluate_status = $eva_fk_evaluate_status;
+                $form->getData()->created_by         = $eva_created_by;
+                $form->getData()->created_at         = $eva_created_at;
+                $form->getData()->updated_by         = $cur_user;
+                $form->getData()->updated_at         = $this->_getDateTime();
                 if(isset($id_barcode))
                 {
                     $form->getData()->barcode = $id_barcode;
@@ -384,15 +390,16 @@ class EvaluateController extends AbstractActionController
 
         return new ViewModel(array(
             //'evaluate' => $this->getEvaluateTable()->getEvaluate($id),
-            'user'     => $cur_user,
-            'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
-            'form'     => $form,
-            'id'       => $id_evaluate,
-            'product'  => $product,
+            'user'         => $cur_user,
+            'user_type'    => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
+            'form'         => $form,
+            'id'           => $id_evaluate,
+            'product'      => $product,
             //'media_assignees' => $arr_media_assignees,
             'barcode_path' => $barcode_path,
-            'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkEva($id_evaluate),
-            'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
+            'screenshots'  => $this->getScreenshotTable()->fetchScreenshotByFkEva($id_evaluate),
+            'count_ss'     => $this->getScreenshotTable()->fetchCountSsByFkEva($id_evaluate),
+            'is_writer'    => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
     }
 
@@ -433,6 +440,7 @@ class EvaluateController extends AbstractActionController
                     );
 
                 //upload start
+                /*
                 //1. barcode
                 $file = $this->params()->fromFiles('barcode');
                 $max = 400000;//单位比特
@@ -480,6 +488,7 @@ class EvaluateController extends AbstractActionController
                     }
                 }
                 unset($adapter);
+                */
                 //2. screen shot
                 $screen_shot = $this->params()->fromFiles('screen_shot');
                 foreach($screen_shot as $ss)
@@ -537,7 +546,7 @@ class EvaluateController extends AbstractActionController
                 //upload end
 
                 $evaluate2 = $this->getEvaluateTable()->getEvaluate($id_evaluate);
-                $evaluate2->barcode = $id_barcode;
+                //$evaluate2->barcode = $id_barcode;
                 $evaluate2->order_no = 21000000 + $id_evaluate;
                 $this->getEvaluateTable()->saveEvaluate($evaluate2);
 
@@ -577,6 +586,7 @@ class EvaluateController extends AbstractActionController
             'evaluate' => $this->getEvaluateTable()->fetchEvaluateByUser($cur_user),
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'barcodes' => $this->getBarcodeTable()->fetchBarcodeByUser($cur_user),
         ));        
     }
 
@@ -642,6 +652,115 @@ class EvaluateController extends AbstractActionController
                 'id'     => $id_evaluate,
             ));
         }
+    }
+
+    public function addonelimitAction()
+    {
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_evaluate = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evaluate) {
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'index'
+            ));
+        }
+        $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+        $target_user = $this->getUserTable()->getUserByName($evaluate->created_by);
+        $fk_user = $target_user->id;        
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+
+        //update the evaluate, +1 to $evaluate->order_limit
+        $evaluate->order_limit++;
+        $evaluate->updated_by = $cur_user;
+        $evaluate->updated_at = $this->_getDateTime();
+        $this->getEvaluateTable()->saveEvaluate($evaluate);
+        //update the credit, +2000 to the $credit->deposit
+        $price = 2000;
+        $credit->deposit += $price;
+        $credit->updated_by = $cur_user;
+        $credit->updated_at = $this->_getDateTime();
+        $this->getCreditTable()->saveCredit($credit);
+        //log the credit change;
+        $creditlog = new Creditlog();
+        $creditlog->fk_credit = $credit->id_credit;
+        $creditlog->fk_service_type = 4;//企业->产品评测
+        $creditlog->fk_from = $fk_user;
+        $creditlog->fk_to = null;
+        $creditlog->date_time = $this->_getDateTime();
+        $creditlog->amount = 0;//do not pay any money here
+        $creditlog->remaining_balance = $credit->amount;
+        $creditlog->is_pay = 0;//is not pay
+        $creditlog->is_charge = 0; //is not charge
+        $creditlog->deposit = $price;
+        $creditlog->remaining_deposit = $credit->deposit;
+        $creditlog->is_pay_deposit = 0;//is not pay the deposit
+        $creditlog->is_charge_deposit = 1;//is charge the deposit
+        $creditlog->order_no = $evaluate->order_no;
+        $creditlog->created_at = $this->_getDateTime();
+        $creditlog->created_by = $cur_user;
+        $this->getCreditlogTable()->saveCreditlog($creditlog);
+
+        return $this->redirect()->toRoute('evaluate', array(
+            'action' => 'detail',
+            'id'     => $id_evaluate,
+        ));
+    }
+
+    public function minusonelimitAction()
+    {
+        $arr_type_allowed = array(1, 3);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_evaluate = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_evaluate) {
+            return $this->redirect()->toRoute('evaluate', array(
+                'action' => 'index'
+            ));
+        }
+        $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
+        $target_user = $this->getUserTable()->getUserByName($evaluate->created_by);
+        $fk_user = $target_user->id;        
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+
+        if($evaluate->order_limit>1)
+        {
+            //update the evaluate, +1 to $evaluate->order_limit
+            $evaluate->order_limit--;
+            $evaluate->updated_by = $cur_user;
+            $evaluate->updated_at = $this->_getDateTime();
+            $this->getEvaluateTable()->saveEvaluate($evaluate);
+            //update the credit, +2000 to the $credit->deposit
+            $price = 2000;
+            $credit->deposit -= $price;
+            $credit->updated_by = $cur_user;
+            $credit->updated_at = $this->_getDateTime();
+            $this->getCreditTable()->saveCredit($credit);
+            //log the credit change;
+            $creditlog = new Creditlog();
+            $creditlog->fk_credit = $credit->id_credit;
+            $creditlog->fk_service_type = 4;//企业->产品评测
+            $creditlog->fk_from = $fk_user;
+            $creditlog->fk_to = null;
+            $creditlog->date_time = $this->_getDateTime();
+            $creditlog->amount = 0;//do not pay any money here
+            $creditlog->remaining_balance = $credit->amount;
+            $creditlog->is_pay = 0;//is not pay
+            $creditlog->is_charge = 0; //is not charge
+            $creditlog->deposit = $price;
+            $creditlog->remaining_deposit = $credit->deposit;
+            $creditlog->is_pay_deposit = 1;//is pay the deposit
+            $creditlog->is_charge_deposit = 0;//is not charge the deposit
+            $creditlog->order_no = $evaluate->order_no;
+            $creditlog->created_at = $this->_getDateTime();
+            $creditlog->created_by = $cur_user;
+            $this->getCreditlogTable()->saveCreditlog($creditlog);
+        }        
+
+        return $this->redirect()->toRoute('evaluate', array(
+            'action' => 'detail',
+            'id'     => $id_evaluate,
+        ));
     }
 
     public function adminAction()

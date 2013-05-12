@@ -132,7 +132,7 @@ class ProductController extends AbstractActionController
 
                 return $this->redirect()->toRoute('product',array(
                     'action' => 'detail',
-                    'id'     => $product->id_product,
+                    'id'     => $id_product,
                 ));
             }
         }
