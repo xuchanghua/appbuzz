@@ -262,10 +262,79 @@ class InterviewController extends AbstractActionController
         }
 
         $interview = $this->getInterviewTable()->getInterview($id_interview);
+        $product = $this->getProductTable()->getProduct($interview->fk_product);
+        $itv_fk_product          = $interview->fk_product;
+        $itv_fk_enterprise_user  = $interview->fk_enterprise_user;
+        $itv_fk_media_user       = $interview->fk_media_user;
+        $itv_date_time           = $interview->date_time;
+        $itv_purpose             = $interview->purpose;
+        $itv_outline             = $interview->outline;
+        $itv_order_no            = $interview->order_no;
+        $itv_created_at          = $interview->created_at;
+        $itv_created_by          = $interview->created_by;
+        $itv_fk_interview_status = $interview->fk_interview_status;
+
+        $form  = new InterviewForm();
+        $form->bind($interview);
+        $form->get('submit')->setAttribute('value', '提交');
+
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $form->setInputFilter($interview->getInputFilter());
+            $form->setData($request->getPost());
+            if ($form->isValid()) {
+                $form->getData()->fk_product          = $itv_fk_product;
+                $form->getData()->fk_enterprise_user  = $itv_fk_enterprise_user;
+                $form->getData()->fk_media_user       = $itv_fk_media_user;
+                $form->getData()->date_time           = $itv_date_time;
+                $form->getData()->purpose             = $itv_purpose;
+                $form->getData()->outline             = $itv_outline;
+                $form->getData()->order_no            = $itv_order_no;
+                $form->getData()->created_at          = $itv_created_at;
+                $form->getData()->created_by          = $itv_created_by;
+                $form->getData()->fk_interview_status = $itv_fk_interview_status;
+                $form->getData()->updated_at          = $this->_getDateTime();
+                $form->getData()->updated_by          = $cur_user;
+                $this->getInterviewTable()->saveInterview($form->getData());
+
+                // Redirect to list of interview detail
+                return $this->redirect()->toRoute('interview', array(
+                    'action' => 'entdetail',
+                    'id'     => $id_interview,
+                ));
+            }
+            /*else{
+                die(var_dump($form->getMessages()));
+            }*/
+        }
 
         return new ViewModel(array(
             'user' => $cur_user,
             'interview' => $interview,
+            'product' => $product,
+            'form' => $form,
+        ));
+    }
+
+    public function completeAction()
+    {
+        //媒体->采访邀约->结束采访
+        $arr_type_allowed = array(2);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_interview = (int)$this->params()->fromRoute('id', 0);
+        if(!$id_interview){
+            return $this->redirect()->toRoute('interview', array(
+                'action' => 'index',
+            ));
+        }
+        $interview = $this->getInterviewTable()->getInterview($id_interview);
+        $interview->fk_interview_status = 5;//completed
+        $this->getInterviewTable()->saveInterview($interview);
+
+        return $this->redirect()->toRoute('interview', array(
+            'action' => 'detail',
+            'id'     => $id_interview,
         ));
     }
 

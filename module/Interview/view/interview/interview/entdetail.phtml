@@ -78,6 +78,7 @@
                                 '2' => '企业接受邀请',
                                 '3' => '企业拒绝邀请',
                                 '4' => '媒体取消',
+                                '5' => '采访结束',
                             );
                              echo $arr_interview_status[$interview->fk_interview_status]; ?>
                         </td>
@@ -126,15 +127,15 @@
                                         <input type="submit" class="btn btn-primary" value="接受邀请">
                                     </form>
                                 </div>
-                                <div>
+                                <div class="linkbtns">
                                     <form action="<?php echo $this->url('interview',
                                     array('action' => 'entrej', 'id' => $interview->id_interview)); ?>">
                                         <input type="submit" class="btn btn-danger" value="拒绝邀请">
                                     </form>
                                 </div>
                             </div>
-                            <div style="display:<?php echo ($interview->fk_interview_status!=2)?'none':'';?>;">
-                                <div class="linkbtns">
+                            <div>
+                                <div class="linkbtns" style="display:<?php echo ($interview->fk_interview_status!=2)?'none':'';?>;">
                                     <form action="<?php echo $this->url('interview',
                                     array('action' => 'answer', 'id' => $interview->id_interview)); ?>">
                                         <input type="submit" class="btn btn-primary" value="回答问题">

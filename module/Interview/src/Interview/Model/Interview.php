@@ -105,7 +105,7 @@ class Interview implements InputFilterAwareInterface
                     array('name' => 'Int'),
                 ),
             )));
-            $inputFilter->add($factory->createInput(array(
+            /*$inputFilter->add($factory->createInput(array(
                 'name'=> 'date_time',
                 'validators' => array(
                     array(
@@ -114,7 +114,7 @@ class Interview implements InputFilterAwareInterface
                         //'format' => 'Y-m-d H:i:s'
                     ),
                 ),
-            )));
+            )));*/
 
             $this->inputFilter = $inputFilter;
         }
