@@ -248,6 +248,27 @@ class InterviewController extends AbstractActionController
         ));
     }
 
+    public function answerAction()
+    {
+        //企业->媒体采访->回答问题
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_interview = (int)$this->params()->fromRoute('id', 0);
+        if(!$id_interview){
+            return $this->redirect()->toRoute('interview', array(
+                'action' => 'entcurrent',
+            ));
+        }
+
+        $interview = $this->getInterviewTable()->getInterview($id_interview);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'interview' => $interview,
+        ));
+    }
+
     public function entaccAction()
     {
         //企业->媒体采访->接受邀请
