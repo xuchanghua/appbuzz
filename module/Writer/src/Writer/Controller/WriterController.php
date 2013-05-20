@@ -210,6 +210,7 @@ class WriterController extends AbstractActionController
             'wrtmedias' => $this->getWrtmediaTable()->fetchWmExRejByMedByFkWrt($id),//not include those rejected by the media
             'barcode_path' => $barcode_path,
             'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkWrt($id),
+            'count_ent_accepted_wrtmedias' => count($this->getWrtmediaTable()->fetchEntAccdWrtmediaByFkWrt($writer->id_writer)),
         ));
     }    
 
@@ -241,8 +242,9 @@ class WriterController extends AbstractActionController
         $wrt_created_at       = $writer->created_at;
         $wrt_barcode          = $writer->barcode;
         $wrt_order_no         = $writer->order_no;
-        $wrt_order_limit      = $writer->order_limit;
+        //$wrt_order_limit      = $writer->order_limit;
         $wrt_fk_writer_status = $writer->fk_writer_status;
+        $wrt_fk_writer_type   = $writer->fk_writer_type;
         $form = new WriterForm();
         $form->bind($writer);
         $form->get('submit')->setAttribute('value','保存');
@@ -354,8 +356,9 @@ class WriterController extends AbstractActionController
                 $form->getData()->created_by       = $wrt_created_by;
                 $form->getData()->created_at       = $wrt_created_at;
                 $form->getData()->order_no         = $wrt_order_no;
-                $form->getData()->order_limit      = $wrt_order_limit;
+                //$form->getData()->order_limit      = $wrt_order_limit;
                 $form->getData()->fk_writer_status = $wrt_fk_writer_status;
+                $form->getData()->fk_writer_type   = $wrt_fk_writer_type;
                 $form->getData()->updated_by       = $cur_user;
                 $form->getData()->updated_at       = $this->_getDateTime();
                 if(isset($id_barcode))
@@ -389,7 +392,7 @@ class WriterController extends AbstractActionController
         */
 
         return new ViewModel(array(
-            //'writer' => $this->getWriterTable()->getWriter($id),
+            'writer' => $writer,
             'order_no' => $wrt_order_no,
             'user'     => $cur_user,
             'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
@@ -410,7 +413,7 @@ class WriterController extends AbstractActionController
 
         //handle the form
         $form = new WriterForm();
-        $form->get('submit')->setValue('保存');
+        $form->get('submit')->setValue('创建订单');
         $request = $this->getRequest();
         if($request->isPost()){
             $writer = new Writer();
@@ -556,8 +559,9 @@ class WriterController extends AbstractActionController
                 $this->getCreditlogTable()->saveCreditlog($creditlog);*/
 
                 return $this->redirect()->toRoute('writer',array(
-                    'action'=>'detail',
-                    'id'    => $id_writer,
+                    /*'action'=>'detail',
+                    'id'    => $id_writer,*/
+                    'action' => 'index',
                 ));
             }
         }
@@ -577,7 +581,7 @@ class WriterController extends AbstractActionController
         $arr_type_allowed = array(1, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
-        $id_writer = (int)$this->params()->fromRoute('id',0);        
+        $id_writer = (int)$this->params()->fromRoute('id',0);
         if (!$id_writer) {
             return $this->redirect()->toRoute('writer', array(
                 'action' => 'index'
@@ -588,8 +592,8 @@ class WriterController extends AbstractActionController
         $fk_user = $target_user->id;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
 
-        //对企业用户应收$price = $order_limit * 1200元的撰稿费用
-        $price = $writer->order_limit * 1200;
+        //对企业用户应收$price 1200元的撰稿费用
+        $price = 1200;
         $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
         if(!$is_sufficient)
         {
@@ -876,10 +880,16 @@ class WriterController extends AbstractActionController
         }
 
         $wrtmedia = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
-        $wrtmedia->updated_by = $cur_user;
-        $wrtmedia->updated_at = $this->_getDateTime();
-        $wrtmedia->fk_wrtmedia_status = 5;//accept the order
-        $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
+        $writer = $this->getWriterTable()->getWriter($wrtmedia->fk_writer);
+        $ent_accepted_wrtmedias = $this->getWrtmediaTable()->fetchEntAccdWrtmediaByFkWrt($writer->id_writer);
+        $count = count($ent_accepted_wrtmedias);
+        if($count == 0)
+        {
+            $wrtmedia->updated_by = $cur_user;
+            $wrtmedia->updated_at = $this->_getDateTime();
+            $wrtmedia->fk_wrtmedia_status = 5;//accept the order
+            $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
+        }
 
         return $this->redirect()->toRoute('writer', array(
             'action' => 'detail',
@@ -1017,7 +1027,7 @@ class WriterController extends AbstractActionController
 
         $form = new WrtmediaForm();
         $form->bind($wrtmedia);
-        $form->get('submit')->setAttribute('value', '提交');
+        $form->get('submit')->setAttribute('value', '提交一稿');
 
         $request = $this->getRequest();
         if($request->isPost()){
@@ -1093,7 +1103,7 @@ class WriterController extends AbstractActionController
 
         $form = new WrtmediaForm();
         $form->bind($wrtmedia);
-        $form->get('submit')->setAttribute('value', '提交');
+        $form->get('submit')->setAttribute('value', '提交修改意见');
 
         $request = $this->getRequest();
         if($request->isPost()){
@@ -1225,7 +1235,7 @@ class WriterController extends AbstractActionController
 
     public function passAction()
     {
-        //企业->转告管理->稿件通过              
+        //企业->撰稿管理->稿件通过              
         $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
@@ -1243,6 +1253,103 @@ class WriterController extends AbstractActionController
         $wrtmedia->updated_by = $cur_user;
         $wrtmedia->updated_at = $this->_getDateTime();
         $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
+
+        //update the credit of the enterprise user
+        $target_user = $this->getUserTable()->getUserByName($writer->created_by);
+        $fk_user = $target_user->id;
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+        $originamount = $credit->amount;
+        $origindeposit = $credit->deposit;
+        $price = 1200;
+        $credit->amount = $originamount - $price;
+        $credit->deposit = $origindeposit - $price;
+        $credit->updated_at = $this->_getDateTime();
+        $credit->updated_by = $cur_user;
+        $this->getCreditTable()->saveCredit($credit);
+        //log the credit change;
+        $creditlog = new Creditlog();
+        $creditlog->fk_credit = $credit->id_credit;
+        $creditlog->fk_service_type = 6;//企业->我要撰稿
+        $creditlog->fk_from = $fk_user;
+        $creditlog->fk_to = null;
+        $creditlog->date_time = $this->_getDateTime();
+        $creditlog->amount = $price;//do not pay any money here
+        $creditlog->remaining_balance = $credit->amount;
+        $creditlog->is_pay = 1;//is pay
+        $creditlog->is_charge = 0; //is not charge
+        $creditlog->deposit = $price;
+        $creditlog->remaining_deposit = $credit->deposit;
+        $creditlog->is_pay_deposit = 1;//is pay the deposit
+        $creditlog->is_charge_deposit = 0;//is not charge the deposit
+        $creditlog->order_no = $writer->order_no;
+        $creditlog->created_at = $this->_getDateTime();
+        $creditlog->created_by = $cur_user;
+        $this->getCreditlogTable()->saveCreditlog($creditlog);
+
+        return $this->redirect()->toRoute('writer', array(
+            'action' => 'wrtinfoent',
+            'id'     => $id_wrtmedia,
+        ));
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'writer' => $writer,
+            'wrtmedia' => $wrtmedia,
+            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+        ));
+    }
+
+    public function failAction()
+    {
+        //企业->撰稿外包->撰稿不通过(二稿不通过，退还锁定金额)
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_wrtmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_wrtmedia) {
+            return $this->redirect()->toRoute('writer', array(
+                'action' => 'index',
+            ));
+        }
+        $wrtmedia = $this->getWrtmediaTable()->getWrtmedia($id_wrtmedia);
+        $id_writer = $wrtmedia->fk_writer;
+        $writer = $this->getWriterTable()->getWriter($id_writer);
+
+        $wrtmedia->fk_wrtmedia_status = 10;//订单终止
+        $wrtmedia->updated_by = $cur_user;
+        $wrtmedia->updated_at = $this->_getDateTime();
+        $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
+
+        //update the credit of the enterprise user
+        $target_user = $this->getUserTable()->getUserByName($writer->created_by);
+        $fk_user = $target_user->id;
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+        $origindeposit = $credit->deposit;
+        $price = 1200;
+        $credit->deposit = $origindeposit - $price;
+        $credit->updated_at = $this->_getDateTime();
+        $credit->updated_by = $cur_user;
+        $this->getCreditTable()->saveCredit($credit);
+        //log the credit change;
+        $creditlog = new Creditlog();
+        $creditlog->fk_credit = $credit->id_credit;
+        $creditlog->fk_service_type = 6;//企业->我要撰稿
+        $creditlog->fk_from = $fk_user;
+        $creditlog->fk_to = null;
+        $creditlog->date_time = $this->_getDateTime();
+        $creditlog->amount = 0;//do not pay any money here
+        $creditlog->remaining_balance = $credit->amount;
+        $creditlog->is_pay = 0;//is pay
+        $creditlog->is_charge = 0; //is not charge
+        $creditlog->deposit = $price;
+        $creditlog->remaining_deposit = $credit->deposit;
+        $creditlog->is_pay_deposit = 1;//is pay the deposit
+        $creditlog->is_charge_deposit = 0;//is not charge the deposit
+        $creditlog->order_no = $writer->order_no;
+        $creditlog->created_at = $this->_getDateTime();
+        $creditlog->created_by = $cur_user;
+        $this->getCreditlogTable()->saveCreditlog($creditlog);
 
         return $this->redirect()->toRoute('writer', array(
             'action' => 'wrtinfoent',

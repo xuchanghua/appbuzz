@@ -418,6 +418,11 @@ class UserController extends AbstractActionController
         ));
     }
 
+    public function forgetpasswordAction()
+    {
+        
+    }
+
     public function changepasswordAction()
     {
         $arr_type_allowed = array(1, 2, 3);

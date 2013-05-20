@@ -61,8 +61,8 @@
                     ?>
                     <tr>
                         <th>母订单号</th>
+                        <th>APP产品</th>
                         <th>发布企业</th>
-                        <th>产品名称</th>
                         <th>子订单号</th>
                         <th>评测媒体</th>
                         <th>订单状态</th>
@@ -76,7 +76,6 @@
                                 <?php echo $ejm->order_no; ?>
                             </a>
                         </td>
-                        <td><?php echo $ejm->created_by; ?></td>
                         <td>
                             <?php
                             if(array_key_exists($ejm->fk_product, $arr_id_product))
@@ -85,6 +84,7 @@
                             }
                             ?>
                         </td>
+                        <td><?php echo $ejm->created_by; ?></td>
                         <td><?php echo $ejm->em_order_no; ?></td>
                         <td>
                             <?php                             
@@ -96,9 +96,9 @@
                         </td>
                         <td>
                             <?php
-                            if(array_key_exists($ejm->em_fk_evaluate_status, $arr_fk_evamedia_status))
+                            if(array_key_exists($ejm->em_fk_evamedia_status, $arr_fk_evamedia_status))
                             {
-                                echo $arr_fk_evamedia_status[$ejm->em_fk_evaluate_status];
+                                echo $arr_fk_evamedia_status[$ejm->em_fk_evamedia_status];
                             }
                             ?>
                         </td>

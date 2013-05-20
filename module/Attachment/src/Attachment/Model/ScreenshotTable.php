@@ -46,6 +46,15 @@ class ScreenshotTable
         return $resultSet;
     }
 
+    public function fetchScreenshotByFkItv($fk_interview)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use($fk_interview){
+            $select->where->equalTo('fk_interview', $fk_interview);
+            $select->order('id_screenshot DESC');
+        });
+        return $resultSet;
+    }
+
     public function fetchCountSsByFkEva($fk_evaluate)
     {
         $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_evaluate){
@@ -84,12 +93,13 @@ class ScreenshotTable
     public function saveScreenshot(Screenshot $screenshot)
     {
         $data = array(
-            'filename'    => $screenshot->filename,
-            'path'        => $screenshot->path,
-            'fk_evaluate' => $screenshot->fk_evaluate,
-            'fk_writer'   => $screenshot->fk_writer,
-            'created_by'  => $screenshot->created_by,
-            'created_at'  => $screenshot->created_at,
+            'filename'     => $screenshot->filename,
+            'path'         => $screenshot->path,
+            'fk_evaluate'  => $screenshot->fk_evaluate,
+            'fk_writer'    => $screenshot->fk_writer,
+            'fk_interview' => $screenshot->fk_interview,
+            'created_by'   => $screenshot->created_by,
+            'created_at'   => $screenshot->created_at,
         );
 
         $id = (int)$screenshot->id_screenshot;

@@ -96,7 +96,24 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>公司名称：</td>
+                                <td>媒体属性：</td>
+                                <td colspan=2>
+                                    <?php 
+                                    $arr_media_type = array(
+                                        '1' => '印刷媒体',
+                                        '2' => '网络媒体',
+                                        '3' => '自媒体人',
+                                    );
+                                    if(array_key_exists($media->fk_media_type, $arr_media_type)){
+                                        echo $arr_media_type[$media->fk_media_type];
+                                    }else{
+                                        echo "媒体属性错误！";
+                                    }                                    
+                                    ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>媒体名称：</td>
                                 <td colspan=2>
                                     <?php echo $media->name;?>
                                 </td>
@@ -108,7 +125,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>办公地址：</td>
+                                <td>通信地址：</td>
                                 <td colspan=2>
                                     <?php echo $media->address;?>
                                 </td>
@@ -128,7 +145,7 @@
                                 </td>
                             </tr>-->
                             <tr>
-                                <td>联系人：</td>
+                                <td>个人信息：</td>
                                 <td>姓名：</td>
                                 <td>
                                     <?php echo $media->contacter_name;?>
@@ -174,7 +191,13 @@
                         echo $this->formHidden($form->get('id_media'));
                         ?>
                             <tr>
-                                <td class="tdlabel">公司名称：</td>
+                                <td class="tdlabel">媒体属性：</td>
+                                <td colspan=2 class="tdinput">
+                                    <?php echo $this->formRow($form->get('fk_media_type'));?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="tdlabel">媒体名称：</td>
                                 <td colspan=2 class="tdinput">
                                     <?php echo $this->formRow($form->get('name')); ?>
                                 </td>
@@ -186,27 +209,27 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="tdlabel">办公地址：</td>
+                                <td class="tdlabel">通信地址：</td>
                                 <td colspan=2 class="tdinput">
                                     <?php echo $this->formRow($form->get('address')); ?>
                                 </td>
                             </tr>
-                            <tr>
+                            <!--<tr>
                                 <td class="tdlabel">发票信息：</td>
                                 <td class="tdlabel">发票抬头：</td>
                                 <td class="tdinput">
-                                    <?php echo $this->formRow($form->get('invoice_title')); ?>
+                                    <?php //echo $this->formRow($form->get('invoice_title')); ?>
                                 </td>
                             </tr>
                             <tr>
                                 <td></td>
                                 <td class="tdlabel">发票类型：</td>
                                 <td class="tdinput">
-                                    <?php echo $this->formRow($form->get('invoice_type')); ?>
+                                    <?php //echo $this->formRow($form->get('invoice_type')); ?>
                                 </td>
-                            </tr>
+                            </tr>-->
                             <tr>
-                                <td class="tdlabel">联系人：</td>
+                                <td class="tdlabel">个人信息：</td>
                                 <td class="tdlabel">姓名</td>
                                 <td class="tdinput">
                                     <?php echo $this->formRow($form->get('contacter_name')); ?>

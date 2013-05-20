@@ -130,7 +130,7 @@
                             ?>
                         </td>
                     </tr>
-                    <tr style="display:<?php echo ($np->fk_pub_mode==1)?'':'none';?>;">
+                    <tr style="display:<?php echo ($np->fk_pub_mode==1||$np->fk_pub_mode==2)?'':'none';?>;">
                         <td class="tdlabel">已选媒体</td>
                         <td>
                             <?php
@@ -145,7 +145,12 @@
                                     '3' => '媒体拒绝',
                                     '4' => '已发布',
                                     '5' => '已取消',
-                                    );                            
+                                );
+                                $arr_id_pubmedia = array();
+                                foreach ($pubmedias as $pm)
+                                {
+                                    $arr_id_pubmedia[$pm->id_pubmedia] = $pm->name;
+                                }                            
                             ?>
                             <div class="widget-box">
                                 <div class="widget-content nopadding">
@@ -154,12 +159,13 @@
                                             <th>媒体</th>
                                             <th>状态</th>
                                             <th>新闻链接</th>
+                                            <th>评分</th>
                                             <th>操作</th>
                                         </tr>
                                         <?php foreach($npmedia as $nm): ?>
                                         <tr>
                                             <td>
-                                                <?php echo $arr_id_user[$nm->fk_media_user];?>
+                                                <?php echo $arr_id_pubmedia[$nm->fk_media_user];?>
                                             </td>
                                             <td>
                                                 <?php echo $arr_npmedia_status[$nm->fk_npmedia_status] ;?>
@@ -167,8 +173,19 @@
                                             <td>
                                                 <?php echo $nm->news_link ;?>
                                             </td>
+                                            <td>
+                                                <?php echo $nm->score; ?>
+                                            </td>
                                             <td style="display:<?php echo ($user_type==1)?'':'none';?>">
-                                                <div style="display:<?php echo ($nm->fk_npmedia_status==4)?'':'none';?>">
+                                                <div style="display:<?php echo ($nm->fk_npmedia_status==1&&$newspub->fk_newspub_status==2)?'':'none';?>">
+                                                    <div>
+                                                        <form action="<?php echo $this->url('newspub',
+                                                        array('action' => 'cancel', 'id' => $nm->id_npmedia)) ;?>">
+                                                            <input type="submit" class="btn btn-primary btn-mini" value="企业取消">
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div style="display:<?php echo ($nm->fk_npmedia_status==4&&$nm->score==null)?'':'none';?>">
                                                     <div class="linkbtns">
                                                         <form action="<?php echo $this->url('newspub',
                                                         array('action' => 'score', 'id' => $nm->id_npmedia)) ;?>">
@@ -178,7 +195,7 @@
                                                 </div>
                                             </td>
                                             <td style="display:<?php echo ($user_type==3)?'':'none';?>">
-                                                <div style="display:<?php echo ($nm->fk_npmedia_status==1)?'':'none';?>">
+                                                <div style="display:<?php echo ($nm->fk_npmedia_status==1&&$newspub->fk_newspub_status==2)?'':'none';?>">
                                                     <div class="linkbtns">
                                                         <form action="<?php echo $this->url('newspub',
                                                         array('action' => 'mediaacc', 'id' => $nm->id_npmedia)) ;?>">
@@ -207,7 +224,7 @@
                                                     </div>
                                                     <div>
                                                         <form action="<?php echo $this->url('newspub',
-                                                        array('action' => 'nmcancel', 'id' => $nm->id_npmedia)) ;?>">
+                                                        array('action' => 'cancel', 'id' => $nm->id_npmedia)) ;?>">
                                                             <input type="submit" class="btn btn-primary btn-mini" value="企业取消">
                                                         </form>
                                                     </div>
@@ -219,7 +236,7 @@
                                 </div>
                             </div>
                         </td>
-                    </tr>
+                    </tr>                    
                     <tr>
                         <td class="tdlabel">创建日期</td>
                         <td><?php echo $this->escapeHtml($np->created_at);?></td>
@@ -245,7 +262,19 @@
                                     <input type="submit" class="btn btn-primary" value="修改订单">
                                 </form>
                             </div>
-                            <div style="display:<?php echo ($np->fk_newspub_status==1)?'':'none';?>">
+                            <div class="linkbtns" style="display:<?php echo ($user_type==3&&$np->fk_pub_mode==2&&$np->fk_newspub_status==2)?'':'none';?>">
+                                <form action="<?php echo $this->url('newspub',
+                                array('action' => 'addnpmedia', 'id' => $np->id_newspub)) ;?>">
+                                    <input type="submit" class="btn btn-primary" value="选择媒体并发布新闻链接">
+                                </form>
+                            </div>
+                            <div class="linkbtns" style="display:<?php echo ($user_type==3&&$np->fk_pub_mode==2&&$np->fk_newspub_status==2)?'':'none';?>">                            
+                                <form action="<?php echo $this->url('newspub',
+                                array('action' => 'multiplefinish', 'id' => $np->id_newspub));?>">
+                                    <input type="submit" class="btn btn-primary" value="结束订单">
+                                </form>
+                            </div>
+                            <div style="display:<?php echo ($np->fk_newspub_status==1&&$user_type==1)?'':'none';?>">
                                 <form action="<?php echo $this->url('newspub',
                                 array('action' => 'confirm', 'id' => $np->id_newspub)); ?>">
                                     <input type="submit" class="btn btn-primary" value="确认订单">

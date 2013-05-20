@@ -21,7 +21,7 @@ class MediaForm extends Form
             'name' => 'name',
             'attributes' => array(
                 'type'  => 'text',
-                'placeholder' => '公司名称',
+                'placeholder' => '媒体名称',
             ),
             'options' => array(
                 'label' => '',
@@ -41,7 +41,7 @@ class MediaForm extends Form
             'name' => 'address',
             'attributes' => array(
                 'type'  => 'text',
-                'placeholder' => '办公地址',
+                'placeholder' => '通信地址',
             ),
             'options' => array(
                 'label' => '',
@@ -106,6 +106,20 @@ class MediaForm extends Form
             'options' => array(
                 'label' => '',
             ),
+        ));
+        $this->add(array(
+            'name' => 'fk_media_type',
+            'type'  => 'Zend\Form\Element\Select',
+                'attributes' => array(
+                    'id' => 'fk_media_type',
+                ),
+                'options' => array(
+                    'value_options' => array(
+                        '1' => '印刷媒体',
+                        '2' => '网络媒体',
+                        '3' => '自媒体人',
+                    ),
+                ),
         ));
         $this->add(array(
             'name' => 'submit',

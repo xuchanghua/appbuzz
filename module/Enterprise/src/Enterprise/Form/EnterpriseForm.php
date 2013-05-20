@@ -41,7 +41,7 @@ class EnterpriseForm extends Form
             'name' => 'address',
             'attributes' => array(
                 'type'  => 'text',
-                'placeholder' => '办公地址',
+                'placeholder' => '通信地址',
             ),
             'options' => array(
                 'label' => '',

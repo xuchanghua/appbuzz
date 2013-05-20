@@ -90,6 +90,7 @@ class TpcontactTable
             'fk_tpcontact_status' => $tpcontact->fk_tpcontact_status,
             'attachment'          => $tpcontact->attachment,
             'topic_link'          => $tpcontact->topic_link,
+            'introduction'        => $tpcontact->introduction,
         );
 
         $id = (int)$tpcontact->id_tpcontact;

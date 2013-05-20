@@ -97,6 +97,14 @@
                     </td>
                 </tr>
                 <tr>
+                    <td class="tdlabel">产品图标</td>
+                    <td>
+                        <img src="<?php echo $appicon_path;?>" height="200" width="200">
+                        </br>
+                        <?php echo $this->formRow($form->get('fk_appicon')); ?>
+                    </td>
+                </tr>
+                <tr>
                     <td></td>
                     <td>
                         <?php echo $this->formSubmit($form->get('submit')); ?>

@@ -71,6 +71,16 @@ class EvamediaTable
         return $rowset;
     }
 
+    public function fetchEntAccdByFkEva($fk_evaluate)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($fk_evaluate){
+            $select->where->equalTo('fk_evaluate', $fk_evaluate);
+            $select->where->greaterThan('fk_evamedia_status',4);
+            $select->order('id_evamedia DESC');
+        });
+        return $rowset;
+    }
+
     public function getEvamedia($id)
     {
         $id  = (int) $id;

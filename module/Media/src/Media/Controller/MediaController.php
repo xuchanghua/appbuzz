@@ -6,7 +6,9 @@ use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use Media\Model\Media;
+use Media\Model\Pubmedia;
 use Media\Form\MediaForm;
+use Media\Form\PubmediaForm;
 use DateTime;
 
 class MediaController extends AbstractActionController
@@ -22,6 +24,7 @@ class MediaController extends AbstractActionController
     protected $productTable;
     protected $evaluateTable;
     protected $writerTable;
+    protected $pubmediaTable;
 
     public function indexAction()
     {
@@ -206,6 +209,49 @@ class MediaController extends AbstractActionController
         ));        
     }
 
+    public function publistAction()
+    {
+        //管理员->发稿媒体列表
+        $arr_type_allowed = array(3, 4);        
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'pubmedias' => $this->getPubmediaTable()->fetchAll(),
+        ));
+    }
+
+    public function addpubmediaAction()
+    {
+        //管理员->创建发稿媒体
+        $arr_type_allowed = array(3, 4);        
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $form = new PubmediaForm();
+        $form->get('submit')->setValue('创建发稿媒体');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $pubmedia = new Pubmedia();
+            $form->setInputFilter($pubmedia->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $pubmedia->exchangeArray($form->getData());
+                $pubmedia->created_at = $this->_getDateTime();
+                $pubmedia->created_by = $cur_user;
+                $pubmedia->updated_at = $this->_getDateTime();
+                $pubmedia->updated_by = $cur_user;
+                $this->getPubmediaTable()->savePubmedia($pubmedia);
+            }
+            return $this->redirect()->toRoute('media', array(
+                'action' => 'publist',
+            ));
+        }
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+        ));
+    }
+
     public function topicpublishAction()
     {
     }
@@ -238,6 +284,15 @@ class MediaController extends AbstractActionController
             $this->mediaTable = $sm->get('Media\Model\MediaTable');
         }
         return $this->mediaTable;
+    }
+
+    public function getPubmediaTable()
+    {
+        if(!$this->pubmediaTable){
+            $sm = $this->getServiceLocator();
+            $this->pubmediaTable = $sm->get('Media\Model\PubmediaTable');
+        }
+        return $this->pubmediaTable;
     }
 
     public function getCreditTable()

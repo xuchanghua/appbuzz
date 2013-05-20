@@ -70,6 +70,24 @@
                     </td>
                 </tr>
                 <tr>
+                    <td class="tdlabel">撰稿类型：</td>
+                    <td>
+                        <?php 
+                        $arr_writer_type = array(
+                            '1' => '企业新闻',
+                            '2' => '产品新闻',
+                            '3' => '其他',
+                        );
+                        if(array_key_exists($writer->fk_writer_type, $arr_writer_type)){
+                            echo $arr_writer_type[$writer->fk_writer_type]; 
+                        }else{
+                            echo "撰稿类型不正确！";
+                        }
+                        
+                        ?>
+                    </td>
+                </tr>
+                <tr>
                     <td class="tdlabel">App产品：</td>
                     <td>
                         <?php echo $product->name; ?>

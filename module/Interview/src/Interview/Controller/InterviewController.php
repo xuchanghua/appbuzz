@@ -8,12 +8,17 @@ use Interview\Form\InterviewForm;       // <-- Add this import
 use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use DateTime;
+use Zend\File\Transfer\Adapter\Http as FileHttp;
+use Zend\Validator\File\Size as FileSize;
+use Zend\Validator\File\Extension as FileExt;
+use Attachment\Model\Screenshot;
 
 class InterviewController extends AbstractActionController
 {
     protected $interviewTable;
     protected $productTable;
     protected $userTable;
+    protected $screenshotTable;
 
     public function indexAction()
     {
@@ -51,7 +56,7 @@ class InterviewController extends AbstractActionController
         $cur_user = $this->_auth($arr_type_allowed);
 
         $form = new InterviewForm();
-        $form->get('submit')->setValue('发出邀约');
+        $form->get('submit')->setValue('创建订单');
 
         $request = $this->getRequest();
         if ($request->isPost()) {
@@ -80,8 +85,9 @@ class InterviewController extends AbstractActionController
 
                 // Redirect to list of interview detail
                 return $this->redirect()->toRoute('interview', array(
-                    'action' => 'detail',
-                    'id'     => $id_interview,
+                    /*'action' => 'detail',
+                    'id'     => $id_interview,*/
+                    'action' => 'index',
                 ));
             }
         }
@@ -115,6 +121,7 @@ class InterviewController extends AbstractActionController
             'interview' => $interview,
             'product' => $product,
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
+            'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkItv($id_interview),
         ));
     }
 
@@ -245,6 +252,7 @@ class InterviewController extends AbstractActionController
             'user' => $cur_user,
             'interview' => $interview,
             'product' => $product,
+            'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkItv($id_interview),
         ));
     }
 
@@ -297,6 +305,61 @@ class InterviewController extends AbstractActionController
                 $form->getData()->updated_by          = $cur_user;
                 $this->getInterviewTable()->saveInterview($form->getData());
 
+                //2. screen shot
+                $screen_shot = $this->params()->fromFiles('screen_shot');
+                foreach($screen_shot as $ss)
+                {
+                    $adapter = new FileHttp();
+                    /*$max = 400000;//单位比特
+                    $sizeObj = new FileSize(array("max"=>$max));
+                    $extObj = new FileExt(array("jpeg","jpg","gif","png"));
+                    $adapter->setValidators(array($sizeObj, $extObj),$ss['name']);
+                    if(!$adapter->isValid()){
+                        echo implode("\n",$dataError = $adapter->getMessages());
+                    }else{
+                        */
+                        //check if the path exists
+                        //path format: /public/upload/user_name/module_name/id_module_name/
+                        $path_0    = 'public/upload/';
+                        $path_1    = $path_0.$cur_user.'/';
+                        $path_2    = $path_1.'interview/';
+                        $path_3    = $path_2.$id_interview.'/';
+                        $path_full = $path_3.'screenshot/';
+                        if(!is_dir($path_1))
+                        {
+                            mkdir($path_1);
+                        }
+                        if(!is_dir($path_2))
+                        {
+                            mkdir($path_2);
+                        }
+                        if(!is_dir($path_3))
+                        {
+                            mkdir($path_3);
+                        }
+                        if(!is_dir($path_full))
+                        {
+                            mkdir($path_full);
+                        }
+                        $adapter->setDestination($path_full);
+                        if(!$adapter->receive($ss['name'])){
+                            echo implode("\n", $adapter->getMessages());
+                        }
+                        else
+                        {
+                            //create a record in the table 'screenshot'
+                            $screenshot = new Screenshot();
+                            $screenshot->filename = $ss['name'];
+                            $screenshot->path = $path_full;
+                            $screenshot->fk_interview = $id_interview;
+                            $screenshot->created_by = $cur_user;
+                            $screenshot->created_at = $this->_getDateTime();
+                            $this->getScreenshotTable()->saveScreenshot($screenshot);
+                        }   
+                    //}
+                    unset($adapter);
+                }
+
                 // Redirect to list of interview detail
                 return $this->redirect()->toRoute('interview', array(
                     'action' => 'entdetail',
@@ -313,6 +376,7 @@ class InterviewController extends AbstractActionController
             'interview' => $interview,
             'product' => $product,
             'form' => $form,
+            'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkItv($id_interview),
         ));
     }
 
@@ -413,6 +477,15 @@ class InterviewController extends AbstractActionController
             $this->userTable = $sm->get('User\Model\UserTable');
         }
         return $this->userTable;
+    }
+
+    public function getScreenshotTable()
+    {
+        if (!$this->screenshotTable) {
+            $sm = $this->getServiceLocator();
+            $this->screenshotTable = $sm->get('Attachment\Model\ScreenshotTable');
+        }
+        return $this->screenshotTable;
     }
 
     protected function _authenticateSession($fk_user_type)

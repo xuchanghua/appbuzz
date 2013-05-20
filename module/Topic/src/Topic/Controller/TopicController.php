@@ -57,7 +57,7 @@ class TopicController extends AbstractActionController
         $cur_user = $this->_auth($arr_type_allowed);
 
         $form = new TopicForm();
-        $form->get('submit')->setValue('保存');
+        $form->get('submit')->setValue('创建订单');
         $request = $this->getRequest();
         if($request->isPost()){
             $topic = new Topic();
@@ -77,8 +77,9 @@ class TopicController extends AbstractActionController
                 $this->getTopicTable()->saveTopic($topic2);
 
                 return $this->redirect()->toRoute('topic',array(
-                    'action' => 'detail',
-                    'id'     => $topic->id_topic,
+                    /*'action' => 'detail',
+                    'id'     => $topic->id_topic,*/
+                    'action' => 'index',
                 ));
             }
         }
@@ -195,6 +196,7 @@ class TopicController extends AbstractActionController
 
     public function contactAction()
     {
+        //企业->最新选题->有兴趣
         $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
@@ -217,6 +219,7 @@ class TopicController extends AbstractActionController
             $form->setInputFilter($tpcontact->getInputFilter());
             $form->setData($request->getPost());
             if($form->isValid()){
+                //die(var_dump($form->getData()));
                 $tpcontact->exchangeArray($form->getData());
                 $tpcontact->fk_topic = $topic->id_topic;
                 $tpcontact->fk_enterprise_user = $enterprise_user->id;
@@ -300,6 +303,46 @@ class TopicController extends AbstractActionController
             'form' => $form,
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
         ));        
+    }
+
+    public function ignoreAction()
+    {
+        //企业->最新选题->忽略
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_topic = (int)$this->params()->fromRoute('id', 0);
+        if (!$id_topic) {
+            return $this->redirect()->toRoute('topic', array(
+                'action' => 'current',
+            ));
+        }
+        $topic = $this->getTopicTable()->getTopic($id_topic);
+        $enterprise_user = $this->getUserTable()->getUserByName($cur_user);
+        $media_user = $this->getUserTable()->getUserByName($topic->created_by);
+
+        $tpcontact = new Tpcontact();
+        $tpcontact->fk_topic = $topic->id_topic;
+        $tpcontact->fk_enterprise_user = $enterprise_user->id;
+        $tpcontact->fk_media_user = $media_user->id;
+        $tpcontact->fk_tpcontact_status = 3;//ignored by the enterprise
+        $tpcontact->created_by = $cur_user;
+        $tpcontact->created_at = $this->_getDateTime();
+        $tpcontact->updated_by = $cut_user;
+        $tpcontact->updated_at = $this->_getDateTime();
+        $this->getTpcontactTable()->saveTpcontact($tpcontact);
+
+        $id_tpcontact = $this->getTpcontactTable()->getId(
+            $tpcontact->created_at,
+            $tpcontact->created_by
+        );
+        $tpcontact2 = $this->getTpcontactTable()->getTpcontact($id_tpcontact);
+        $tpcontact2->order_no = 41000000 + $id_tpcontact;
+        $this->getTpcontactTable()->saveTpcontact($tpcontact2);
+
+        return $this->redirect()->toRoute('topic', array(
+            'action' => 'current',
+        ));   
     }
 
     public function editcontactAction()
@@ -447,13 +490,19 @@ class TopicController extends AbstractActionController
         }
         $topic = $this->getTopicTable()->getTopic($id_topic);
         $tpcontact = $this->getTpcontactTable()->getTpcontactByFkTpAndUser($id_topic, $cur_user);
+
+        if($tpcontact->attachment){
+            $attachment = $this->getAttachmentTable()->getAttachment($tpcontact->attachment);
+        }else{
+            $attachment = null;
+        }
         
         $view = array(
             'user' => $cur_user,
             'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'topic' => $topic,
             'tpcontact' => $tpcontact,
-            'attachment' => $this->getAttachmentTable()->getAttachment($tpcontact->attachment),
+            'attachment' => $attachment,
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         );
 

@@ -5,6 +5,8 @@ use Attachment\Model\Attachment;
 use Attachment\Model\AttachmentTable;
 use Attachment\Model\Barcode;
 use Attachment\Model\BarcodeTable;
+use Attachment\Model\Appicon;
+use Attachment\Model\AppiconTable;
 use Attachment\Model\Screenshot;
 use Attachment\Model\ScreenshotTable;
 use Zend\Db\ResultSet\ResultSet;
@@ -67,6 +69,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Screenshot());
                     return new TableGateway('screenshot', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Attachment\Model\AppiconTable' =>  function($sm) {
+                    $tableGateway = $sm->get('AppiconTableGateway');
+                    $table = new AppiconTable($tableGateway);
+                    return $table;
+                },
+                'AppiconTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Appicon());
+                    return new TableGateway('appicon', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );

@@ -77,6 +77,7 @@ class ProductTable
             'androidmkt_link' => $product->androidmkt_link,
             'web_link'        => $product->web_link,
             'barcode'         => $product->barcode,
+            'fk_appicon'      => $product->fk_appicon,
             'created_by'      => $product->created_by,
             'created_at'      => $product->created_at,
             'updated_by'      => $product->updated_by,

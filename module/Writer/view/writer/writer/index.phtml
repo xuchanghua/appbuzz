@@ -52,9 +52,13 @@
                     ?>
                     <tr>
                         <th>订单号</th>
-                        <th>App产品</th>
-                        <th>撰稿要求</th>
+                        <th>撰稿类型</th>
                         <th>有效日期</th>
+                        <th>订单状态</th>
+                        <th>发布状态</th>
+                        <th>查看详情</th>
+                        <!--<th>App产品</th>-->
+                        <!--<th>撰稿要求</th>-->
                         <!--<th>创建日期</th>-->
                     </tr>
                     <?php foreach($paginator as $np): ?>
@@ -64,9 +68,62 @@
                                 <?php echo $this->escapeHtml($np->order_no);?>
                             </a>
                         </td>
-                        <td><?php echo $this->escapeHtml($arr_products[$np->fk_product]);?></td>
-                        <td><?php echo $this->escapeHtml($np->requirement);?></td>
-                        <td><?php echo $this->escapeHtml($np->due_date);?></td>
+                        <td>
+                            <?php 
+                            $arr_writer_type = array(
+                                '1' => '企业新闻',
+                                '2' => '产品新闻',
+                                '3' => '其他',
+                            );
+                            if(array_key_exists($np->fk_writer_type, $arr_writer_type)){
+                                echo $this->escapeHtml($arr_writer_type[$np->fk_writer_type]); 
+                            }else{
+                                echo "撰稿类型错误！";
+                            }
+                            
+                            ?>
+                        </td>
+                        <td>
+                            <?php echo $this->escapeHtml($np->due_date);?>
+                        </td>
+                        <td>
+                            <?php 
+                            $arr_writer_status = array(
+                                '1' => '草稿',
+                                '2' => '订单确认',
+                                '3' => '订单完成',
+                                '4' => '账款结清',
+                            );
+                            $arr_pub_status = array(
+                                '1' => '',
+                                '2' => '进行中',
+                                '3' => '订单完成',
+                                '4' => '订单完成',
+                            );
+                            if(array_key_exists($np->fk_writer_status, $arr_writer_status)){
+                                echo $this->escapeHtml($arr_writer_status[$np->fk_writer_status]);
+                            }else{
+                                echo "订单状态错误！";
+                            }                            
+                            ?>
+                        </td>
+                        <td>
+                            <?php 
+                            if(array_key_exists($np->fk_writer_status, $arr_pub_status)){
+                                echo $this->escapeHtml($arr_pub_status[$np->fk_writer_status]);
+                            }else{
+                                echo "订单状态错误！";
+                            }  
+                            ?>
+                        </td>
+                        <td>
+                            <form action="<?php echo $this->url('writer', 
+                            array('action' => 'detail', 'id' => $np->id_writer)) ;?>">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看详情">
+                            </form>
+                        </td>
+                        <!--<td><?php echo $this->escapeHtml($arr_products[$np->fk_product]);?></td>-->
+                        <!--<td><?php echo $this->escapeHtml($np->requirement);?></td>-->
                         <!--<td><?php echo $this->escapeHtml($np->created_at);?></td>-->
                     </tr>
                     <?php endforeach; ?>

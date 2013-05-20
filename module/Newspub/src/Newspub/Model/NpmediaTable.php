@@ -40,6 +40,36 @@ class NpmediaTable
         return $resultSet;
     }
 
+    public function is_completed($fk_newspub)
+    {
+        $npmedias = $this->fetchNpmediaByFkNewspub($fk_newspub);
+        foreach($npmedias as $np)
+        {
+            if($np->fk_npmedia_status != 3 && $np->fk_npmedia_status != 4 && $np->fk_npmedia_status != 5)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function fetchCanceledNpmediaByFkNewspub($fk_newspub)
+    {
+        $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_newspub){
+            $where = $select->where;
+            $subWhereForId = clone $where;
+            $subWhereForStatus = clone $where;
+            $subWhereForId->equalTo('fk_newspub', $fk_newspub);
+            $where->addPredicate($subWhereForId);
+            $subWhereForStatus->equalTo('fk_npmedia_status', 5);//'5'=>'canceled'
+            $subWhereForStatus->or;
+            $subWhereForStatus->equalTo('fk_npmedia_status', 3);//'3'=>'rejected by media'
+            $where->addPredicate($subWhereForStatus);
+            
+        });
+        return $resultSet;
+    }
+
     public function getCountNmByFkNewspub($fk_newspub)
     {
         $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_newspub){
@@ -92,6 +122,7 @@ class NpmediaTable
             'fk_media_user'     => $npmedia->fk_media_user,
             'fk_npmedia_status' => $npmedia->fk_npmedia_status,
             'news_link'         => $npmedia->news_link,
+            'score'             => $npmedia->score,
             'created_at'        => $npmedia->created_at,
             'created_by'        => $npmedia->created_by,
             'updated_at'        => $npmedia->updated_at,

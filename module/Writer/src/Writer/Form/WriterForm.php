@@ -25,6 +25,21 @@ class WriterForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'fk_writer_type',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'fk_writer_type',
+            ),
+            'options' => array(
+                'value_options' => array(
+                    ''  => '请选择撰稿类型',
+                    '1' => '企业新闻',
+                    '2' => '产品新闻',
+                    '3' => '其他',
+                ),
+            ),
+        ));
+        $this->add(array(
             'name' => 'requirement',
             'attributes' => array(
                 'type'  => 'textarea',
@@ -114,7 +129,7 @@ class WriterForm extends Form
                 'label' => '',
             ),
         ));
-        $this->add(array(
+        /*$this->add(array(
             'name' => 'order_limit',
             'attributes' => array(
                 'type' => 'text',
@@ -122,7 +137,7 @@ class WriterForm extends Form
                 'id' => 'order_limit',
                 'class' => 'order_limit',
             ),
-        ));
+        ));*/
         $this->add(array(
             'name' => 'due_date',
             'attributes' => array(

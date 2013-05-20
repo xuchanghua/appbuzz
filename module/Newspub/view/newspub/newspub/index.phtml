@@ -43,11 +43,17 @@
                     '1' => '单篇发布',
                     '2' => '打包发布',
                 );
-                $arr_newspub_status = array(
+                $arr_newspub_status = array(                    
                     '1' => '草稿',
                     '2' => '订单确认',
-                    '3' => '订单工作完成',
-                    '4' => '账款结清',
+                    '3' => '订单完成',
+                    '4' => '账款结清'
+                );
+                $arr_pub_status = array(
+                    '1' => '',
+                    '2' => '进行中',
+                    '3' => '订单完成',
+                    '4' => '订单完成',
                 );
                 ?>
                 <div class="widget-title">
@@ -57,9 +63,12 @@
                 <table class="table table-bordered table-striped">
                     <tr>
                         <th>订单号</th>
-                        <th>业务内容</th>
                         <th>发布方式</th>
+                        <th>创建日期</th>
+                        <!--<th>业务内容</th>-->
+                        <th>订单状态</th>
                         <th>付款状态</th>
+                        <th>操作</th>
                     </tr>
                     <?php foreach($paginator as $np): ?>
                     <tr>
@@ -68,9 +77,25 @@
                                 <?php echo $this->escapeHtml($np->order_no);?>
                             </a>
                         </td>
-                        <td><?php echo $this->escapeHtml($np->title);?></td>
-                        <td><?php echo $this->escapeHtml($arr_pub_mode[$np->fk_pub_mode]);?></td>
-                        <td><?php echo $this->escapeHtml($arr_newspub_status[$np->fk_newspub_status]);?></td>
+                        <td>
+                            <?php echo $this->escapeHtml($arr_pub_mode[$np->fk_pub_mode]);?>
+                        </td>
+                        <td>
+                            <?php echo $this->escapeHtml($np->created_at);?>
+                        </td>
+                        <!--<td><?php echo $this->escapeHtml($np->title);?></td>-->
+                        <td>
+                            <?php echo $this->escapeHtml($arr_newspub_status[$np->fk_newspub_status]);?>
+                        </td>
+                        <td>
+                            <?php echo $this->escapeHtml($arr_pub_status[$np->fk_newspub_status]);?>
+                        </td>
+                        <td>
+                            <form action="<?php echo $this->url('newspub', 
+                            array('action' => 'detail', 'id' => $np->id_newspub)) ;?>">
+                                <input type="submit" class="btn btn-primary btn-mini" value="查看详情">
+                            </form>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
 

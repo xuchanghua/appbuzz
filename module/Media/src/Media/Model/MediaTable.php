@@ -51,6 +51,7 @@ class MediaTable
             'contacter_post'  => $media->contacter_post,
             'contacter_phone' => $media->contacter_phone,
             'contacter_email' => $media->contacter_email,
+            'fk_media_type'   => $media->fk_media_type,
             'created_at'      => $media->created_at,
             'created_by'      => $media->created_by,
             'updated_at'      => $media->updated_at,

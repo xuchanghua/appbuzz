@@ -9,7 +9,8 @@ class InterviewForm extends Form
     {
         // we want to ignore the name passed
         parent::__construct('interview');
-        $this->setAttribute('method', 'post');
+        $this->setAttribute('method', 'post');        
+        $this->setAttribute('enctype', 'multipart/form-data');
         $this->add(array(
             'name' => 'id_interview',
             'attributes' => array(
@@ -71,6 +72,21 @@ class InterviewForm extends Form
             'name' => 'fk_interview_status',
             'attributes' => array(
                 'type'  => 'hidden',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'MAX_FILE_SIZE',
+            'attributes' => array(
+                'type' => 'hidden',
+                'value' => '100000000'
+            ),
+        ));
+        $this->add(array(
+            'name' => 'screen_shot',
+            'type' => 'file',
+            'attributes' => array(
+                'id' => 'screen_shot',
+                'multiple' => true
             ),
         ));
         for($i = 1; $i < 11; $i++)

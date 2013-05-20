@@ -54,10 +54,12 @@
                             <tr>
                                 <td>用户名：</td>
                                 <td><?php echo $user; ?></td>
-                                <td>账户余额：</td>
-                                <td><?php echo '人民币 '.$credit->amount.' 元'; ?></td>
-                                <td>被冻结资金：</td>
-                                <td><?php echo '人民币 '.$credit->deposit.' 元'; ?></td>
+                                <td>账户总金额：</td>
+                                <td><?php echo '人民币 ',$credit->amount,' 元'; ?></td>
+                                <td>账户可用金额：</td>
+                                <td><?php echo '人民币 ',$credit->amount-$credit->deposit,' 元'; ?></td>
+                                <td>订单锁定金额：</td>
+                                <td><?php echo '人民币 ',$credit->deposit,' 元'; ?></td>
                             </tr>                            
                         </table>
                     </div>
@@ -69,58 +71,90 @@
                 <div class="widget-content nopadding">
                     <?php 
                     $arr_service_type = array(
-                        '1' => '充值',
-                        '2' => '新闻发布(单篇)',
-                        '3' => '新闻发布(打包)',
-                        '4' => '产品评测',
-                        '5' => '媒体评测',
-                        '6' => '新闻撰稿',
-                        '7' => '媒体撰稿',
-                        '8' => '网络监测(6个月)',
-                        '9' => '网络监测(12个月)',
-                        '10' => '新闻发布(单篇)结账',
-                        '11' => '新闻发布(打包)结账',
+                        '1' => '充值成功',
+                        '2' => '已下单',//单篇发布
+                        '3' => '已下单',//打包发布
+                        '4' => '已结束',//单篇发布->将取消的订单的锁定资金退回
+                        '5' => '已完成',//打包发布结账
+                        '6' => '已完成',//单篇发布结账
+                        '7' => '已下单',//评测
+                        '8' => '增加数量',//评测
+                        '9' => '减少数量',//评测
+                        '10' => '订单结束',
+                        '11' => '订单结束',
                     );
                     ?>
                     <table class="table table-bordered table-striped">
                         <tr>
                             <th>订单号</th>
-                            <th>交易类型</th>
+                            <th>订单类型</th>
+                            <th>状态</th>
+                            <th>锁定金额</th>
                             <th>交易金额</th>
-                            <th>余额</th>
-                            <th>冻结资金</th>
-                            <th>全部冻结资金</th>
+                            <th>账户可用金额</th>
+                            <!--<th>全部锁定金额</th>-->
                             <th>交易日期</th>
                             <th>经办人</th>
                         </tr>
                         <?php foreach($creditlog as $log): ?>
                         <tr>
                             <td><?php echo $log->order_no; ?></td>
-                            <td><?php echo $arr_service_type[$log->fk_service_type]; ?></td>
                             <td>
                                 <?php 
-                                $sign = '';
-                                if($log->is_charge==1){
-                                    $sign = '+';
+                                $type_code = substr($log->order_no, 0, 1);
+                                switch($type_code)
+                                {
+                                    case 9:
+                                        echo "充值";
+                                        break;
+                                    case 1:
+                                        echo "新闻发布";
+                                        break;
+                                    case 2:
+                                        echo "产品评测";
+                                        break;
+                                    case 3:
+                                        echo "撰稿外包";
+                                        break;
+                                    case 4:
+                                        echo "媒体选题";
+                                        break;
+                                    case 5:
+                                        echo "网络监测";
+                                        break;
                                 }
-                                echo $sign.$log->amount.'元'; 
                                 ?>
                             </td>
-                            <td>
-                                <?php echo $log->remaining_balance.'元'; ?>
-                            </td>
+                            <td><?php echo $arr_service_type[$log->fk_service_type]; ?></td>
                             <td>
                                 <?php 
                                 $sign_deposit = '';
                                 if($log->is_pay_deposit==1){
                                     $sign_deposit = '-';
                                 }
-                                echo $sign_deposit.$log->deposit.'元'; 
+                                /*if($log->is_charge_deposit==1){
+                                    echo $log->deposit;
+                                }*/
+                                echo $sign_deposit.$log->deposit; 
                                 ?>
                             </td>
                             <td>
-                                <?php echo $log->remaining_deposit.'元'; ?>
+                                <?php 
+                                $sign = '';
+                                if($log->is_charge==1){
+                                    $sign = '+';
+                                }
+                                if($log->amount != 0){
+                                    echo $sign.$log->amount; 
+                                }                                
+                                ?>
                             </td>
+                            <td>
+                                <?php echo $log->remaining_balance - $log->remaining_deposit; ?>
+                            </td>
+                            <!--<td>
+                                <?php //echo $log->remaining_deposit.'元'; ?>
+                            </td>-->
                             <td><?php echo $log->date_time; ?></td>
                             <td><?php echo $log->created_by; ?></td>
                         </tr>

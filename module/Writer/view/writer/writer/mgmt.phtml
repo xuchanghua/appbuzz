@@ -88,19 +88,19 @@
                     ?>
                     <tr>
                         <td>
+                            <a href="<?php echo $this->url('writer',
+                            array('action' => 'wrtinfo', 'id' => $wrt->id_writer)); ?>">
                             <?php 
                             if(array_key_exists($wrt->id_writer, $arr_wrt_order))
                             {
                                 echo $this->escapeHtml($arr_wrt_order[$wrt->id_writer]);
                             }
                             ?>
+                            </a>
                         </td>
                         <td><?php echo $this->escapeHtml($arr_product_name[$wrt->fk_product]);?></td>
                         <td>
-                            <a href="<?php echo $this->url('writer',
-                            array('action' => 'wrtinfo', 'id' => $wrt->id_writer)); ?>">
-                                <?php echo $this->escapeHtml($wrt->requirement);?>
-                            </a>
+                            <?php echo $this->escapeHtml($wrt->requirement);?>
                         </td>
                         <td><?php echo $this->escapeHtml($wrt->created_by);?></td>
                         <td>     

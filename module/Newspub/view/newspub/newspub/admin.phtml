@@ -34,8 +34,14 @@
                 $arr_newspub_status = array(                    
                     '1' => '草稿',
                     '2' => '订单确认',
-                    '3' => '订单任务完成',
+                    '3' => '订单完成',
                     '4' => '账款结清'
+                );
+                $arr_pub_status = array(
+                    '1' => '',
+                    '2' => '进行中',
+                    '3' => '订单完成',
+                    '4' => '订单完成',
                 );
             ?>
             <div id="pubmgmt" class="widget-box">
@@ -46,16 +52,17 @@
                 <table class="table table-bordered table-striped">
                     <tr>
                         <th>订单号</th>
-                        <th>业务内容</th>
                         <th>发布方式</th>
+                        <th>创建日期</th>
+                        <!--<th>业务内容</th>-->
                         <th>订单状态</th>
-                        <th>创建人</th>
+                        <th>发布状态</th>
+                        <!--<th>创建人</th>-->
                         <th>操作</th>
                     </tr>
                     <?php foreach($newspubs as $np): ?>
                     <tr>
                         <td><a href="<?php echo $this->url('newspub',array('action'=>'detail','id'=>$np->id_newspub));?>"><?php echo $this->escapeHtml($np->order_no);?></a></td>
-                        <td><?php echo $this->escapeHtml($np->title);?></td>
                         <td>
                             <?php 
                             if(array_key_exists($np->fk_pub_mode, $arr_pub_mode))
@@ -65,6 +72,12 @@
                             ?>
                         </td>
                         <td>
+                            <?php echo $this->escapeHtml($np->created_at); ?>
+                        </td>
+                        <!--<td>
+                            <?php echo $this->escapeHtml($np->title);?>
+                        </td>-->
+                        <td>
                             <?php 
                             if(array_key_exists($np->fk_newspub_status, $arr_newspub_status))
                             {
@@ -72,9 +85,19 @@
                             }                            
                             ?>  
                         </td>
-                        <td><?php echo $this->escapeHtml($np->created_by);?></td>
                         <td>
-                            <div id="btns" style="display:<?php echo ($np->fk_newspub_status==2)?"inline":"none";?>">
+                            <?php 
+                            if(array_key_exists($np->fk_newspub_status, $arr_pub_status))
+                            {
+                                echo $this->escapeHtml($arr_pub_status[$np->fk_newspub_status]);
+                            }                            
+                            ?>
+                        </td>
+                        <!--<td>
+                            <?php echo $this->escapeHtml($np->created_by);?>
+                        </td>-->
+                        <td>
+                            <!--<div id="btns" style="display:<?php echo ($np->fk_newspub_status==2)?"inline":"none";?>">
                                 <form action="<?php echo $this->url('newspub', 
                                 array('action' => 'done', 'id' => $np->id_newspub)) ;?>">
                                     <input type="submit" class="btn btn-primary btn-mini" value="订单完成">
@@ -85,7 +108,7 @@
                                 array('action' => 'remittance', 'id' => $np->id_newspub)) ;?>">
                                     <input type="submit" class="btn btn-primary btn-mini" value="确认付款">
                                 </form>                                   
-                            </div>
+                            </div>-->
                         </td>
                     </tr>
                     <?php endforeach; ?>

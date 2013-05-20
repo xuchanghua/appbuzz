@@ -19,6 +19,28 @@ class NpmediaForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'fk_media_user',
+            'attributes' => array(
+                'type' => 'hidden',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'score',
+            'type' => 'Zend\Form\Element\Select',
+            'attributes' => array(
+                'id' => 'score',
+            ),
+            'options' => array(
+                'value_options' => array(
+                    '1分' => '1分',
+                    '2分' => '2分',
+                    '3分' => '3分',
+                    '4分' => '4分',
+                    '5分' => '5分',
+                ),
+            ),
+        ));
+        $this->add(array(
             'name' => 'news_link',
             'required' => true,
             'attributes' => array(

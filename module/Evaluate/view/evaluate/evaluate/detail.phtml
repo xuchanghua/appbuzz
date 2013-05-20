@@ -59,6 +59,7 @@
                         3 => '媒体接受',
                         4 => '企业拒绝',
                         5 => '企业接受',
+                        6 => '订单完成',
                     );
                     ?>
                     <tr>
@@ -153,17 +154,21 @@
                                 <?php echo $this->escapeHtml($evaluate->order_limit);?>
                             </div>
                             <div class="linkbtns" style="display:<?php echo ($evaluate->fk_evaluate_status==2)?"":"none";?>">
-                                <form action="<?php echo $this->url('evaluate',
-                                array('action'=>'addonelimit', 'id' => $evaluate->id_evaluate)) ;?>">
+                                <!--<form action="<?php //echo $this->url('evaluate', array('action'=>'addonelimit', 'id' => $evaluate->id_evaluate)) ;?>">
                                     <input type="submit" class="btn btn-primary btn-mini" value="邀约+1">
-                                </form>
+                                </form>-->
+                                <a href="javascript:if(confirm('确实要增加最大评测媒体数量吗?'))location='<?php echo $this->url('evaluate',array('action'=>'addonelimit', 'id' => $evaluate->id_evaluate)) ;?>'" class="btn btn-primary btn-mini">
+                                    评测+1
+                                </a>
                             </div>
-                            <div style="display:<?php echo ($evaluate->fk_evaluate_status==2)?"":"none";?>">
-                                <form action="<?php echo $this->url('evaluate',
-                                array('action'=>'minusonelimit', 'id' => $evaluate->id_evaluate)) ;?>">
+                            <!--<div style="display:<?php //echo ($evaluate->fk_evaluate_status==2)?"":"none";?>">
+                                <form action="<?php //echo $this->url('evaluate', array('action'=>'minusonelimit', 'id' => $evaluate->id_evaluate)) ;?>">
                                     <input type="submit" class="btn btn-danger btn-mini" value="邀约-1">
                                 </form>
-                            </div>
+                                <a href="javascript:if(confirm('确实要减少最大评测媒体数量吗?'))location='<?php //echo $this->url('evaluate',array('action'=>'minusonelimit', 'id' => $evaluate->id_evaluate)) ;?>'" class="btn btn-danger btn-mini">
+                                    评测-1
+                                </a>
+                            </div>-->
                         </td>
                     </tr>
                     <tr>
@@ -182,8 +187,8 @@
                                             <th>子订单号</th>
                                             <th>媒体名称</th>
                                             <th>订单状态</th>
-                                            <th>操作</th>
                                             <th>评测链接</th>
+                                            <th>操作</th>
                                         </tr>
                                         <?php foreach ($evamedias as $em): ?>
                                         <tr>
@@ -193,9 +198,12 @@
                                                 <div class="linkbtns">
                                                     <?php echo $arr_evamedia_status[$em->fk_evamedia_status]; ?>
                                                 </div>
-                                            </td>
+                                            </td>   
                                             <td>
-                                                <div id="btns" style="display:<?php echo ($em->fk_evamedia_status==3)?"inline":"none";?>">
+                                                <?php echo $em->news_link; ?>
+                                            </td>     
+                                            <td>
+                                                <div id="btns" style="display:<?php echo ($em->fk_evamedia_status==3&&$vacant>0)?"inline":"none";?>">
                                                     <div class="linkbtns">
                                                         <form action="<?php echo $this->url('evaluate',
                                                         array('action' => 'entacc', 'id' => $em->id_evamedia)) ;?>">
@@ -209,10 +217,7 @@
                                                         </form>
                                                     </div>
                                                 </div>
-                                            </td>    
-                                            <td>
-                                                <?php echo $em->news_link; ?>
-                                            </td>                                        
+                                            </td>                                    
                                         </tr>
                                         <?php endforeach;?>
                                     </table>
@@ -246,10 +251,12 @@
                                 </form>
                             </div>
                             <div style="display:<?php echo ($evaluate->fk_evaluate_status==1)?"":"none";?>">
-                                <form action="<?php echo $this->url('evaluate',
-                                array('action'=>'confirm', 'id' => $evaluate->id_evaluate)) ;?>">
+                                <!--<form action="<?php //echo $this->url('evaluate', array('action'=>'confirm', 'id' => $evaluate->id_evaluate)) ;?>">
                                     <input type="submit" class="btn btn-primary" value="确认订单">
-                                </form>
+                                </form>-->
+                                <a href="javascript:if(confirm('确实要确认订单吗?\n<?php echo 2000*(int)$evaluate->order_limit;?>元评测费用将被冻结。'))location='<?php echo $this->url('evaluate',array('action'=>'confirm', 'id' => $evaluate->id_evaluate)) ;?>'" class="btn btn-primary">
+                                    确认订单
+                                </a>
                             </div>
                         </td>
                     </tr>                    

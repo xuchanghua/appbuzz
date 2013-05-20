@@ -108,11 +108,21 @@
                     <tr>
                         <td class="tdlabel">附件：</td>
                         <td>
-                            <?php if(isset($attachment)): ?>
+                            <?php if(isset($attachment)){ ?>
                             <a href="<?php echo substr($attachment->path,6).$attachment->filename; ?>" title="点击下载">
                                 <?php echo $attachment->filename; ?>
                             </a>
-                            <?php endif;?>
+                            <?php 
+                            }else{
+                                echo "未上传附件";
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">说明：</td>
+                        <td>
+                            <?php echo $tpcontact->introduction;?>
                         </td>
                     </tr>
                     <!--<tr>

@@ -116,6 +116,16 @@ class ProductForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'fk_appicon',
+            'attributes' => array(
+                'type'  => 'file',
+                'placeholder' => '产品图标',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
             'name' => 'submit',
             'attributes' => array(
                 'type'  => 'submit',

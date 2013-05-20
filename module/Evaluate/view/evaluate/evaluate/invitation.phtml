@@ -69,6 +69,7 @@
                         3 => '媒体接受，等待企业回复',
                         4 => '企业拒绝',
                         5 => '企业接受',
+                        6 => '订单完成',
                     );
                     ?>
 
@@ -84,7 +85,7 @@
                         <th>操作</th>
                     </tr>
                     <?php foreach($evaluate as $eva): ?>
-                    <tr>
+                    <tr style="display:<?php echo ($eva->fk_evaluate_status==1)?'none':'';?>">
                         <td>
                             <?php if(array_key_exists($eva->id_evaluate, $arr_eva_order)): ?>
                             <a href="<?php echo $this->url('evaluate', 

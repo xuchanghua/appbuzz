@@ -5,6 +5,8 @@ use Credit\Model\Credit;
 use Credit\Model\CreditTable;
 use Credit\Model\Creditlog;
 use Credit\Model\CreditlogTable;
+use Credit\Model\Constant;
+use Credit\Model\ConstantTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -54,6 +56,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Creditlog());
                     return new TableGateway('creditlog', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Credit\Model\ConstantTable' =>  function($sm) {
+                    $tableGateway = $sm->get('ConstantTableGateway');
+                    $table = new ConstantTable($tableGateway);
+                    return $table;
+                },
+                'ConstantTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Constant());
+                    return new TableGateway('constant', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );

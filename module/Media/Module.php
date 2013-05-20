@@ -3,6 +3,8 @@ namespace Media;
 
 use Media\Model\Media;
 use Media\Model\MediaTable;
+use Media\Model\Pubmedia;
+use Media\Model\PubmediaTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -41,6 +43,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Media());
                     return new TableGateway('media', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Media\Model\PubmediaTable' =>  function($sm) {
+                    $tableGateway = $sm->get('PubmediaTableGateway');
+                    $table = new PubmediaTable($tableGateway);
+                    return $table;
+                },
+                'PubmediaTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Pubmedia());
+                    return new TableGateway('pubmedia', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );

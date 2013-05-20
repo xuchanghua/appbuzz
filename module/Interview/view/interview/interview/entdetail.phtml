@@ -118,6 +118,14 @@
                         <?php endfor; ?>
                     <?php endif; ?>
                     <tr>
+                        <td>回答配图：</td>
+                        <td>
+                            <?php foreach($screenshots as $ss): ?>
+                            <img src="<?php echo substr($ss->path.$ss->filename, 6);?>" height="300" width="300"> 
+                            <?php endforeach; ?>
+                        </td>
+                    </tr>
+                    <tr>
                         <td></td>
                         <td>
                             <div style="display:<?php echo ($interview->fk_interview_status!=1)?'none':'';?>;">

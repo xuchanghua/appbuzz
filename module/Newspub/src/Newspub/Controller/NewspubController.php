@@ -27,6 +27,7 @@ class NewspubController extends AbstractActionController
     protected $barcodeTable;
     protected $npmediaTable;
     protected $creditTable;
+    protected $pubmediaTable;
     protected $creditlogTable;
 
     public function indexAction()
@@ -62,7 +63,7 @@ class NewspubController extends AbstractActionController
 
         //handle the form
         $form = new NewspubForm();
-        $form->get('submit')->setValue('保存');
+        $form->get('submit')->setValue('创建订单');
         $request = $this->getRequest();
         if($request->isPost()){
             $newspub = new Newspub();
@@ -210,8 +211,9 @@ class NewspubController extends AbstractActionController
                 }
                 
                 return $this->redirect()->toRoute('newspub',array(
-                    'action'=>'detail',
-                    'id'    => $id_newspub,
+                    /*'action'=>'detail',
+                    'id'    => $id_newspub,*/
+                    'action' => 'index',
                 ));
             }/*else{
                 die(var_dump($form->getMessages()));
@@ -224,7 +226,8 @@ class NewspubController extends AbstractActionController
             'newspub' => $this->getNewspubTable()->getNewspubByUser($cur_user),
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
-            'medias' => $this->getUserTable()->fetchUserByFkType(2),
+            //'medias' => $this->getUserTable()->fetchUserByFkType(2),
+            'medias' => $this->getPubmediaTable()->fetchAll(),
             'barcodes' => $this->getBarcodeTable()->fetchBarcodeByUser($cur_user),
         ));        
     }
@@ -275,9 +278,9 @@ class NewspubController extends AbstractActionController
             $creditlog = new Creditlog();
             $creditlog->fk_credit = $credit->id_credit;
             if($newspub->fk_pub_mode == 1){
-                $creditlog->fk_service_type = 2;//新闻发布->单篇发布
+                $creditlog->fk_service_type = 2;//新闻发布->单篇发布->订单确认
             }else{
-                $creditlog->fk_service_type = 3;//新闻发布->打包发布
+                $creditlog->fk_service_type = 3;//新闻发布->打包发布->订单确认
             }
             $creditlog->fk_from = $fk_user;
             $creditlog->fk_to = null;
@@ -338,6 +341,8 @@ class NewspubController extends AbstractActionController
             'product' => $this->getProductTable()->getProduct($np->fk_product),
             'barcode_path' => $barcode_path,
             'npmedia' => $this->getNpmediaTable()->fetchNpmediaByFkNewspub($id),
+            'newspub' => $np,
+            'pubmedias' => $this->getPubmediaTable()->fetchAll(),
         ));
     }
 
@@ -457,10 +462,10 @@ class NewspubController extends AbstractActionController
                     'id'    => $id_newspub,
                 ));
             }
-            else
+            /*else
             {
                 die(var_dump($form->getMessages()));
-            }
+            }*/
         }
         return new ViewModel(array(
             'np'      => $this->getNewspubTable()->getNewspub($id_newspub),
@@ -483,6 +488,107 @@ class NewspubController extends AbstractActionController
         return new ViewModel(array(
             'user' => $cur_user,
             'newspubs' => $this->getNewspubTable()->fetchAllDesc(),
+        ));
+    }
+
+    public function addnpmediaAction()
+    {
+        //管理员用户->订单详情->选择媒体并发布新闻链接
+        $arr_type_allowed = array(3, 4);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_newspub = (int)$this->params()->fromRoute('id', 0);
+        if(!$id_newspub){
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'admin',
+            ));
+        }
+        $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
+
+        $form = new NpmediaForm();
+        $form->get('submit')->setAttribute('value','保存并发布');
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $npmedia = new Npmedia();
+            $form->setInputFilter($npmedia->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $npmedia->exchangeArray($form->getData());
+                $npmedia->fk_newspub = $id_newspub;
+                $npmedia->created_at = $this->_getDateTime();
+                $npmedia->created_by = $cur_user;
+                $npmedia->fk_npmedia_status = 4;
+                $npmedia->updated_at = $this->_getDateTime();
+                $npmedia->updated_by = $cur_user;
+                $this->getNpmediaTable()->saveNpmedia($npmedia);
+
+                return $this->redirect()->toRoute('newspub',array(
+                    'action'=>'detail',
+                    'id'    => $id_newspub,
+                ));
+            }
+        }
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'newspub' => $newspub,
+            'all_media_users' => $this->getUserTable()->fetchUserByFkType(2),
+            'form' => $form,
+            'pubmedias' => $this->getPubmediaTable()->fetchAll(),
+        ));
+    }
+
+    public function scoreAction()
+    {
+        //企业用户->订单详情->评分
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_npmedia = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_npmedia) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'index',
+            ));
+        }
+        $npmedia = $this->getNpmediaTable()->getNpmedia($id_npmedia);
+        $newspub = $this->getNewspubTable()->getNewspub($npmedia->fk_newspub);
+        $np_fk_newspub = $npmedia->fk_newspub;
+        $np_fk_media_user = $npmedia->fk_media_user;
+        $np_created_at = $npmedia->created_at;
+        $np_created_by = $npmedia->created_by;        
+        $np_fk_npmedia_status = $npmedia->fk_npmedia_status;
+        $np_news_link = $npmedia->news_link;
+        $form = new NpmediaForm();
+        $form->bind($npmedia);
+        $form->get('submit')->setAttribute('value','保存并发布');
+
+        $request = $this->getRequest();
+        if($request->isPost()){
+            $form->setInputFilter($npmedia->getInputFilter());
+            $form->setData($request->getPost());
+            if($form->isValid()){
+                $form->getData()->fk_newspub = $np_fk_newspub;
+                $form->getData()->fk_media_user = $np_fk_media_user;
+                $form->getData()->created_at = $np_created_at;
+                $form->getData()->created_by = $np_created_by;
+                $form->getData()->fk_npmedia_status = $np_fk_npmedia_status;
+                $form->getData()->news_link = $np_news_link;
+                $form->getData()->updated_at = $this->_getDateTime();
+                $form->getData()->updated_by = $cur_user;
+                $this->getNpmediaTable()->saveNpmedia($form->getData());
+
+                return $this->redirect()->toRoute('newspub', array(
+                    'action' => 'detail',
+                    'id'     => $npmedia->fk_newspub,
+                ));
+            }
+        }        
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'form' => $form,
+            'id_npmedia' => $id_npmedia,
+
         ));
     }
 
@@ -637,7 +743,7 @@ class NewspubController extends AbstractActionController
         $creditlog->fk_from = $fk_user;
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();
-        $creditlog->amount = $proce;
+        $creditlog->amount = $price;
         $creditlog->remaining_balance = $credit->amount;
         $creditlog->is_pay = 1;//is pay
         $creditlog->is_charge = 0; //is not charge
@@ -729,6 +835,49 @@ class NewspubController extends AbstractActionController
         $npmedia->updated_at = $this->_getDateTime();
         $npmedia->updated_by = $cur_user;
         $this->getNpmediaTable()->saveNpmedia($npmedia);
+        $newspub = $this->getNewspubTable()->getNewspub($npmedia->fk_newspub);
+        $target_user = $this->getUserTable()->getUserByName($newspub->created_by);
+        $fk_user = $target_user->id;
+
+        //check if the whole order has been finished
+        $is_completed = $this->getNpmediaTable()->is_completed($newspub->id_newspub);
+        if($is_completed)
+        {
+            //update the newspub, change the status to 4
+            $newspub->fk_newspub_status = 4;
+            $newspub->updated_by = $cur_user;
+            $newspub->updated_at = $this->_getDateTime();
+            $this->getNewspubTable()->saveNewspub($newspub);
+            //return the money to the enterprise user where the npmedia orders were canceled
+            $canceled_npmedias = $this->getNpmediaTable()->fetchCanceledNpmediaByFkNewspub($newspub->id_newspub);
+            $price = 350 * count($canceled_npmedias);
+            //update the credit, 
+            $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+            $origindeposit = $credit->deposit;
+            $credit->deposit = $origindeposit - $price;
+            $credit->updated_at = $this->_getDateTime();
+            $credit->updated_by = $cur_user;
+            $this->getCreditTable()->saveCredit($credit);
+            //log the change
+            $creditlog = new Creditlog();
+            $creditlog->fk_credit = $credit->id_credit;
+            $creditlog->fk_service_type = 10;//新闻发布->单篇发布->订单结束
+            $creditlog->fk_from = null;
+            $creditlog->fk_to = $fk_user;
+            $creditlog->date_time = $this->_getDateTime();
+            $creditlog->amount = 0;
+            $creditlog->remaining_balance = $credit->amount;
+            $creditlog->is_pay = 0;//is not pay
+            $creditlog->is_charge = 0; //is not charge
+            $creditlog->deposit = $price;
+            $creditlog->remaining_deposit = $credit->deposit;
+            $creditlog->is_pay_deposit = 1;//is pay the deposit
+            $creditlog->is_charge_deposit = 0;//is charge the deposit
+            $creditlog->order_no = $newspub->order_no;
+            $creditlog->created_at = $this->_getDateTime();
+            $creditlog->created_by = $cur_user;
+            $this->getCreditlogTable()->saveCreditlog($creditlog);                    
+        }
 
         return $this->redirect()->toRoute('newspub', array(
             'action' => 'detail',
@@ -736,10 +885,66 @@ class NewspubController extends AbstractActionController
         ));
     }
 
+    public function multiplefinishAction()
+    {
+        //管理员用户->打包发布->结束订单
+        $arr_type_allowed = array(3, 4);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        $id_newspub = (int)$this->params()->fromRoute('id',0);        
+        if (!$id_newspub) {
+            return $this->redirect()->toRoute('newspub', array(
+                'action' => 'admin',
+            ));
+        }
+        $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
+        $target_user = $this->getUserTable()->getUserByName($newspub->created_by);
+        $fk_user = $target_user->id;
+        $price = 1500;
+        //change the $newspub->fk_newspub_status to 4 (remittance)
+        $newspub->fk_newspub_status = 4;
+        $newspub->updated_by = $cur_user;
+        $newspub->updated_at = $this->_getDateTime();
+        $this->getNewspubTable()->saveNewspub($newspub);
+        //update the credit, 
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+        $originamount = $credit->amount;
+        $origindeposit = $credit->deposit;
+        $credit->amount = $originamount - $price;
+        $credit->deposit = $origindeposit - $price;
+        $credit->updated_at = $this->_getDateTime();
+        $credit->updated_by = $cur_user;
+        $this->getCreditTable()->saveCredit($credit);
+        //log the change
+        $creditlog = New Creditlog();
+        $creditlog->fk_credit = $credit->id_credit;
+        $creditlog->fk_service_type = 5;//新闻发布->多篇发布->结账
+        $creditlog->fk_from = $fk_user;
+        $creditlog->fk_to = null;
+        $creditlog->date_time = $this->_getDateTime();
+        $creditlog->amount = $price;
+        $creditlog->remaining_balance = $credit->amount;
+        $creditlog->is_pay = 1;//is pay
+        $creditlog->is_charge = 0; //is not charge
+        $creditlog->deposit = $price;
+        $creditlog->remaining_deposit = $credit->deposit;
+        $creditlog->is_pay_deposit = 1;//is pay the deposit
+        $creditlog->is_charge_deposit = 0;//is charge the deposit
+        $creditlog->order_no = $newspub->order_no;
+        $creditlog->created_at = $this->_getDateTime();
+        $creditlog->created_by = $cur_user;
+        $this->getCreditlogTable()->saveCreditlog($creditlog);
+
+        return $this->redirect()->toRoute('newspub', array(
+            'action' => 'detail',
+            'id'     => $id_newspub,
+        ));
+    }
+
     public function publishAction()
     {
         //管理员用户->发布
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_npmedia = (int)$this->params()->fromRoute('id',0);        
@@ -749,6 +954,7 @@ class NewspubController extends AbstractActionController
             ));
         }
         $npmedia = $this->getNpmediaTable()->getNpmedia($id_npmedia);
+        $newspub = $this->getNewspubTable()->getNewspub($npmedia->fk_newspub);
         $np_fk_newspub = $npmedia->fk_newspub;
         $np_fk_media_user = $npmedia->fk_media_user;
         $np_created_at = $npmedia->created_at;
@@ -771,13 +977,89 @@ class NewspubController extends AbstractActionController
                 $form->getData()->updated_by = $cur_user;
                 $this->getNpmediaTable()->saveNpmedia($form->getData());
 
+                $target_user = $this->getUserTable()->getUserByName($npmedia->created_by);
+                $fk_user = $target_user->id;
+                $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+                $origindeposit = $credit->deposit;
+                $originamount  = $credit->amount;
+                $price = 350;
+                $credit->deposit = $origindeposit - $price;
+                $credit->amount  = $originamount - $price;
+                $credit->updated_by = $cur_user;
+                $credit->updated_at = $this->_getDateTime();
+                $this->getCreditTable()->saveCredit($credit);
+
+                //log the change of the amount
+                $creditlog = New Creditlog();
+                $creditlog->fk_credit = $credit->id_credit;
+                $creditlog->fk_service_type = 6;//新闻发布->单篇发布->结账
+                $creditlog->fk_from = $fk_user;
+                $creditlog->fk_to = null;
+                $creditlog->date_time = $this->_getDateTime();
+                $creditlog->amount = $price;
+                $creditlog->remaining_balance = $credit->amount;
+                $creditlog->is_pay = 1;//is pay
+                $creditlog->is_charge = 0; //is not charge
+                $creditlog->deposit = $price;
+                $creditlog->remaining_deposit = $credit->deposit;
+                $creditlog->is_pay_deposit = 1;//is pay the deposit
+                $creditlog->is_charge_deposit = 0;//is charge the deposit
+                $creditlog->order_no = $newspub->order_no;
+                $creditlog->created_at = $this->_getDateTime();
+                $creditlog->created_by = $cur_user;
+                $this->getCreditlogTable()->saveCreditlog($creditlog);
+
+                //check if the whole order has been finished
+                $is_completed = $this->getNpmediaTable()->is_completed($newspub->id_newspub);
+                if($is_completed)
+                {
+                    //update the newspub, change the status to 4
+                    $newspub->fk_newspub_status = 4;
+                    $newspub->updated_by = $cur_user;
+                    $newspub->updated_at = $this->_getDateTime();
+                    $this->getNewspubTable()->saveNewspub($newspub);
+                    //return the money to the enterprise user where the npmedia orders were canceled
+                    $canceled_npmedias = $this->getNpmediaTable()->fetchCanceledNpmediaByFkNewspub($newspub->id_newspub);
+                    $price = 350 * count($canceled_npmedias);
+                    //update the credit, 
+                    $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+                    $origindeposit = $credit->deposit;
+                    $credit->deposit = $origindeposit - $price;
+                    $credit->updated_at = $this->_getDateTime();
+                    $credit->updated_by = $cur_user;
+                    $this->getCreditTable()->saveCredit($credit);
+                    //log the change
+                    $creditlog = new Creditlog();
+                    $creditlog->fk_credit = $credit->id_credit;
+                    $creditlog->fk_service_type = 10;//新闻发布->单篇发布->订单结束
+                    $creditlog->fk_from = null;
+                    $creditlog->fk_to = $fk_user;
+                    $creditlog->date_time = $this->_getDateTime();
+                    $creditlog->amount = 0;
+                    $creditlog->remaining_balance = $credit->amount;
+                    $creditlog->is_pay = 0;//is not pay
+                    $creditlog->is_charge = 0; //is not charge
+                    $creditlog->deposit = $price;
+                    $creditlog->remaining_deposit = $credit->deposit;
+                    $creditlog->is_pay_deposit = 1;//is pay the deposit
+                    $creditlog->is_charge_deposit = 0;//is charge the deposit
+                    $creditlog->order_no = $newspub->order_no;
+                    $creditlog->created_at = $this->_getDateTime();
+                    $creditlog->created_by = $cur_user;
+                    $this->getCreditlogTable()->saveCreditlog($creditlog);                    
+                }
+
                 return $this->redirect()->toRoute('newspub', array(
                     'action' => 'detail',
                     'id'     => $npmedia->fk_newspub,
                 ));
             }
+            else
+            {
+                die(var_dump($form->getMessages()));
+            }
         }
-
+        
         return new ViewModel(array(
             'user' => $cur_user,
             'form' => $form,
@@ -787,21 +1069,62 @@ class NewspubController extends AbstractActionController
 
     public function cancelAction()
     {
-        //管理员用户->企业取消
-        $arr_type_allowed = array(3);
+        //管理员用户或企业用户->企业取消
+        $arr_type_allowed = array(1, 3);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_npmedia = (int)$this->params()->fromRoute('id',0);        
         if (!$id_npmedia) {
-            return $this->redirect()->toRoute('newspub', array(
-                'action' => 'admin',
-            ));
+            return $this->redirect()->toRoute('/');
         }
         $npmedia = $this->getNpmediaTable()->getNpmedia($id_npmedia);
         $npmedia->fk_npmedia_status = 5;
         $npmedia->updated_at = $this->_getDateTime();
         $npmedia->updated_by = $cur_user;
         $this->getNpmediaTable()->saveNpmedia($npmedia);
+        $newspub = $this->getNewspubTable()->getNewspub($npmedia->fk_newspub);
+        $target_user = $this->getUserTable()->getUserByName($newspub->created_by);
+        $fk_user = $target_user->id;
+
+        //check if the whole order has been finished
+        $is_completed = $this->getNpmediaTable()->is_completed($newspub->id_newspub);
+        if($is_completed)
+        {
+            //update the newspub, change the status to 4
+            $newspub->fk_newspub_status = 4;
+            $newspub->updated_by = $cur_user;
+            $newspub->updated_at = $this->_getDateTime();
+            $this->getNewspubTable()->saveNewspub($newspub);
+            //return the deposit to the enterprise user where the npmedia orders were canceled
+            $canceled_npmedias = $this->getNpmediaTable()->fetchCanceledNpmediaByFkNewspub($newspub->id_newspub);
+            $price = 350 * count($canceled_npmedias);
+            //update the credit, 
+            $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+            $origindeposit = $credit->deposit;
+            $credit->deposit = $origindeposit - $price;
+            $credit->updated_at = $this->_getDateTime();
+            $credit->updated_by = $cur_user;
+            $this->getCreditTable()->saveCredit($credit);
+            //log the change
+            $creditlog = new Creditlog();
+            $creditlog->fk_credit = $credit->id_credit;
+            $creditlog->fk_service_type = 10;//新闻发布->单篇发布->订单结束
+            $creditlog->fk_from = null;
+            $creditlog->fk_to = $fk_user;
+            $creditlog->date_time = $this->_getDateTime();
+            $creditlog->amount = 0;
+            $creditlog->remaining_balance = $credit->amount;
+            $creditlog->is_pay = 0;//is not pay
+            $creditlog->is_charge = 0; //is not charge
+            $creditlog->deposit = $price;
+            $creditlog->remaining_deposit = $credit->deposit;
+            $creditlog->is_pay_deposit = 1;//is pay the deposit
+            $creditlog->is_charge_deposit = 0;//is charge the deposit
+            $creditlog->order_no = $newspub->order_no;
+            $creditlog->created_at = $this->_getDateTime();
+            $creditlog->created_by = $cur_user;
+            $this->getCreditlogTable()->saveCreditlog($creditlog);                    
+        }
 
         return $this->redirect()->toRoute('newspub', array(
             'action' => 'detail',
@@ -851,6 +1174,15 @@ class NewspubController extends AbstractActionController
             $this->userTable = $sm->get('User\Model\UserTable');
         }
         return $this->userTable;
+    }
+
+    public function getPubmediaTable()
+    {
+        if(!$this->pubmediaTable){
+            $sm = $this->getServiceLocator();
+            $this->pubmediaTable = $sm->get('Media\Model\PubmediaTable');
+        }
+        return $this->pubmediaTable;
     }
 
     public function getProductTable()

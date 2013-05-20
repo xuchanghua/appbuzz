@@ -22,6 +22,7 @@ class Tpcontact implements InputFilterAwareInterface
     public $fk_tpcontact_status;
     public $attachment;
     public $topic_link;
+    public $introduction;
     protected $inputFilter;                       // <-- Add this variable
 
     public function exchangeArray($data)
@@ -40,6 +41,7 @@ class Tpcontact implements InputFilterAwareInterface
         $this->fk_tpcontact_status = (isset($data['fk_tpcontact_status'])) ? $data['fk_tpcontact_status'] : null;
         $this->attachment          = (isset($data['attachment']))          ? $data['attachment']          : null;
         $this->topic_link          = (isset($data['topic_link']))          ? $data['topic_link']          : null;
+        $this->introduction        = (isset($data['introduction']))        ? $data['introduction']        : null;
     }
 
     // Add the following method:

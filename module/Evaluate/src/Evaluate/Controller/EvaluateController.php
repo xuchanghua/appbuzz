@@ -196,6 +196,9 @@ class EvaluateController extends AbstractActionController
             }
         }*/
 
+        $count_entaccd = count($this->getEvamediaTable()->fetchEntAccdByFkEva($evaluate->id_evaluate));
+        $vacant = $evaluate->order_limit - $count_entaccd;
+
         return new ViewModel(array(
             'evaluate' => $evaluate,
             'user' => $cur_user,
@@ -208,6 +211,7 @@ class EvaluateController extends AbstractActionController
             'barcode_path' => $barcode_path,
             'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkEva($id),
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
+            'vacant' => $vacant,
         ));
     }    
 
@@ -411,7 +415,7 @@ class EvaluateController extends AbstractActionController
 
         //handle the form
         $form = new EvaluateForm();
-        $form->get('submit')->setValue('提交订单');
+        $form->get('submit')->setValue('创建订单');
         $request = $this->getRequest();
         if($request->isPost()){
             $evaluate = new Evaluate();
@@ -574,8 +578,9 @@ class EvaluateController extends AbstractActionController
                 $this->getCreditlogTable()->saveCreditlog($creditlog);*/
 
                 return $this->redirect()->toRoute('evaluate',array(
-                    'action'=>'detail',
-                    'id'    => $id_evaluate,
+                    /*'action'=>'detail',
+                    'id'    => $id_evaluate,*/
+                    'action' => 'index',
                 ));
             }
         }
@@ -630,7 +635,7 @@ class EvaluateController extends AbstractActionController
             //log the changes
             $creditlog = new Creditlog();
             $creditlog->fk_credit = $credit->id_credit;
-            $creditlog->fk_service_type = 4;//企业->产品评测
+            $creditlog->fk_service_type = 7;//企业->产品评测
             $creditlog->fk_from = $fk_user;
             $creditlog->fk_to = null;
             $creditlog->date_time = $this->_getDateTime();
@@ -684,7 +689,7 @@ class EvaluateController extends AbstractActionController
         //log the credit change;
         $creditlog = new Creditlog();
         $creditlog->fk_credit = $credit->id_credit;
-        $creditlog->fk_service_type = 4;//企业->产品评测
+        $creditlog->fk_service_type = 8;//企业->产品评测->增加最大评测数量
         $creditlog->fk_from = $fk_user;
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();
@@ -739,7 +744,7 @@ class EvaluateController extends AbstractActionController
             //log the credit change;
             $creditlog = new Creditlog();
             $creditlog->fk_credit = $credit->id_credit;
-            $creditlog->fk_service_type = 4;//企业->产品评测
+            $creditlog->fk_service_type = 9;//企业->产品评测->减少最大评测数量
             $creditlog->fk_from = $fk_user;
             $creditlog->fk_to = null;
             $creditlog->date_time = $this->_getDateTime();
@@ -775,6 +780,7 @@ class EvaluateController extends AbstractActionController
             'products' => $this->getProductTable()->fetchAll(),
             //'evamedia' => $this->getEvamediaTable()->fetchAllDesc(),
             'all_users' => $this->getUserTable()->fetchAll(),
+            'evaluates' => $this->getEvaluateTable()->fetchAll(),
             'evajoinem' => $this->getEvaluateTable()->fetchAllJoinLeftEvamediaDesc(),
         ));    
     }
@@ -1000,7 +1006,8 @@ class EvaluateController extends AbstractActionController
         if($evaluate->barcode)
         {
             $barcode = $this->getBarcodeTable()->getBarcode($evaluate->barcode);
-            $barcode_path = '/upload/'.$evaluate->created_by.'/evaluate/'.$id_evaluate.'/'.$barcode->filename;
+            //$barcode_path = '/upload/'.$evaluate->created_by.'/evaluate/'.$id_evaluate.'/'.$barcode->filename;
+            $barcode_path = substr($barcode->path.$barcode->filename, 6);
         }
         else
         {
@@ -1053,13 +1060,44 @@ class EvaluateController extends AbstractActionController
                 $form->getData()->fk_evaluate        = $em_fk_evaluate;
                 $form->getData()->fk_enterprise_user = $em_fk_enterprise_user;
                 $form->getData()->fk_media_user      = $em_fk_media_user;
-                $form->getData()->fk_evamedia_status = $em_fk_evamedia_status;
+                $form->getData()->fk_evamedia_status = 6;//completed
                 $form->getData()->order_no           = $em_order_no;
                 $form->getData()->created_by         = $em_created_by;
                 $form->getData()->created_at         = $em_created_at;
                 $form->getData()->updated_by         = $cur_user;
                 $form->getData()->updated_at         = $this->_getDateTime();
                 $this->getEvamediaTable()->saveEvamedia($form->getData());
+
+                $target_user = $this->getUserTable()->getUserByName($evaluate->created_by);  
+                $fk_user = $target_user->id;              
+                $price = 2000;
+                $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+                $originamount = $credit->amount;
+                $origindeposit = $credit->deposit;
+                $credit->amount = $originamount - $price;
+                $credit->deposit = $origindeposit - $price;
+                $credit->updated_at = $this->_getDateTime();
+                $credit->updated_by = $cur_user;
+                $this->getCreditTable()->saveCredit($credit);
+                //log the changes
+                $creditlog = new Creditlog();
+                $creditlog->fk_credit = $credit->id_credit;
+                $creditlog->fk_service_type = 10;//企业->产品评测->结账
+                $creditlog->fk_from = $fk_user;
+                $creditlog->fk_to = null;
+                $creditlog->date_time = $this->_getDateTime();
+                $creditlog->amount = $price;//do not pay any money here
+                $creditlog->remaining_balance = $credit->amount;
+                $creditlog->is_pay = 1;//is pay
+                $creditlog->is_charge = 0; //is not charge
+                $creditlog->deposit = $price;
+                $creditlog->remaining_deposit = $credit->deposit;
+                $creditlog->is_pay_deposit = 1;//is pay the deposit
+                $creditlog->is_charge_deposit = 0;//is charge the deposit
+                $creditlog->order_no = $evaluate->order_no;
+                $creditlog->created_at = $this->_getDateTime();
+                $creditlog->created_by = $cur_user;
+                $this->getCreditlogTable()->saveCreditlog($creditlog);
 
                 return $this->redirect()->toRoute('evaluate',array(
                     'action' => 'evainfo',

@@ -179,8 +179,9 @@ class NewspubTable
                     }
                 };
         //$select->columns(array('id', 'title', 'artist'))->where($closure);
-        $select->columns(array('id_newspub', 'title', 'body', 'download_link', 'appstore_links', 'barcode', 'fk_pub_mode','fk_newspub_status','order_no'))
-                ->where($closure);
+        /*$select->columns(array('id_newspub', 'title', 'body', 'download_link', 'appstore_links', 'barcode', 'fk_pub_mode','fk_newspub_status','order_no'))
+                ->where($closure);*/
+        $select->where($closure);
         if($created_by)
         {
             $select->where->equalTo('created_by', $created_by);

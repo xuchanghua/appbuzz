@@ -16,6 +16,7 @@ class Product implements InputFilterAwareInterface
     public $androidmkt_link;
     public $web_link;
     public $barcode;
+    public $fk_appicon;
     public $created_by;
     public $created_at;
     public $updated_by;
@@ -33,6 +34,7 @@ class Product implements InputFilterAwareInterface
         $this->androidmkt_link = (isset($data['androidmkt_link'])) ? $data['androidmkt_link'] : null;
         $this->web_link        = (isset($data['web_link']))        ? $data['web_link']        : null;
         $this->barcode         = (isset($data['barcode']))         ? $data['barcode']         : null;
+        $this->fk_appicon      = (isset($data['fk_appicon']))      ? $data['fk_appicon']      : null;
         $this->created_by      = (isset($data['created_by']))      ? $data['created_by']      : null;
         $this->created_at      = (isset($data['created_at']))      ? $data['created_at']      : null;
         $this->updated_by      = (isset($data['updated_by']))      ? $data['updated_by']      : null;

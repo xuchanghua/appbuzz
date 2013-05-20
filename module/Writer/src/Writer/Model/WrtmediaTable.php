@@ -43,6 +43,16 @@ class WrtmediaTable
         return $rowset;
     }
 
+    public function fetchEntAccdWrtmediaByFkWrt($fk_writer)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use($fk_writer){
+            $select->where->equalTo('fk_writer', $fk_writer);
+            $select->where->greaterThan('fk_wrtmedia_status', 4);
+            $select->order('id_wrtmedia DESC');
+        });
+        return $rowset;
+    }
+
     public function fetchWrtmediaByUser($created_by)
     {
         $rowset = $this->tableGateway->select(function(Select $select) use($created_by){

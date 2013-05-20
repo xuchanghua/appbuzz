@@ -153,10 +153,11 @@
                                     <h5>候选媒体</h5>
                                     <select multiple class="sel" id="sel_left">
                                         <?php foreach($medias as $media): ?>
-                                        <option value="<?php echo $media->id;?>">
+                                        <option value="<?php echo $media->id_pubmedia;?>">
                                             <?php 
-                                                echo $media->username;
-                                                $arr_id_media[$media->id] = $media->username;
+                                                echo $media->name;
+                                                //$arr_id_media[$media->id] = $media->username;
+                                                $arr_id_media[$media->id_pubmedia] = $media->name;
                                             ?>
                                         </option>
                                         <?php endforeach; ?>

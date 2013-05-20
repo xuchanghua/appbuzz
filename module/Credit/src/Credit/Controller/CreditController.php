@@ -128,6 +128,7 @@ class CreditController extends AbstractActionController
                 $log->fk_to = $credit2->fk_user;
                 $log->date_time = $this->_getDateTime();
                 $log->amount = $chargeamount;
+                $log->remaining_balance = $credit2->amount;
                 $log->is_pay = 0;// not pay
                 $log->is_charge = 1; // is charge
                 $log->created_at = $this->_getDateTime();
