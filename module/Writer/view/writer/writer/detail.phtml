@@ -58,10 +58,10 @@
                         2 => '媒体拒绝',
                         3 => '媒体接受',
                         4 => '企业拒绝',
-                        5 => '企业接受，等待媒体提交一稿',
-                        6 => '一稿提交，等待企业审核',
-                        7 => '一稿退回，企业给出修改意见，等待媒体提交二稿',
-                        8 => '二稿提交，等待企业回复',
+                        5 => '企业接受，等待媒体提交初稿',
+                        6 => '初稿提交，等待企业审核',
+                        7 => '初稿退回，企业给出修改意见，等待媒体提交终稿',
+                        8 => '终稿提交，等待企业回复',
                         9 => '稿件通过',
                         10 => '订单终止',
                     );
@@ -277,7 +277,7 @@
                     <tr>
                         <td></td>
                         <td>
-                            <div class="linkbtns">
+                            <div class="linkbtns" style="display:<?php echo ($writer->fk_writer_status<2)?'':'none';?>">
                                 <form action="<?php echo $this->url('writer',
                                 array('action' => 'edit', 'id' => $writer->id_writer)) ;?>">
                                     <input type="submit" class="btn btn-primary" value="修改订单">

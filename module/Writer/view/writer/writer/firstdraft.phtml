@@ -53,10 +53,10 @@
                         2 => '媒体拒绝',
                         3 => '媒体接受',
                         4 => '企业拒绝',
-                        5 => '企业接受，等待媒体提交一稿',
-                        6 => '一稿提交，等待企业审核',
-                        7 => '一稿退回，企业给出修改意见，等待媒体提交二稿',
-                        8 => '二稿提交，等待企业回复',
+                        5 => '企业接受，等待媒体提交初稿',
+                        6 => '初稿提交，等待企业审核',
+                        7 => '初稿退回，企业给出修改意见，等待媒体提交终稿',
+                        8 => '终稿提交，等待企业回复',
                         9 => '稿件通过',
                         10 => '订单终止',
                     );
@@ -114,7 +114,7 @@
                     </tr>
                     <tr>
                         <td class="tdlabel">撰稿费用：</td>
-                        <td>1500元/篇（800字左右）</td>
+                        <td>1200元/篇（800字左右）</td>
                     </tr>
                     <tr>
                         <td class="tdlabel">订单状态：</td>
@@ -136,13 +136,13 @@
                     echo $this->formHidden($form->get('id_wrtmedia'));
                     ?>
                     <tr>
-                        <td class="tdlabel">一稿标题：</td>
+                        <td class="tdlabel">初稿标题：</td>
                         <td>
                             <?php echo $this->formRow($form->get('first_draft_title'));?>
                         </td>
                     </tr>
                     <tr>
-                        <td class="tdlabel">一稿内容：</td>
+                        <td class="tdlabel">初稿内容：</td>
                         <td>
                             <?php echo $this->formRow($form->get('first_draft_body'));?>
                         </td>

@@ -27,6 +27,9 @@ echo $this->formHidden($form->get('fk_user_type'));
 echo "</br>";
 echo $this->formRow($form->get('username'));
 echo "</br>";
+?>
+<span id="dupe_hint"></span>
+<?php
 //echo $this->formRow($form->get('real_name'));
 //echo "</br>";
 echo $this->formRow($form->get('email'));
@@ -35,8 +38,50 @@ echo $this->formRow($form->get('password'));
 echo "</br>";
 echo $this->formRow($form->get('confirmpassword'));
 echo "</br>";
-echo $this->formSubmit($form->get('submit'));
+?>
+<input id="terms" type="checkbox">我同意<a href="/user/terms" target="view_frame">用户协议</a></input>
+</br>
+<input type="button" class="btn" value="立即注册" onClick="signup_ent();"/>
+<?php
+//echo $this->formSubmit($form->get('submit'));
 echo $this->form()->closeTag();
-
 ?>
 
+<script>
+function checkDupe(str)
+{
+    if(str.length == 0)
+    {
+        document.getElementById("dupe_hint").innerHTML = "";
+        return;
+    }
+    //alert("aoaokaka");
+    if (window.XMLHttpRequest)
+    {// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp = new XMLHttpRequest();
+    }
+    else
+    {// code for IE6, IE5
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function()
+    {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
+        {
+            document.getElementById("dupe_hint").innerHTML = xmlhttp.responseText;
+        }
+    }
+    xmlhttp.open("GET","/user/check?q=" + str, true);
+    xmlhttp.send();
+}
+function signup_ent()
+{
+    var is_agree_terms = document.getElementById("terms").checked;  
+    var form_user = document.getElementById("user");
+    if(is_agree_terms){
+        form_user.submit();
+    }else{
+        alert("必须同意用户协议才能注册。");
+    }
+}
+</script>

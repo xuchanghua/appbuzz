@@ -53,10 +53,10 @@
                         2 => '媒体拒绝',
                         3 => '媒体接受',
                         4 => '企业拒绝',
-                        5 => '企业接受，等待媒体提交一稿',
-                        6 => '一稿提交，等待企业审核',
-                        7 => '一稿退回，企业给出修改意见，等待媒体提交二稿',
-                        8 => '二稿提交，等待企业回复',
+                        5 => '企业接受，等待媒体提交初稿',
+                        6 => '初稿提交，等待企业审核',
+                        7 => '初稿退回，企业给出修改意见，等待媒体提交终稿',
+                        8 => '终稿提交，等待企业回复',
                         9 => '稿件通过',
                         10 => '订单终止',
                     );
@@ -125,7 +125,7 @@
                     <tr> 
                         <td class="tdlabel">
                             <div style="display:<?php echo ($wrtmedia->fk_wrtmedia_status>5)?"inline":"none";?>">
-                                一稿标题：
+                                初稿标题：
                             </div>
                         </td>
                         <td>
@@ -137,7 +137,7 @@
                     <tr>
                         <td class="tdlabel">
                             <div style="display:<?php echo ($wrtmedia->fk_wrtmedia_status>5)?"inline":"none";?>">
-                                一稿内容：
+                                初稿内容：
                             </div>
                         </td>
                         <td>
@@ -161,7 +161,7 @@
                     <tr>
                         <td class="tdlabel">
                             <div style="display:<?php echo ($wrtmedia->fk_wrtmedia_status>7)?"inline":"none";?>">
-                                二稿标题：
+                                终稿标题：
                             </div>
                         </td>
                         <td>
@@ -173,7 +173,7 @@
                     <tr>
                         <td class="tdlabel">
                             <div style="display:<?php echo ($wrtmedia->fk_wrtmedia_status>7)?"inline":"none";?>">
-                                二稿内容：
+                                终稿内容：
                             </div>
                         </td>
                         <td>
@@ -193,16 +193,28 @@
                                         </form>
                                     </div>
                                     <div class="linkbtns">
-                                        <form action="<?php echo $this->url('writer', array('action' => 'pass', 'id' => $wrtmedia->id_wrtmedia)) ;?>">
+                                        <!--<form action="<?php //echo $this->url('writer', array('action' => 'pass', 'id' => $wrtmedia->id_wrtmedia)) ;?>">
                                             <input type="submit" class="btn btn-primary" value="撰稿通过">
-                                        </form>
+                                        </form>-->
+                                        <a href="
+                                        javascript:
+                                        if(confirm('您即将确认稿件并支付稿费。'))
+                                        location='<?php echo $this->url('writer',array('action'=>'pass', 'id' => $wrtmedia->id_wrtmedia)) ;?>'" class="btn btn-primary">
+                                            撰稿通过
+                                        </a>
                                     </div>
                                 </div>
                                 <div style="display:<?php echo ($wrtmedia->fk_wrtmedia_status==8)?'inline':'none';?>;">
                                     <div class="linkbtns">
-                                        <form action="<?php echo $this->url('writer', array('action' => 'pass', 'id' => $wrtmedia->id_wrtmedia)) ;?>">
+                                        <!--<form action="<?php// echo $this->url('writer', array('action' => 'pass', 'id' => $wrtmedia->id_wrtmedia)) ;?>">
                                             <input type="submit" class="btn btn-primary" value="撰稿通过">
-                                        </form>
+                                        </form>-->
+                                        <a href="
+                                        javascript:
+                                        if(confirm('您即将确认稿件并支付稿费。'))
+                                        location='<?php echo $this->url('writer',array('action'=>'pass', 'id' => $wrtmedia->id_wrtmedia)) ;?>'" class="btn btn-primary">
+                                            撰稿通过
+                                        </a>
                                     </div>
                                     <div class="linkbtns">
                                         <!--<form action="<?php echo $this->url('writer', array('action' => 'fail', 'id' => $wrtmedia->id_wrtmedia)) ;?>">
@@ -223,14 +235,14 @@
                                 <!--<div style="display:<?php echo ($wrtmedia->fk_wrtmedia_status>5)?'inline':'none';?>;">
                                     <div class="linkbtns">
                                         <form action="<?php echo $this->url('writer', array('action' => 'printfirstdraft','id' => $wrtmedia->id_wrtmedia)) ;?>">
-                                            <input type="submit" class="btn btn-primary" value="打印一稿">
+                                            <input type="submit" class="btn btn-primary" value="打印初稿">
                                         </form>
                                     </div>
                                 </div>
                                 <div style="display:<?php echo ($wrtmedia->fk_wrtmedia_status==9)?'inline':'none';?>;">
                                     <div class="linkbtns">
                                         <form action="<?php echo $this->url('writer', array('action' => 'printseconddraft','id' => $wrtmedia->id_wrtmedia)) ;?>">
-                                            <input type="submit" class="btn btn-primary" value="打印二稿">
+                                            <input type="submit" class="btn btn-primary" value="打印终稿">
                                         </form>
                                     </div>
                                 </div>-->

@@ -244,7 +244,7 @@
                     <tr>
                         <td></td>
                         <td>
-                            <div class="linkbtns">
+                            <div class="linkbtns" style="display:<?php echo ($evaluate->fk_evaluate_status<2)?'':'none';?>">
                                 <form action="<?php echo $this->url('evaluate',
                                 array('action' => 'edit', 'id' => $evaluate->id_evaluate)) ;?>">
                                     <input type="submit" class="btn btn-primary" value="修改订单">

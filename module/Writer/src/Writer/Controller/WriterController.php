@@ -968,7 +968,7 @@ class WriterController extends AbstractActionController
 
     public function wrtinfoentAction()
     {
-        //企业->撰稿管理->查看稿件(对于一稿、二稿提交的订单)
+        //企业->撰稿管理->查看稿件(对于初稿、终稿提交的订单)
         $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
@@ -1004,7 +1004,7 @@ class WriterController extends AbstractActionController
 
     public function firstdraftAction()
     {
-        //媒体->自由撰稿人->编辑一稿              
+        //媒体->自由撰稿人->编辑初稿              
         $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
@@ -1027,7 +1027,7 @@ class WriterController extends AbstractActionController
 
         $form = new WrtmediaForm();
         $form->bind($wrtmedia);
-        $form->get('submit')->setAttribute('value', '提交一稿');
+        $form->get('submit')->setAttribute('value', '提交初稿');
 
         $request = $this->getRequest();
         if($request->isPost()){
@@ -1155,7 +1155,7 @@ class WriterController extends AbstractActionController
 
     public function seconddraftAction()
     {
-        //媒体->自由撰稿人->编辑二稿              
+        //媒体->自由撰稿人->编辑终稿              
         $arr_type_allowed = array(2);
         $cur_user = $this->_auth($arr_type_allowed);
 
@@ -1302,7 +1302,7 @@ class WriterController extends AbstractActionController
 
     public function failAction()
     {
-        //企业->撰稿外包->撰稿不通过(二稿不通过，退还锁定金额)
+        //企业->撰稿外包->撰稿不通过(终稿不通过，退还锁定金额)
         $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
@@ -1367,7 +1367,7 @@ class WriterController extends AbstractActionController
 
     public function printfirstdraftAction()
     {
-        //企业->新闻撰写->撰稿管理->打印一稿
+        //企业->新闻撰写->撰稿管理->打印初稿
         $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 

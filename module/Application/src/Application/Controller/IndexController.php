@@ -31,10 +31,32 @@ class IndexController extends AbstractActionController
         //content 
         $articles = $this->getArticleTable()->fetchAll();
         $rank = $this->getRankTable()->getRankByObj('article');
+        $captcha = new \Zend\Captcha\Image(array(
+            'Expiration' => '300',
+            'wordlen'    => '5',
+            'Height'     => '50',
+            'Width'      => '200',
+            //'Font'       => 'C:\Windows\Fonts\georgia.ttf',
+            'Font'       => 'data/georgia.ttf',
+            'ImgDir'     => 'data/images',
+        ));
+        $captcha->setImgDir('public/verifycode/images');
+        $captcha_med = new \Zend\Captcha\Image(array(
+            'Expiration' => '300',
+            'wordlen'    => '5',
+            'Height'     => '50',
+            'Width'      => '200',
+            //'Font'       => 'C:\Windows\Fonts\georgia.ttf',
+            'Font'       => 'data/georgia.ttf',
+            'ImgDir'     => 'data/images',
+        ));
+        $captcha_med->setImgDir('public/verifycode/images');
         return new ViewModel(array(
             'session_user' => $user,
             'articles' => $articles,
             'rank' => $rank,
+            'captcha' => $captcha,
+            'captcha_med' => $captcha_med,
         ));        
     }
 

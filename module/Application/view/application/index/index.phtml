@@ -26,7 +26,7 @@
 						<span id="med-login" class="med-login" onclick="med_alert();">媒体用户</span>
 					</h5>
 					<div id="enterpriseuser" class="enterpriseuser">
-						<form id='login' action="user/checkenterpriseuser" method='post' accept-charset='UTF-8'>
+						<form id='ent_login' action="user/checkenterpriseuser" method='post' accept-charset='UTF-8'>
 							<!--<h4>企业用户登录</h4>-->
 							<div class="login-inputs">
 								<div class="mid-it">
@@ -43,6 +43,21 @@
 		    								<input name="password" type="password"/>
 		    							</td>
 		    						</tr>
+		    						<tr>
+		    							<td class="tdlabel">验证码：</td>
+		    							<td>
+		    								<input id="verify_code" name="verifycode" type="text"/>
+		    								<?php 
+		    								$id_verifycode = $captcha->generate();
+		    								//echo $captcha->getWord();
+		    								?>
+		    							</td>
+		    						</tr>
+		    						<tr>
+		    							<td colspan=2>
+		    								<img src="<?php echo 'verifycode/images/'.$id_verifycode.'.png';?>"/>
+		    							</td>
+		    						</tr>
 		    					</table>
 		    					</div>
     						</div>
@@ -51,14 +66,14 @@
         						<div class="forget-password">
             						<a href="">忘记密码</a>
 	        					</div>
-	    						<input type="submit" class="btn" value="登录"/>
+	    						<input type="button" class="btn" value="登录" onClick="submit_form();"/>
     							<a href="user/signup">注册</a>
     							</div>
     						</div>
 						</form>
 					</div>
 					<div id="mediauser" class="mediauser">
-						<form id='login' action="user/checkmediauser" method='post' accept-charset='UTF-8'>
+						<form id='med_login' action="user/checkmediauser" method='post' accept-charset='UTF-8'>
 							<!--<h4>媒体用户登录</h4>-->
 							<div class="login-inputs">
 								<div class="mid-it">
@@ -75,6 +90,20 @@
 		    								<input name="password" type="password"/>
 		    							</td>
 		    						</tr>
+		    						<tr>
+		    							<td class="tdlabel">验证码：</td>
+		    							<td>
+		    								<input id="verify_code_med" name="verifycode" type="text"/>
+		    								<?php 
+		    								$id_verifycode_med = $captcha_med->generate();
+		    								?>
+		    							</td>
+		    						</tr>
+		    						<tr>
+		    							<td colspan=2>
+		    								<img src="<?php echo 'verifycode/images/'.$id_verifycode_med.'.png';?>"/>
+		    							</td>
+		    						</tr>
 		    					</table>
 		    					</div>
     						</div>
@@ -83,7 +112,7 @@
 	        					<div class="forget-password">
     	        					<a href="">忘记密码</a>
         						</div>
-	 	   						<input type="submit" class="btn" value="登录"/>
+	    						<input type="button" class="btn" value="登录" onClick="submit_form_med();"/>
     							<a href="user/mediasignup">注册</a>
     							</div>
     						</div>
@@ -149,6 +178,30 @@
 </div>
 
 <script>
+function submit_form()
+{
+	var verify_code_input = document.getElementById("verify_code").value;
+	var verify_code_show = "<?php echo $captcha->getWord(); ?>";
+	var form_enterprise = document.getElementById("ent_login");
+	if(verify_code_show == verify_code_input){
+		//alert("验证码正确！");
+		form_enterprise.submit();
+	}else{
+		alert("验证码错误！");
+	}
+}
+function submit_form_med()
+{
+	var verify_code_input = document.getElementById("verify_code_med").value;
+	var verify_code_show = "<?php echo $captcha_med->getWord(); ?>";
+	var form_media = document.getElementById("med_login");
+	if(verify_code_show == verify_code_input){
+		//alert("验证码正确！");
+		form_media.submit();
+	}else{
+		alert("验证码错误！");
+	}
+}
 function ent_alert()
 {
 	var div_ent = document.getElementById("enterpriseuser");

@@ -175,7 +175,7 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td>
+                        <td style="display:<?php echo ($topic->fk_topic_status<2)?'':'none';?>">
                             <form action="/topic/edit/<?php echo $id; ?>" 
                                 style="display:<?php echo ($usertype==1)?'none':'inline';?>;">
                                 <input type="submit" class="btn btn-primary" value="修改订单"/>

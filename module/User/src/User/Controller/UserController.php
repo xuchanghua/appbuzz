@@ -138,6 +138,19 @@ class UserController extends AbstractActionController
 
     public function signupAction()
     {
+        if(isset($_GET["q"]))
+        {
+            $q = $_GET["q"];
+            if(strlen($q) > 0)
+            {
+                $is_user_exist = $this->getUserTable()->checkUser($q);
+                if($is_user_exist)
+                {
+                    echo "抱歉，该用户名已被使用，请使用其他用户名进行注册";
+                }
+            }
+        }
+        //handle the form
         $form = new UserForm();
         $form->get('submit')->setValue('立即注册');
         $request = $this->getRequest();
@@ -193,11 +206,14 @@ class UserController extends AbstractActionController
                         die("no such user type!");
                 }
                 //return $this->redirect()->toRoute('enterprise');
-            }else{
+            }/*else{
                 die(var_dump($form->getMessages()));
-            }
+            }*/
         }
-        return array('form' => $form);
+        return new ViewModel(array(
+            'form' => $form,
+            //'users' => $this->getUserTable()->fetchAll(),
+        ));
     }
 
     public function mediasignupAction()
@@ -259,6 +275,11 @@ class UserController extends AbstractActionController
             }
         }
         return array('form' => $form);
+    }
+
+    public function termsAction()
+    {
+
     }
 
     public function addAction()
@@ -480,6 +501,27 @@ class UserController extends AbstractActionController
             'target_user' => $target_user,
             'form' => $form,
         ));
+    }
+
+    public function checkAction()
+    {        
+        if(isset($_GET["q"]))
+        {
+            $q = $_GET["q"];
+            if(strlen($q) > 0)
+            {
+                $is_user_exist = $this->getUserTable()->checkUser($q);
+                if($is_user_exist){
+                    echo "抱歉，该用户名已被使用，请使用其他用户名进行注册<br>";die();
+                }else{
+                    die();
+                }
+            }else{
+                die();
+            }
+        }else{
+            die();
+        }
     }
 
     public function deleteAction()

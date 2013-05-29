@@ -69,6 +69,7 @@
                         3 => '媒体接受，等待企业回复',
                         4 => '企业拒绝',
                         5 => '企业接受',
+                        6 => '订单完成',
                     );
                     ?>
 
@@ -86,19 +87,19 @@
                     <?php foreach($evaluate as $eva): ?>
                     <tr>
                         <td>
-                            <?php 
-                            if(array_key_exists($eva->id_evaluate, $arr_eva_order))
-                            {
-                                echo $this->escapeHtml($arr_eva_order[$eva->id_evaluate]);
-                            }
-                            ?>
+                            <a href="<?php echo $this->url('evaluate', 
+                            array('action' => 'evainfo', 'id' => $eva->id_evaluate)) ;?>">
+                                <?php 
+                                if(array_key_exists($eva->id_evaluate, $arr_eva_order))
+                                {
+                                    echo $this->escapeHtml($arr_eva_order[$eva->id_evaluate]);
+                                }
+                                ?>
+                            </a>
                         </td>
                         <td><?php echo $this->escapeHtml($arr_product_name[$eva->fk_product]);?></td>
                         <td>
-                            <a href="<?php echo $this->url('evaluate', 
-                            array('action' => 'evainfo', 'id' => $eva->id_evaluate)) ;?>">
-                                <?php echo $this->escapeHtml($eva->requirement);?>
-                            </a>
+                            <?php echo $this->escapeHtml($eva->requirement);?>
                         </td>
                         <td><?php echo $this->escapeHtml($eva->due_date);?></td>
                         <td><?php echo $this->escapeHtml($eva->created_by);?></td>

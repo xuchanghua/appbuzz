@@ -74,26 +74,16 @@
                     ?>
 
                     <tr>
-                        <th>订单号</th>
                         <th>App产品</th>
                         <th>评测要求</th>
                         <th>有效时间</th>
                         <th>创建者</th>
                         <th>评测稿费</th>
                         <th>状态</th>
-                        <th>评论链接</th>
                         <th>操作</th>
                     </tr>
                     <?php foreach($evaluate as $eva): ?>
-                    <tr style="display:<?php echo ($eva->fk_evaluate_status==1)?'none':'';?>">
-                        <td>
-                            <?php if(array_key_exists($eva->id_evaluate, $arr_eva_order)): ?>
-                            <a href="<?php echo $this->url('evaluate', 
-                            array('action' => 'evainfo', 'id' => $eva->id_evaluate)) ;?>">
-                            <?php echo $this->escapeHtml($arr_eva_order[$eva->id_evaluate]); ?>
-                            </a>
-                            <?php endif; ?>
-                        </td>
+                    <tr>
                         <td><?php echo $this->escapeHtml($arr_product_name[$eva->fk_product]);?></td>
                         <td><?php echo $this->escapeHtml($eva->requirement);?></td>
                         <td><?php echo $this->escapeHtml($eva->due_date);?></td>
@@ -105,13 +95,6 @@
                             </div>
                             <div id="status" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_eva_em)?"inline":"none";?>"> 
                                 <?php echo $this->escapeHtml($arr_evamedia_status[$arr_em_stat[$eva->id_evaluate]]);?>
-                            </div>
-                        </td>
-                        <td>
-                            <div id="status" style="display:<?php echo array_key_exists($eva->id_evaluate, $arr_em_link)?"inline":"none";?>"> 
-                                <a href="<?php echo $this->escapeHtml($arr_em_link[$eva->id_evaluate]);?>">
-                                    <?php echo $this->escapeHtml($arr_em_link[$eva->id_evaluate]);?>
-                                </a>
                             </div>
                         </td>
                         <td>

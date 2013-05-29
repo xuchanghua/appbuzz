@@ -38,6 +38,7 @@ class UserForm extends Form
 			'type' => 'text',
 			'attributes' => array(
 				'placeholder' => '*用户名',
+				'onkeyup' => 'checkDupe(this.value)',
 				),
 			));
 		$this->add(array(

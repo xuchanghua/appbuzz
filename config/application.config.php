@@ -13,6 +13,7 @@ return array(
 	    'Media',
         'Message',
         'Monitor',
+        'Newshelper',
         'Newspub',
         'Product',
         'Topic',

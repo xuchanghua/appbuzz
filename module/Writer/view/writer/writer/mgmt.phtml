@@ -61,11 +61,11 @@
                         1 => '新订单',
                         2 => '媒体拒绝',
                         3 => '媒体接受，等待企业回复',
-                        4 => '企业拒绝',
+                        4 => '企业选择了其它撰稿人',
                         5 => '企业接受',
-                        6 => '一稿提交',
-                        7 => '一稿修改',
-                        8 => '二稿提交',
+                        6 => '初稿提交',
+                        7 => '初稿修改',
+                        8 => '终稿提交',
                         9 => '稿件通过',
                         10 => '订单终止',
                     );
@@ -138,7 +138,7 @@
                                 <div>
                                     <form action="<?php echo $this->url('writer',
                                     array('action' => 'seconddraft', 'id' => $arr_wrt_wm[$wrt->id_writer])) ;?>">
-                                        <input type="submit" class="btn btn-primary btn-mini" value="撰写二稿">
+                                        <input type="submit" class="btn btn-primary btn-mini" value="撰写终稿">
                                     </form>
                                 </div>
                             </div>
