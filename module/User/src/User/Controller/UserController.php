@@ -9,8 +9,15 @@ use Zend\Session\Container as SessionContainer;
 use User\Model\User;
 use User\Form\UserForm;
 use User\Form\changepasswordForm;
+use User\Form\ForgotpasswordForm;
 use Credit\Model\Credit;
 use DateTime;
+use Zend\Mail\Message;
+use Zend\Mail\Transport\Sendmail as SendmailTransport;
+use Zend\Mail\Transport\Smtp as SmtpTransport;
+use Zend\Mime\Message as MimeMessage;
+use Zend\Mime\Part as MimePart;
+use Zend\Mail\Transport\SmtpOptions;
 
 class UserController extends AbstractActionController
 {
@@ -346,7 +353,7 @@ class UserController extends AbstractActionController
     public function adminAction()
     {
         //用户管理->所有用户
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
 
@@ -359,7 +366,7 @@ class UserController extends AbstractActionController
 
     public function detailAction()
     {        
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
         $id = (int)$this->params()->fromRoute('id', 0);
         if(!$id) {
@@ -439,9 +446,45 @@ class UserController extends AbstractActionController
         ));
     }
 
-    public function forgetpasswordAction()
+    public function forgotpasswordAction()
     {
-        
+        if(isset($_POST["username"]))
+        {
+            $username = $_POST["username"];
+            $target_user = $this->getUserTable()->getUserByName($username);
+            if($target_user)
+            {
+                $to = $target_user->email;
+                $password = $target_user->password;
+                $date = $this->_getDateTime();
+                $message = new Message();
+                $message->addTo($to)
+                        ->addFrom('noreply@furnihome.asia')
+                        ->setSubject('Appbuzz.cn密码找回邮件（此为系统邮件，请勿回复）');
+
+
+                $html = new MimePart(
+                    '<p>尊敬的'.$username.'，</p>
+                    <p>你在appbuzz.cn网站上的密码是：</p>
+                    <p>'.$password.'</p>
+                    <p>如有必要，请及时修改并妥善保管您的密码。</p>
+                    <p>（此为系统邮件，请勿回复）</p>
+                    <br><br>
+                    <p>顺颂商祺，</p>
+                    <p>APPbuzz.cn网站管理团队</p>
+                    <p>'.substr($date, 0, 10).'</p>');
+                $html->type = "text/html";
+ 
+                $body = new MimeMessage();
+                $body->addPart($html);
+ 
+                $message->setBody($body);
+ 
+                $transport = new SendmailTransport();
+                $transport->send($message);
+            }
+            $this->redirect()->toRoute('application');
+        }
     }
 
     public function changepasswordAction()

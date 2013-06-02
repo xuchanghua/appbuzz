@@ -5,23 +5,25 @@
 				<div id="enterpriseuser" class="enterpriseuser">
 					<!--<a href="/enterprise/index">企业用户</a>-->
 					<form id='login' action="/user/checkadminuser" method='post' accept-charset='UTF-8'>
-						<h4>管理员用户登录</h4>
+						<h1>管理员用户登录</h1>
     					<input name="username" type="text" placeholder="用户名"/>
     					<input name="password" type="password" placeholder="密码"/>
     					<div class="remember">
-        					<div class="left">
-            					<input id="remember_me" type="checkbox">
-            					<label for="remember_me">记住我</label>
-        					</div>
         					<div class="right">
-            					<a href="">忘记密码</a>
+            					<a href="/user/forgotpassword">忘记密码</a>
         					</div>
     					</div>
     					<input type="submit" class="btn" value="登录"/>
-    					<a href="user/signup">注册</a>
 					</form>
 				</div>				
 			</div>			
 		</div>		
 	</div>
 </div>
+
+<style>
+div.navbar
+{
+    display: none;
+}
+</style>

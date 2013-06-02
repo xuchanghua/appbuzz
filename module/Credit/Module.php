@@ -7,6 +7,8 @@ use Credit\Model\Creditlog;
 use Credit\Model\CreditlogTable;
 use Credit\Model\Constant;
 use Credit\Model\ConstantTable;
+use Credit\Model\Withdraw;
+use Credit\Model\WithdrawTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -67,6 +69,17 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Constant());
                     return new TableGateway('constant', $dbAdapter, null, $resultSetPrototype);
+                },
+                'Credit\Model\WithdrawTable' =>  function($sm) {
+                    $tableGateway = $sm->get('WithdrawTableGateway');
+                    $table = new WithdrawTable($tableGateway);
+                    return $table;
+                },
+                'WithdrawTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Withdraw());
+                    return new TableGateway('withdraw', $dbAdapter, null, $resultSetPrototype);
                 },
             ),
         );

@@ -29,6 +29,7 @@ class EvaluateController extends AbstractActionController
     protected $screenshotTable;
     protected $creditTable;
     protected $creditlogTable;
+    protected $constantTable;
 
     public function indexAction()
     {     
@@ -197,7 +198,13 @@ class EvaluateController extends AbstractActionController
         }*/
 
         $count_entaccd = count($this->getEvamediaTable()->fetchEntAccdByFkEva($evaluate->id_evaluate));
-        $vacant = $evaluate->order_limit - $count_entaccd;
+        $vacant = $evaluate->order_limit - $count_entaccd;        
+
+        //get the price
+        $price_evaluate_ent = $this->getConstantTable()->getConstant(5)->value;
+        $price_evaluate_media = $this->getConstantTable()->getConstant(6)->value;
+
+        $credit = $this->getCreditTable()->getCreditByFkUser($owner->id);
 
         return new ViewModel(array(
             'evaluate' => $evaluate,
@@ -212,13 +219,16 @@ class EvaluateController extends AbstractActionController
             'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkEva($id),
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
             'vacant' => $vacant,
+            'price_evaluate_ent' => $price_evaluate_ent,
+            'price_evaluate_media' => $price_evaluate_media,
+            'credit' => $credit,
         ));
     }    
 
     public function editAction()
     {
         //$cur_user = $this->_authenticateSession(1);
-        $arr_type_allowed = array(1, 2, 3);
+        $arr_type_allowed = array(1, 2, 3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_evaluate = (int)$this->params()->fromRoute('id',0);
@@ -244,7 +254,6 @@ class EvaluateController extends AbstractActionController
         $eva_created_at         = $evaluate->created_at;
         $eva_barcode            = $evaluate->barcode;
         $eva_order_no           = $evaluate->order_no;
-        $eva_order_limit        = $evaluate->order_limit;
         $eva_fk_evaluate_status = $evaluate->fk_evaluate_status;
         $form = new EvaluateForm();
         $form->bind($evaluate);
@@ -356,7 +365,6 @@ class EvaluateController extends AbstractActionController
             $form->setData($request->getPost());
             if($form->isValid()){
                 $form->getData()->order_no           = $eva_order_no;
-                $form->getData()->order_limit        = $eva_order_limit;
                 $form->getData()->fk_evaluate_status = $eva_fk_evaluate_status;
                 $form->getData()->created_by         = $eva_created_by;
                 $form->getData()->created_at         = $eva_created_at;
@@ -585,6 +593,8 @@ class EvaluateController extends AbstractActionController
             }
         }
 
+        $price_evaluate_ent = $this->getConstantTable()->getConstant(5)->value;
+
         return new ViewModel(array(
             'user' => $cur_user,
             'form' => $form,
@@ -592,12 +602,13 @@ class EvaluateController extends AbstractActionController
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'js_products' => $this->getProductTable()->fetchProductByUser($cur_user),
             'barcodes' => $this->getBarcodeTable()->fetchBarcodeByUser($cur_user),
+            'price_evaluate_ent' => $price_evaluate_ent,
         ));        
     }
 
     public function confirmAction()
     {
-        $arr_type_allowed = array(1, 3);
+        $arr_type_allowed = array(1, 3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_evaluate = (int)$this->params()->fromRoute('id',0);        
@@ -606,13 +617,18 @@ class EvaluateController extends AbstractActionController
                 'action' => 'index'
             ));
         }
+
+        //get the price
+        $price_evaluate_ent = $this->getConstantTable()->getConstant(5)->value;
+        $price_evaluate_media = $this->getConstantTable()->getConstant(6)->value;
+
         $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
         $target_user = $this->getUserTable()->getUserByName($evaluate->created_by);
         $fk_user = $target_user->id;        
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
         
         //对企业用户应收$price = $order_limit * 2000元的媒体评测费用
-        $price = $evaluate->order_limit * 2000;
+        $price = $evaluate->order_limit * $price_evaluate_ent;
         $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
         if(!$is_sufficient)
         {
@@ -670,6 +686,10 @@ class EvaluateController extends AbstractActionController
                 'action' => 'index'
             ));
         }
+
+        //get the price
+        $price_evaluate_ent = $this->getConstantTable()->getConstant(5)->value;
+
         $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
         $target_user = $this->getUserTable()->getUserByName($evaluate->created_by);
         $fk_user = $target_user->id;        
@@ -681,7 +701,7 @@ class EvaluateController extends AbstractActionController
         $evaluate->updated_at = $this->_getDateTime();
         $this->getEvaluateTable()->saveEvaluate($evaluate);
         //update the credit, +2000 to the $credit->deposit
-        $price = 2000;
+        $price = $price_evaluate_ent;
         $credit->deposit += $price;
         $credit->updated_by = $cur_user;
         $credit->updated_at = $this->_getDateTime();
@@ -723,6 +743,10 @@ class EvaluateController extends AbstractActionController
                 'action' => 'index'
             ));
         }
+
+        //get the price
+        $price_evaluate_ent = $this->getConstantTable()->getConstant(5)->value;
+
         $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
         $target_user = $this->getUserTable()->getUserByName($evaluate->created_by);
         $fk_user = $target_user->id;        
@@ -736,7 +760,7 @@ class EvaluateController extends AbstractActionController
             $evaluate->updated_at = $this->_getDateTime();
             $this->getEvaluateTable()->saveEvaluate($evaluate);
             //update the credit, +2000 to the $credit->deposit
-            $price = 2000;
+            $price = $price_evaluate_ent;
             $credit->deposit -= $price;
             $credit->updated_by = $cur_user;
             $credit->updated_at = $this->_getDateTime();
@@ -793,8 +817,8 @@ class EvaluateController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,
-          //'evaluate' => $this->getEvaluateTable()->fetchAllDesc(),
-            'evaluate' => $this->getEvaluateTable()->fetchPastEvaluate(),
+            'evaluate' => $this->getEvaluateTable()->fetchAllDesc(),
+          //'evaluate' => $this->getEvaluateTable()->fetchPastEvaluate(),
             'products' => $this->getProductTable()->fetchAll(),
             'evamedia' => $this->getEvamediaTable()->fetchEvamediaByUser($cur_user),
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
@@ -918,6 +942,9 @@ class EvaluateController extends AbstractActionController
             ));
         }
 
+        //get the price
+        $price_evaluate_media = $this->getConstantTable()->getConstant(6)->value;
+
         $evamedia = $this->getEvamediaTable()->getEvamedia($id_evamedia);
         $evamedia->updated_by = $cur_user;
         $evamedia->updated_at = $this->_getDateTime();
@@ -925,9 +952,9 @@ class EvaluateController extends AbstractActionController
         $this->getEvamediaTable()->saveEvamedia($evamedia);
         $fk_user = $evamedia->fk_media_user;
 
-        //企业接受时，媒体将获得由appbuzz给出的500元
+        //企业接受时，媒体将获得由appbuzz给出的800元
         //update the user's credit
-        $price = 500;
+        $price = $price_evaluate_media;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
         $originamount = $credit->amount;
         $credit->amount = $originamount + $price;
@@ -1037,6 +1064,10 @@ class EvaluateController extends AbstractActionController
                 'action' => 'invitation'
             ));
         }
+
+        //get the price
+        $price_evaluate_ent = $this->getConstantTable()->getConstant(5)->value;
+
         $evaluate = $this->getEvaluateTable()->getEvaluate($id_evaluate);
         $evamedia = $this->getEvamediaTable()->getEvemediaByUserAndFkEva($cur_user, $evaluate->id_evaluate);
 
@@ -1070,7 +1101,7 @@ class EvaluateController extends AbstractActionController
 
                 $target_user = $this->getUserTable()->getUserByName($evaluate->created_by);  
                 $fk_user = $target_user->id;              
-                $price = 2000;
+                $price = $price_evaluate_ent;
                 $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
                 $originamount = $credit->amount;
                 $origindeposit = $credit->deposit;
@@ -1272,6 +1303,15 @@ class EvaluateController extends AbstractActionController
             $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
         }
         return $this->creditlogTable;
+    }
+
+    public function getConstantTable()
+    {
+        if(!$this->constantTable){
+            $sm = $this->getServiceLocator();
+            $this->constantTable = $sm->get('Credit\Model\ConstantTable');
+        }
+        return $this->constantTable;
     }
 
     protected function _getEvamedia(Evaluate $evaluate)

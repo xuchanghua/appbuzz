@@ -89,10 +89,14 @@
                             ?>
                         </td>
                     </tr>
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">App产品：</td>
                         <td>
-                            <?php echo $this->escapeHtml($product->name); ?>
+                            <?php 
+                            if($product){
+                                echo $this->escapeHtml($product->name); 
+                            }
+                            ?>
                         </td>
                     </tr>
                     <tr>
@@ -119,7 +123,7 @@
                             <?php
                             $arr_writer_status = array(
                                 '1' => '草稿',
-                                '2' => '订单确认',
+                                '2' => '已确认订单，等待自由撰稿人接单',
                                 '3' => '账款结清',
                             );
                             if(array_key_exists($writer->fk_writer_status, $arr_writer_status)){
@@ -153,23 +157,23 @@
                             ?>
                         </td>
                     </tr>-->
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">web下载链接</td>
                         <td>
                             <?php echo $this->escapeHtml($writer->web_link);?>
                         </td>
                     </tr>
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">Appstore下载链接</td>
                         <td>
                             <?php echo $this->escapeHtml($writer->appstore_link);?>
                         </td>
                     </tr>
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">安卓市场下载链接</td>
                         <td>
                             <?php echo $this->escapeHtml($writer->androidmkt_link);?>
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">下载二维码</td>
                         <td>
                             <img src="<?php echo $barcode_path;?>" height="200" width="200">
@@ -203,18 +207,18 @@
                         <td class="tdlabel">撰稿费用：</td>
                         <td>
                             <?php //echo '1200元/篇 × ', $writer->order_limit, ' 篇 = ', 1200*(int)$writer->order_limit, ' 元（每篇800字左右）'; ?>
-                            <?php echo '1200元/篇';?>
+                            <?php echo $price_writer_ent, '元/篇';?>
                         </td>
                     </tr>
                     <tr>
-                        <td class="tdlabel">接受评测的媒体：</td>
+                        <td class="tdlabel">愿意接单的自由撰稿人：</td>
                         <td>
                             <div class="widget-box">
                                 <div class="widget-content nopadding">
                                     <table class="table table-bordered table-striped">
                                         <tr>
-                                            <th>子订单号：</th>
-                                            <th>媒体名称</th>
+                                            <th>子订单号</th>
+                                            <th>来自媒体</th>
                                             <th>订单状态</th>
                                             <th>操作</th>
                                         </tr>
@@ -274,6 +278,10 @@
                         <td class="tdlabel">修改人</td>
                         <td><?php echo $this->escapeHtml($writer->updated_by);?></td>
                     </tr>
+                    <tr style="display:<?php echo ($writer->fk_writer_status==1)?'':'none';?>">
+                        <td></td>
+                        <td>确认订单后等待自由撰稿人接单。</td>
+                    </tr>
                     <tr>
                         <td></td>
                         <td>
@@ -287,9 +295,12 @@
                                 <!--<form action="<?php// echo $this->url('writer',array('action' => 'confirm', 'id' => $writer->id_writer)); ?>">
                                     <input type="submit" class="btn btn-primary" value="确认订单">
                                 </form>-->
-                                <a href="javascript:if(confirm('确实要确认订单吗?\n\n1200元撰稿费用将被冻结。'))location='<?php echo $this->url('writer',array('action'=>'confirm', 'id' => $writer->id_writer)) ;?>'" class="btn btn-primary">
+                                <!--<a href="javascript:if(confirm('确实要确认订单吗?\n\n1200元撰稿费用将被冻结。'))location='<?php echo $this->url('writer',array('action'=>'confirm', 'id' => $writer->id_writer)) ;?>'" class="btn btn-primary">
                                     确认订单
-                                </a>
+                                </a>-->
+                                <button class="btn btn-primary" onClick="check_n_confirm()">
+                                    确认订单
+                                </button>
                             </div>
                             <div>
                                 <form action="<?php 
@@ -353,3 +364,22 @@ input[type="text"], textarea
     width: 100%;
 }
 </style>
+<script>
+function check_n_confirm()
+{
+    var price = <?php echo $price_writer_ent;?>;
+    var credit = <?php echo $credit->amount - $credit->deposit;?>;
+    if(credit < price)
+    {
+        alert("您的账户余额不足，请先充值");
+        window.location.href="/credit/notify";
+    }
+    else
+    {
+        if(confirm('确实要确认订单吗?\n\n'+price+'元撰稿费用将被冻结。'))
+        {
+            window.location.href = '<?php echo $this->url('writer',array('action'=>'confirm', 'id' => $writer->id_writer)) ;?>'
+        }
+    }
+}
+</script>

@@ -124,9 +124,20 @@
                     <tr>
                         <td class="tdlabel">选题链接：</td>
                         <td>
-                            <a href="<?php echo $tpcontact->topic_link; ?>">
-                                <?php echo $tpcontact->topic_link; ?>
+                            <a href="//<?php echo $tpcontact->topic_link; ?>">
+                                <?php 
+                                if($tpcontact->fk_tpcontact_status==2){
+                                    echo $tpcontact->topic_link; 
+                                }                                
+                                ?>
                             </a>
+                            <p style="color:grey">
+                            <?php
+                            if($tpcontact->fk_tpcontact_status==1){
+                                echo "选题完成后请填入链接地址，以表示对选题参与者的尊重";
+                            }
+                            ?>
+                            </p>
                         </td>
                     </tr>
                     <tr>
@@ -134,7 +145,7 @@
                         <td>
                             <?php
                             $arr_tpcontact_status = array(
-                                '1' => '联系中',
+                                '1' => '已投递资料',
                                 '2' => '已完成',
                             );
                             echo $arr_tpcontact_status[$tpcontact->fk_tpcontact_status]; ?>

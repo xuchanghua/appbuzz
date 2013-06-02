@@ -49,20 +49,26 @@
                         </tr>
                         <tr>
                             <td>6个月</td>
-                            <td>18,000元</td>
+                            <td><?php echo $price_monitor_six, '元';?></td>
                             <td>
-                                <form action="<?php echo $this->url('monitor', array('action' => 'buysixm')) ;?>">
+                                <!--<form action="<?php echo $this->url('monitor', array('action' => 'buysixm')) ;?>">
                                     <input type="submit" class="btn btn-primary btn-mini" value="购买">
-                                </form>
+                                </form>-->
+                                <button class="btn btn-primary btn-mini" onClick="check_n_confirm_six()">
+                                    购买
+                                </button>
                             </td>
                         </tr>
                         <tr>
                             <td>12个月</td>
-                            <td>30,000元</td>
+                            <td><?php echo $price_monitor_twelve, '元';?></td>
                             <td>
-                                <form action="<?php echo $this->url('monitor', array('action' => 'buytwelvem')) ;?>">
+                                <!--<form action="<?php echo $this->url('monitor', array('action' => 'buytwelvem')) ;?>">
                                     <input type="submit" class="btn btn-primary btn-mini" value="购买">
-                                </form>
+                                </form>-->
+                                <button class="btn btn-primary btn-mini" onClick="check_n_confirm_twelve()">
+                                    购买
+                                </button>
                             </td>
                         </tr>
                     </table>
@@ -116,7 +122,42 @@ input[type="text"], textarea
     width: 100%;
 }
 </style>
-
+<script>
+function check_n_confirm_six()
+{
+    var price = <?php echo $price_monitor_six;?>;
+    var credit = <?php echo $credit->amount - $credit->deposit;?>;
+    if(credit < price)
+    {
+        alert("您的账户余额不足，请先充值");
+        window.location.href="/credit/notify";
+    }
+    else
+    {
+        if(confirm('确实要确认订单吗?\n\n系统将收取'+price+'元监测费用。'))
+        {
+            window.location.href = '<?php echo $this->url('monitor',array('action'=>'buysixm')) ;?>'
+        }
+    }
+}
+function check_n_confirm_twelve()
+{
+    var price = <?php echo $price_monitor_twelve;?>;
+    var credit = <?php echo $credit->amount - $credit->deposit;?>;
+    if(credit < price)
+    {
+        alert("您的账户余额不足，请先充值");
+        window.location.href="/credit/notify";
+    }
+    else
+    {
+        if(confirm('确实要确认订单吗?\n\n系统将收取'+price+'元监测费用。'))
+        {
+            window.location.href = '<?php echo $this->url('monitor',array('action'=>'buytwelvem')) ;?>'
+        }
+    }
+}
+</script>
 
             <script src="js/excanvas.min.js"></script>
             <script src="js/jquery.min.js"></script>

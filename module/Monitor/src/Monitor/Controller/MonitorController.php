@@ -17,6 +17,12 @@ use User\Model\User;
 use Zend\Session\Container as SessionContainer;
 use DateTime, DateInterval;
 use Zend\Math\BigInteger\BigInteger;
+use Zend\Mail\Message;
+use Zend\Mail\Transport\Sendmail as SendmailTransport;
+use Zend\Mail\Transport\Smtp as SmtpTransport;
+use Zend\Mime\Message as MimeMessage;
+use Zend\Mime\Part as MimePart;
+use Zend\Mail\Transport\SmtpOptions;
 
 class MonitorController extends AbstractActionController
 {
@@ -26,6 +32,7 @@ class MonitorController extends AbstractActionController
     protected $keywordTable;
     protected $creditTable;
     protected $creditlogTable;
+    protected $constantTable;
 
     public function indexAction()
     {
@@ -40,13 +47,25 @@ class MonitorController extends AbstractActionController
         $monitor = $monitorSet->current();
         $id_monitor = $monitor->id_monitor;
         //get two Keywords
-        $keyword1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 1);
-        $keyword2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 2);
+        $self1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 1);
+        $self2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 3);
+        $self3 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 5);
+        $competitor1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 2);
+        $competitor2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 4);
+        $competitor3 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 6);
+        $competitor4 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 8);
+        $competitor5 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 10);
 
         return new ViewModel(array(
-            'user' => $cur_user,
-            'keyword1' => $keyword1,
-            'keyword2' => $keyword2,
+            'user'        => $cur_user,
+            'self1'       => $self1,
+            'self2'       => $self2,
+            'self3'       => $self3,
+            'competitor1' => $competitor1,
+            'competitor2' => $competitor2,
+            'competitor3' => $competitor3,
+            'competitor4' => $competitor4,
+            'competitor5' => $competitor5,
         ));
     }
 
@@ -70,8 +89,17 @@ class MonitorController extends AbstractActionController
         $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
+        $price_monitor_six = $this->getConstantTable()->getConstant(1)->value;
+        $price_monitor_twelve = $this->getConstantTable()->getConstant(2)->value;
+
+        $fk_user = $this->getUserTable()->getUserByName($cur_user)->id;
+        $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+
         return new ViewModel(array(
             'user' => $cur_user,
+            'price_monitor_six' => $price_monitor_six,
+            'price_monitor_twelve' => $price_monitor_twelve,
+            'credit' => $credit,
         ));
     }
 
@@ -81,7 +109,7 @@ class MonitorController extends AbstractActionController
         $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
-        $price = 18000;//对企业用户应收18000元的6个月网络监测费用
+        $price = $this->getConstantTable()->getConstant(1)->value;;//对企业用户应收15000元的6个月网络监测费用
         $fk_user = $this->getUserTable()->getUserByName($cur_user)->id;
         $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
         if(!$is_sufficient)
@@ -122,6 +150,7 @@ class MonitorController extends AbstractActionController
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();
         $creditlog->amount = $price;
+        $creditlog->remaining_balance = $credit->amount;
         $creditlog->is_pay = 1;//is pay
         $creditlog->is_charge = 0;//not charge
         $creditlog->order_no = $monitor2->order_no;
@@ -130,7 +159,19 @@ class MonitorController extends AbstractActionController
         $this->getCreditlogTable()->saveCreditlog($creditlog);
 
         //create two keyword records: one for the enterprise itself and another for the competitor:
-        $keyword1 = new Keyword();
+        for($i = 1 ; $i < 11 ; $i++)
+        {
+            $keyword = new Keyword();
+            $keyword->fk_monitor = $id_monitor;
+            $keyword->keyword = null;
+            $keyword->fk_keyword_type = $i;
+            $keyword->created_at = $this->_getDateTime();
+            $keyword->created_by = $cur_user;
+            $keyword->updated_at = $this->_getDateTime();
+            $keyword->updated_by = $cur_user;
+            $this->getKeywordTable()->saveKeyword($keyword);
+        }        
+        /*$keyword1 = new Keyword();
         $keyword1->fk_monitor = $id_monitor;
         $keyword1->keyword = null;
         $keyword1->fk_keyword_type = 1;// 企业自己的APP
@@ -148,7 +189,7 @@ class MonitorController extends AbstractActionController
         $keyword2->created_by = $cur_user;
         $keyword2->updated_at = $this->_getDateTime();
         $keyword2->updated_by = $cur_user;
-        $this->getKeywordTable()->saveKeyword($keyword2);
+        $this->getKeywordTable()->saveKeyword($keyword2);*/
 
         return $this->redirect()->toRoute('monitor', array(
             'action' => 'configure'
@@ -165,7 +206,7 @@ class MonitorController extends AbstractActionController
         $arr_type_allowed = array(1);
         $cur_user = $this->_auth($arr_type_allowed);
 
-        $price = 30000;//对企业用户应收30000元的6个月网络监测费用
+        $price = $this->getConstantTable()->getConstant(2)->value;//对企业用户应收30000元的6个月网络监测费用
         $fk_user = $this->getUserTable()->getUserByName($cur_user)->id;
         $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
         if(!$is_sufficient)
@@ -206,6 +247,7 @@ class MonitorController extends AbstractActionController
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();
         $creditlog->amount = $price;
+        $creditlog->remaining_balance = $credit->amount;
         $creditlog->is_pay = 1;//is pay
         $creditlog->is_charge = 0;//not charge
         $creditlog->order_no = $monitor2->order_no;
@@ -273,24 +315,63 @@ class MonitorController extends AbstractActionController
             if($form->isValid())
             {
                 $arr_get_data = $form->getData();
-                $myapp = $arr_get_data['myapp'];
-                $competitorapp = $arr_get_data['competitorapp'];
+                $arr_app = array();
+                $arr_app[1] = $arr_get_data['myapp'];
+                $arr_app[2] = $arr_get_data['competitorapp'];
+                $arr_app[3] = $arr_get_data['myapp2'];
+                $arr_app[4] = $arr_get_data['competitorapp2'];
+                $arr_app[5] = $arr_get_data['myapp3'];
+                $arr_app[6] = $arr_get_data['competitorapp3'];
+                $arr_app[8] = $arr_get_data['competitorapp4'];
+                $arr_app[10] = $arr_get_data['competitorapp5'];
+
 
                 //get Monitor
                 $monitorSet = $this->getMonitorTable()->fetchValidMonitorByFkEntUser($id_user);
                 $monitor = $monitorSet->current();
                 $id_monitor = $monitor->id_monitor;
                 //get two Keywords and update it
-                $keyword1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 1);
-                $keyword1->keyword = $myapp;
-                $keyword1->updated_at = $this->_getDateTime();
-                $keyword1->updated_by = $cur_user;
-                $this->getKeywordTable()->saveKeyword($keyword1);
-                $keyword2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 2);
-                $keyword2->keyword = $competitorapp;
-                $keyword2->updated_at = $this->_getDateTime();
-                $keyword2->updated_by = $cur_user;
-                $this->getKeywordTable()->saveKeyword($keyword2);
+                for($i=1;$i<11;$i++)
+                {
+                    if(($i == 7)||($i == 9))
+                    {
+                        continue;
+                    }
+                    $keyword = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, $i);
+                    $keyword->keyword = $arr_app[$i];
+                    $keyword->updated_at = $this->_getDateTime();
+                    $keyword->updated_by = $cur_user;
+                    $this->getKeywordTable()->saveKeyword($keyword);
+                }
+                
+                //send email to admin@appbuzz.cn about the configuration changes
+                $to = "admin@appbuzz.cn";
+                $message = new Message();
+                $message->addTo($to)
+                        ->addFrom("monitor@furnihome.asia")
+                        ->setSubject('用户 '.$cur_user.' 更改网络监测关键字提示');
+                $html = new MimePart(
+                    '<p>管理员,</p>
+                    <p>用户 '.$cur_user.' 已经更改了网络监测关键字：</p>
+                    <p>自产品1： '.$arr_app[1].'</p>
+                    <p>自产品2： '.$arr_app[3].'</p>
+                    <p>自产品3： '.$arr_app[5].'</p>
+                    <p>竞争产品1： '.$arr_app[2].'</p>
+                    <p>竞争产品2： '.$arr_app[4].'</p>
+                    <p>竞争产品3： '.$arr_app[6].'</p>
+                    <p>竞争产品4： '.$arr_app[8].'</p>
+                    <p>竞争产品5： '.$arr_app[10].'</p>
+                    <p>请及时更新系统设置。</p>
+                    <br><br>
+                    <p>顺颂商祺，</p>
+                    <p>APPbuzz.cn网站管理团队</p>
+                    <p>'.substr($date, 0, 10).'</p>');
+                $html->type = "text/html";
+                $body = new MimeMessage();
+                $body->addPart($html);
+                $message->setBody($body);
+                $transport = new SendmailTransport();
+                $transport->send($message);
 
                 return $this->redirect()->toRoute('monitor', array(
                     'action' => 'index',
@@ -318,6 +399,14 @@ class MonitorController extends AbstractActionController
         $monitor = $monitorSet->current();
         $id_monitor = $monitor->id_monitor;
         //get two Keywords (object)
+        $keyword_self_1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 1);
+        $keyword_self_2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 3);
+        $keyword_self_3 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 5);
+        $keyword_competitor_1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 2);
+        $keyword_competitor_1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 4);
+        $keyword_competitor_1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 6);
+        $keyword_competitor_1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 8);
+        $keyword_competitor_1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 10);
         $keyword1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 1);
         $keyword2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 2);
 
@@ -325,18 +414,27 @@ class MonitorController extends AbstractActionController
         $str_keyword_2 = $keyword2->keyword;
 
         //connect to the monitor database
-        $con = mysql_connect("localhost:3306", "root", "");
+        //$host_name = "58.215.79.28:3306";
+        //$db_name = "newwww";
+        //$table_name = "article_express";
+        $host_name = "localhost:3306";
+        $db_name = "article";
+        $table_name = "t_blog";
+        $con = mysql_connect($host_name, "root", "");
+        //$con = mysql_connect("58.215.79.28:3306", "AppBuzz", "changpin");
         mysql_set_charset('utf8', $con);
         $charset = mysql_client_encoding($con);
-        mysql_select_db("article", $con);
+
+        mysql_select_db($db_name, $con);
+
 
         //query
-        $query_keyword1_weibo = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_1."%' AND website_type = 'weibo' ORDER BY id DESC LIMIT 2;";
-        $query_keyword1_news  = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_1."%' AND website_type = '新闻'  ORDER BY id DESC LIMIT 2;";
-        $query_keyword1_forum = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_1."%' AND website_type = '论坛'  ORDER BY id DESC LIMIT 2;";
-        $query_keyword2_weibo = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_2."%' AND website_type = 'weibo' ORDER BY id DESC LIMIT 2;";
-        $query_keyword2_news  = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_2."%' AND website_type = '新闻'  ORDER BY id DESC LIMIT 2;";
-        $query_keyword2_forum = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_2."%' AND website_type = '论坛'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword1_weibo = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_1."%' AND website_type = 'Mblog' ORDER BY id DESC LIMIT 2;";
+        $query_keyword1_news  = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_1."%' AND website_type = 'News'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword1_forum = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_1."%' AND website_type = 'BBS'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword2_weibo = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_2."%' AND website_type = 'Mblog' ORDER BY id DESC LIMIT 2;";
+        $query_keyword2_news  = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_2."%' AND website_type = 'News'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword2_forum = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_2."%' AND website_type = 'BBS'  ORDER BY id DESC LIMIT 2;";
         //$sql = "SELECT * FROM t_blog;";
         $result_keyword1_weibo = mysql_query($query_keyword1_weibo, $con);
         $result_keyword1_news  = mysql_query($query_keyword1_news,  $con);
@@ -804,6 +902,15 @@ class MonitorController extends AbstractActionController
             $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
         }
         return $this->creditlogTable;
+    }
+
+    public function getConstantTable()
+    {
+        if(!$this->constantTable){
+            $sm = $this->getServiceLocator();
+            $this->constantTable = $sm->get('Credit\Model\ConstantTable');
+        }
+        return $this->constantTable;
     }
 
     /**

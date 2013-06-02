@@ -17,7 +17,59 @@ class ConfigureForm extends Form
             ),
         ));
         $this->add(array(
+            'name' => 'myapp2',
+            'attributes' => array(
+                'type'  => 'hidden',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'myapp3',
+            'attributes' => array(
+                'type'  => 'hidden',
+            ),
+        ));
+        $this->add(array(
             'name' => 'competitorapp',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'competitorapp2',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'competitorapp3',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'competitorapp4',
+            'attributes' => array(
+                'type'  => 'text',
+                'placeholder' => '',
+            ),
+            'options' => array(
+                'label' => '',
+            ),
+        ));
+        $this->add(array(
+            'name' => 'competitorapp5',
             'attributes' => array(
                 'type'  => 'text',
                 'placeholder' => '',

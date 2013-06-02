@@ -29,6 +29,7 @@ class NewspubController extends AbstractActionController
     protected $creditTable;
     protected $pubmediaTable;
     protected $creditlogTable;
+    protected $constantTable;
 
     public function indexAction()
     {
@@ -220,6 +221,10 @@ class NewspubController extends AbstractActionController
             }*/
         }
 
+        //get the price
+        $price_newspub_single = $this->getConstantTable()->getConstant(3)->value;
+        $price_newspub_multiple = $this->getConstantTable()->getConstant(4)->value;
+
         return new ViewModel(array(
             'user' => $cur_user,
             'form' => $form,
@@ -229,13 +234,15 @@ class NewspubController extends AbstractActionController
             //'medias' => $this->getUserTable()->fetchUserByFkType(2),
             'medias' => $this->getPubmediaTable()->fetchAll(),
             'barcodes' => $this->getBarcodeTable()->fetchBarcodeByUser($cur_user),
+            'price_newspub_single' => $price_newspub_single,
+            'price_newspub_multiple' => $price_newspub_multiple,
         ));        
     }
 
     public function confirmAction()
     {
         //企业用户->订单详情->确认草稿状态的订单(将会冻结与服务价格等额的资金)
-        $arr_type_allowed = array(1, 3);
+        $arr_type_allowed = array(1, 3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_newspub = (int)$this->params()->fromRoute('id',0);        
@@ -249,11 +256,14 @@ class NewspubController extends AbstractActionController
         $fk_user = $target_user->id;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
         $count = $this->getNpmediaTable()->getCountNmByFkNewspub($id_newspub);
+        //get the price
+        $price_newspub_single = $this->getConstantTable()->getConstant(3)->value;
+        $price_newspub_multiple = $this->getConstantTable()->getConstant(4)->value;
         //对企业应收账款如下：
         if($newspub->fk_pub_mode == 1){
-            $price = $count * 350;//单篇发布：每篇350元
+            $price = $count * $price_newspub_single;//单篇发布
         }else{
-            $price = 1500;//打包发布：一共1500元
+            $price = $price_newspub_multiple;//打包发布
         }
         $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
         if(!$is_sufficient)
@@ -311,7 +321,7 @@ class NewspubController extends AbstractActionController
     public function detailAction()
     {
         //$cur_user = $this->_authenticateSession(1);
-        $arr_type_allowed = array(1, 3);
+        $arr_type_allowed = array(1, 3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id = (int)$this->params()->fromRoute('id',0);        
@@ -332,6 +342,9 @@ class NewspubController extends AbstractActionController
             $barcode_path = '#';
         }
 
+        $price_newspub_single = $this->getConstantTable()->getConstant(3)->value;
+        $price_newspub_multiple = $this->getConstantTable()->getConstant(4)->value;
+
         return new ViewModel(array(
             'np' => $np,
             'user' => $cur_user,
@@ -343,6 +356,8 @@ class NewspubController extends AbstractActionController
             'npmedia' => $this->getNpmediaTable()->fetchNpmediaByFkNewspub($id),
             'newspub' => $np,
             'pubmedias' => $this->getPubmediaTable()->fetchAll(),
+            'price_newspub_single' => $price_newspub_single,
+            'price_newspub_multiple' => $price_newspub_multiple,
         ));
     }
 
@@ -481,7 +496,7 @@ class NewspubController extends AbstractActionController
     public function adminAction()
     {
         //管理员->订单管理->新闻发布
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
 
@@ -797,7 +812,7 @@ class NewspubController extends AbstractActionController
     public function mediaaccAction()
     {
         //管理员用户->媒体接受
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_npmedia = (int)$this->params()->fromRoute('id',0);        
@@ -821,7 +836,7 @@ class NewspubController extends AbstractActionController
     public function mediarejAction()
     {
         //管理员用户->媒体拒绝
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_npmedia = (int)$this->params()->fromRoute('id',0);        
@@ -838,7 +853,8 @@ class NewspubController extends AbstractActionController
         $newspub = $this->getNewspubTable()->getNewspub($npmedia->fk_newspub);
         $target_user = $this->getUserTable()->getUserByName($newspub->created_by);
         $fk_user = $target_user->id;
-
+        //get the price
+        $price_newspub_single = $this->getConstantTable()->getConstant(3)->value;
         //check if the whole order has been finished
         $is_completed = $this->getNpmediaTable()->is_completed($newspub->id_newspub);
         if($is_completed)
@@ -850,7 +866,7 @@ class NewspubController extends AbstractActionController
             $this->getNewspubTable()->saveNewspub($newspub);
             //return the money to the enterprise user where the npmedia orders were canceled
             $canceled_npmedias = $this->getNpmediaTable()->fetchCanceledNpmediaByFkNewspub($newspub->id_newspub);
-            $price = 350 * count($canceled_npmedias);
+            $price = $price_newspub_single * count($canceled_npmedias);
             //update the credit, 
             $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
             $origindeposit = $credit->deposit;
@@ -953,6 +969,11 @@ class NewspubController extends AbstractActionController
                 'action' => 'admin',
             ));
         }
+
+        //get the price
+        $price_newspub_single = $this->getConstantTable()->getConstant(3)->value;
+        $price_newspub_multiple = $this->getConstantTable()->getConstant(4)->value;
+
         $npmedia = $this->getNpmediaTable()->getNpmedia($id_npmedia);
         $newspub = $this->getNewspubTable()->getNewspub($npmedia->fk_newspub);
         $np_fk_newspub = $npmedia->fk_newspub;
@@ -982,7 +1003,7 @@ class NewspubController extends AbstractActionController
                 $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
                 $origindeposit = $credit->deposit;
                 $originamount  = $credit->amount;
-                $price = 350;
+                $price = $price_newspub_single;
                 $credit->deposit = $origindeposit - $price;
                 $credit->amount  = $originamount - $price;
                 $credit->updated_by = $cur_user;
@@ -1020,7 +1041,7 @@ class NewspubController extends AbstractActionController
                     $this->getNewspubTable()->saveNewspub($newspub);
                     //return the money to the enterprise user where the npmedia orders were canceled
                     $canceled_npmedias = $this->getNpmediaTable()->fetchCanceledNpmediaByFkNewspub($newspub->id_newspub);
-                    $price = 350 * count($canceled_npmedias);
+                    $price = $price_newspub_single * count($canceled_npmedias);
                     //update the credit, 
                     $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
                     $origindeposit = $credit->deposit;
@@ -1077,6 +1098,11 @@ class NewspubController extends AbstractActionController
         if (!$id_npmedia) {
             return $this->redirect()->toRoute('/');
         }
+
+        //get the price
+        $price_newspub_single = $this->getConstantTable()->getConstant(3)->value;
+        $price_newspub_multiple = $this->getConstantTable()->getConstant(4)->value;
+
         $npmedia = $this->getNpmediaTable()->getNpmedia($id_npmedia);
         $npmedia->fk_npmedia_status = 5;
         $npmedia->updated_at = $this->_getDateTime();
@@ -1097,7 +1123,7 @@ class NewspubController extends AbstractActionController
             $this->getNewspubTable()->saveNewspub($newspub);
             //return the deposit to the enterprise user where the npmedia orders were canceled
             $canceled_npmedias = $this->getNpmediaTable()->fetchCanceledNpmediaByFkNewspub($newspub->id_newspub);
-            $price = 350 * count($canceled_npmedias);
+            $price = $price_newspub_single * count($canceled_npmedias);
             //update the credit, 
             $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
             $origindeposit = $credit->deposit;
@@ -1228,6 +1254,15 @@ class NewspubController extends AbstractActionController
             $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
         }
         return $this->creditlogTable;
+    }
+
+    public function getConstantTable()
+    {
+        if(!$this->constantTable){
+            $sm = $this->getServiceLocator();
+            $this->constantTable = $sm->get('Credit\Model\ConstantTable');
+        }
+        return $this->constantTable;
     }
 
     protected function _authorizeUser($type, $user, $pass)

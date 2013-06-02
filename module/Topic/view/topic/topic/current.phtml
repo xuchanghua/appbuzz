@@ -36,7 +36,7 @@
                 </div>
                 <div>
                     <form action="/topic/add">
-                        <input type="submit" class="btn btn-primary linkbtn" value="当期选题">
+                        <input type="submit" class="btn btn-primary linkbtn" value="最新选题">
                     </form>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                         </tr>
                         <?php foreach($current_topics as $ct): ?>
                         <!--<tr onclick="document.location = '/topic/detail/<?php echo $this->escapeHtml($ct->id_topic);?>';">-->
-                        <tr>
+                        <tr style="display:<?php echo (array_key_exists($ct->id_topic, $arr_tp_tc))?'none':'';?>">
                             <td>
                                 <?php echo $this->escapeHtml($ct->order_no); ?>
                             </td>

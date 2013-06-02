@@ -28,6 +28,7 @@ class WriterController extends AbstractActionController
     protected $screenshotTable;
     protected $creditTable;
     protected $creditlogTable;
+    protected $constantTable;
 
     public function indexAction()
     {     
@@ -198,6 +199,14 @@ class WriterController extends AbstractActionController
                 $arr_media_assignees[] = $media_user->username;
             }
         }*/
+        if($writer->fk_product){
+            $product = $this->getProductTable()->getProduct($writer->$fk_product);
+        }else{
+            $product = null;
+        }
+
+        $price_writer_ent = $this->getConstantTable()->getConstant(7)->value;
+        $credit = $this->getCreditTable()->getCreditByFkUser($owner->id);
 
         return new ViewModel(array(
             'writer' => $writer,
@@ -205,12 +214,14 @@ class WriterController extends AbstractActionController
             'user_type' => $this->getUserTable()->getUserByName($cur_user)->fk_user_type,
             'allusers' => $this->getUserTable()->fetchAll(),
             'id' => $id,
-            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'product' => $product,
             //'media_assignees' => $arr_media_assignees,
             'wrtmedias' => $this->getWrtmediaTable()->fetchWmExRejByMedByFkWrt($id),//not include those rejected by the media
             'barcode_path' => $barcode_path,
             'screenshots' => $this->getScreenshotTable()->fetchScreenshotByFkWrt($id),
             'count_ent_accepted_wrtmedias' => count($this->getWrtmediaTable()->fetchEntAccdWrtmediaByFkWrt($writer->id_writer)),
+            'price_writer_ent' => $price_writer_ent,
+            'credit' => $credit,
         ));
     }    
 
@@ -592,8 +603,11 @@ class WriterController extends AbstractActionController
         $fk_user = $target_user->id;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
 
+        //get the price
+        $price_writer_ent = $this->getConstantTable()->getConstant(7)->value;
+
         //对企业用户应收$price 1200元的撰稿费用
-        $price = 1200;
+        $price = $price_writer_ent;
         $is_sufficient = $this->getCreditTable()->issufficient($price, $fk_user);
         if(!$is_sufficient)
         {
@@ -656,13 +670,16 @@ class WriterController extends AbstractActionController
         $fk_user = $target_user->id;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
 
+        //get the price
+        $price_writer_ent = $this->getConstantTable()->getConstant(7)->value;        
+
         //update the writer, +1 to $writer->order_limit
         $writer->order_limit++;
         $writer->updated_by = $cur_user;
         $writer->updated_at = $this->_getDateTime();
         $this->getWriterTable()->saveWriter($writer);
         //update the credit, +1500 to the $credit->deposit
-        $price = 1500;
+        $price = $price_writer_ent;
         $credit->deposit += $price;
         $credit->updated_by = $cur_user;
         $credit->updated_at = $this->_getDateTime();
@@ -708,6 +725,8 @@ class WriterController extends AbstractActionController
         $target_user = $this->getUserTable()->getUserByName($writer->created_by);
         $fk_user = $target_user->id;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
+        //get the price
+        $price_writer_ent = $this->getConstantTable()->getConstant(7)->value;
 
         if($writer->order_limit>1)
         {
@@ -717,7 +736,7 @@ class WriterController extends AbstractActionController
             $writer->updated_at = $this->_getDateTime();
             $this->getWriterTable()->saveWriter($writer);
             //update the credit, +1500 to the $credit->deposit
-            $price = 1500;
+            $price = $price_writer_ent;
             $credit->deposit -= $price;
             $credit->updated_by = $cur_user;
             $credit->updated_at = $this->_getDateTime();
@@ -792,7 +811,11 @@ class WriterController extends AbstractActionController
             ));
         }
         $writer = $this->getWriterTable()->getWriter($id_writer);
-        $product = $this->getProductTable()->getProduct($writer->fk_product);
+        if($writer->fk_product){
+            $product = $this->getProductTable()->getProduct($writer->fk_product);
+        }else{
+            $product = null;
+        }        
         $media_user = $this->getUserTable()->getUserByName($cur_user);
         $enterprise_user = $this->getUserTable()->getUserByName($writer->created_by);
 
@@ -955,11 +978,17 @@ class WriterController extends AbstractActionController
             $barcode_path = '#';
         }
 
+        if($writer->fk_product){
+            $product = $this->getProductTable()->getProduct($writer->fk_product);
+        }else{
+            $product = null;
+        }
+
         return new ViewModel(array(
             'writer' => $writer,
             'user' => $cur_user,
             'id' => $id_writer,
-            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'product' => $product,
             'wrtmedia' => $wrtmedia,
             'barcode_path' => $barcode_path,
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
@@ -991,14 +1020,22 @@ class WriterController extends AbstractActionController
         {
             $barcode_path = '#';
         }
+        $price = $this->getConstantTable()->getConstant(7)->value;
+
+        if($writer->fk_product){
+            $product = $this->getProductTable()->getProduct($writer->fk_product);
+        }else{
+            $product = null;
+        }
 
         return new ViewModel(array(
             'writer' => $writer,
             'user' => $cur_user,
             'id' => $id_writer,
-            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'product' => $product,
             'wrtmedia' => $wrtmedia,
             'barcode_path' => $barcode_path,
+            'price' => $price,
         ));
     }
 
@@ -1065,12 +1102,18 @@ class WriterController extends AbstractActionController
             $barcode_path = '#';
         }
 
+        if($writer->fk_product){
+            $product = $this->getProductTable()->getProduct($writer->fk_product);
+        }else{
+            $product = null;
+        }
+
         return new ViewModel(array(
             'user' => $cur_user,
             'form' => $form,
             'writer' => $writer,
             'wrtmedia' => $wrtmedia,
-            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'product' => $product,
             'barcode_path' => $barcode_path,
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
         ));
@@ -1143,13 +1186,22 @@ class WriterController extends AbstractActionController
             $barcode_path = '#';
         }
 
+        $price_writer_ent = $this->getConstantTable()->getConstant(8)->value;
+
+        if($writer->fk_product){
+            $product = $this->getProductTable()->getProduct($writer->fk_product);
+        }else{
+            $product = null;
+        }
+
         return new ViewModel(array(
             'user' => $cur_user,
             'form' => $form,
             'writer' => $writer,
             'wrtmedia' => $wrtmedia,
-            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'product' => $product,
             'barcode_path' => $barcode_path,
+            'price_writer_ent' => $price_writer_ent,
         ));
     }
 
@@ -1222,14 +1274,23 @@ class WriterController extends AbstractActionController
             $barcode_path = '#';
         }
 
+        $price_writer_ent = $this->getConstantTable()->getConstant(8)->value;
+
+        if($writer->fk_product){
+            $product = $this->getProductTable()->getProduct($writer->fk_product);
+        }else{
+            $product = null;
+        }
+
         return new ViewModel(array(
             'user' => $cur_user,
             'form' => $form,
             'writer' => $writer,
             'wrtmedia' => $wrtmedia,
-            'product' => $this->getProductTable()->getProduct($writer->fk_product),
+            'product' => $product,
             'barcode_path' => $barcode_path,
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
+            'price_writer_ent' => $price_writer_ent,
         ));
     }
 
@@ -1254,13 +1315,17 @@ class WriterController extends AbstractActionController
         $wrtmedia->updated_at = $this->_getDateTime();
         $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
 
+        //get the price
+        $price_writer_ent = $this->getConstantTable()->getConstant(7)->value;
+        $price_writer_media = $this->getConstantTable()->getConstant(8)->value;
+
         //update the credit of the enterprise user
         $target_user = $this->getUserTable()->getUserByName($writer->created_by);
         $fk_user = $target_user->id;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
         $originamount = $credit->amount;
         $origindeposit = $credit->deposit;
-        $price = 1200;
+        $price = $price_writer_ent;
         $credit->amount = $originamount - $price;
         $credit->deposit = $origindeposit - $price;
         $credit->updated_at = $this->_getDateTime();
@@ -1285,6 +1350,31 @@ class WriterController extends AbstractActionController
         $creditlog->created_at = $this->_getDateTime();
         $creditlog->created_by = $cur_user;
         $this->getCreditlogTable()->saveCreditlog($creditlog);
+
+        //update the credit of the media user
+        $price_media = $price_writer_media;
+        $fk_user_media = $wrtmedia->fk_media_user;
+        $credit_media = $this->getCreditTable()->getCreditByFkUser($fk_user_media);
+        $originamount_media = $credit_media->amount;
+        $credit_media->amount = $originamount_media + $price_media;
+        $credit_media->updated_at = $this->_getDateTime();
+        $credit_media->updated_by = $cur_user;
+        $this->getCreditTable()->saveCredit($credit_media);
+        //log the change
+        $creditlog_media = new Creditlog();
+        $creditlog_media->fk_credit = $credit_media->id_credit;
+        $creditlog_media->fk_service_type = 61;
+        $creditlog_media->fk_from = null;
+        $creditlog_media->fk_to = $fk_user_media;
+        $creditlog_media->date_time = $this->_getDateTime();
+        $creditlog_media->amount = $price_media;
+        $creditlog_media->is_pay = 0;
+        $creditlog_media->is_charge = 1;
+        $creditlog_media->order_no = $wrtmedia->order_no;
+        $creditlog_media->created_at = $this->_getDateTime();
+        $creditlog_media->created_by = $cur_user;
+        $this->getCreditlogTable()->saveCreditlog($creditlog_media);
+
 
         return $this->redirect()->toRoute('writer', array(
             'action' => 'wrtinfoent',
@@ -1321,12 +1411,15 @@ class WriterController extends AbstractActionController
         $wrtmedia->updated_at = $this->_getDateTime();
         $this->getWrtmediaTable()->saveWrtmedia($wrtmedia);
 
+        //get the price
+        $price_writer_ent = $this->getConstantTable()->getConstant(7)->value;
+
         //update the credit of the enterprise user
         $target_user = $this->getUserTable()->getUserByName($writer->created_by);
         $fk_user = $target_user->id;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
         $origindeposit = $credit->deposit;
-        $price = 1200;
+        $price = $price_writer_ent;
         $credit->deposit = $origindeposit - $price;
         $credit->updated_at = $this->_getDateTime();
         $credit->updated_by = $cur_user;
@@ -1526,6 +1619,15 @@ class WriterController extends AbstractActionController
             $this->creditlogTable = $sm->get('Credit\Model\CreditlogTable');
         }
         return $this->creditlogTable;
+    }
+
+    public function getConstantTable()
+    {
+        if(!$this->constantTable){
+            $sm = $this->getServiceLocator();
+            $this->constantTable = $sm->get('Credit\Model\ConstantTable');
+        }
+        return $this->constantTable;
     }
 
     /**

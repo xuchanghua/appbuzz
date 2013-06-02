@@ -117,7 +117,7 @@ class NewspubForm extends Form
                 ),
             'options' => array(
                 'value_options' => array(
-                    array('id' => 'option1', 'class' => 'option1', 'value' => '1', 'label' => '按媒体单篇发布，350 元/篇： 发布 0 篇，共 0 元。'),
+                    array('id' => 'option1', 'class' => 'option1', 'value' => '1', 'label' => '按媒体单篇发布，300 元/篇： 发布 0 篇，共 0 元。'),
                     array('id' => 'option2', 'class' => 'option2', 'value' => '2', 'label' => '打包发布，实发篇数不少于 6 篇，1500 元/发布包'),
                     //'1' => '单篇发布',
                     //'2' => '打包发布',

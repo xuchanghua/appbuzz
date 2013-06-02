@@ -189,6 +189,13 @@
                 </div>
             </div>
             <div id="mediainfo" style="display:<?php echo ($media)?'':'none';?>;">
+                <?php 
+                $arr_media_type = array(
+                    '1' => '印刷媒体',
+                    '2' => '网络媒体',
+                    '3' => '自媒体人',
+                );
+                ?>
                 <h3>媒体信息：</h3>
                 <table>
                     <tr>
@@ -211,6 +218,20 @@
                         <td><?php echo $media->invoice_title; ?></td>
                         <td>发票类型：</td>
                         <td><?php echo $media->invoice_type; ?></td>
+                    </tr>
+                    <tr>
+                        <td>媒体类型：</td>
+                        <td>
+                            <?php 
+                            if(array_key_exists($media->fk_media_type, $arr_media_type)){
+                                echo $arr_media_type[$media->fk_media_type];
+                            }else{
+                                echo "媒体类型不正确";
+                            }
+                            ?>
+                        </td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>联系人信息：</td>

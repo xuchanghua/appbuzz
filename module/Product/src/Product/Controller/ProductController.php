@@ -45,7 +45,7 @@ class ProductController extends AbstractActionController
     {
         //only admin user can see all the apps
         //$cur_user = $this->_authenticateSession(3);
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
 

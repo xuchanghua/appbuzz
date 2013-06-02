@@ -61,10 +61,14 @@
                         10 => '订单终止',
                     );
                     ?>
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">App产品：</td>
                         <td>
-                            <?php echo $this->escapeHtml($product->name); ?>
+                            <?php 
+                            if($product){
+                                echo $this->escapeHtml($product->name); 
+                            }
+                            ?>
                         </td>
                     </tr>
                     <tr>
@@ -90,23 +94,23 @@
                             ?>
                         </td>
                     </tr>-->
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">web下载链接</td>
                         <td>
                             <?php echo $this->escapeHtml($writer->web_link);?>
                         </td>
                     </tr>
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">Appstore下载链接</td>
                         <td>
                             <?php echo $this->escapeHtml($writer->appstore_link);?>
                         </td>
                     </tr>
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">安卓市场下载链接</td>
                         <td>
                             <?php echo $this->escapeHtml($writer->androidmkt_link);?>
-                    <tr>
+                    <tr style="display:<?php echo ($product==null)?'none':'';?>">
                         <td class="tdlabel">下载二维码</td>
                         <td>
                             <img src="<?php echo $barcode_path;?>" height="200" width="200">
@@ -114,7 +118,7 @@
                     </tr>
                     <tr>
                         <td class="tdlabel">撰稿费用：</td>
-                        <td>1500元/篇（800字左右）</td>
+                        <td><?php echo $price_writer_ent;?>元/篇（800字左右）</td>
                     </tr>
                     <tr>
                         <td class="tdlabel">订单状态：</td>

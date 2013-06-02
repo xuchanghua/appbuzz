@@ -62,19 +62,77 @@
                             'value_options' => $arr_products,
                         ),
                     ));
+                    $form->add(array(
+                        'name' => 'myapp2',
+                        'type'  => 'Zend\Form\Element\Select',
+                        'attributes' => array(
+                            'id' => 'appproduct',
+                            //'onchange' => "alert();",
+                        ),
+                        'options' => array(
+                            'value_options' => $arr_products,
+                        ),
+                    ));
+                    $form->add(array(
+                        'name' => 'myapp3',
+                        'type'  => 'Zend\Form\Element\Select',
+                        'attributes' => array(
+                            'id' => 'appproduct',
+                            //'onchange' => "alert();",
+                        ),
+                        'options' => array(
+                            'value_options' => $arr_products,
+                        ),
+                    ));
                     $form->prepare();   
                     echo $this->form()->openTag($form);
                     ?>
                     <tr>
-                        <td><span>请输入您要监测的APP产品：</span></td>
+                        <td><span>请输入您要监测的APP产品1：</span></td>
                         <td>
                             <?php echo $this->formRow($form->get('myapp')); ?>
                         </td>
                     </tr>
                     <tr>
-                        <td><span>请输入您要监测的竞争APP产品：</span></td>
+                        <td><span>请输入您要监测的APP产品2：</span></td>
+                        <td>
+                            <?php echo $this->formRow($form->get('myapp2')); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>请输入您要监测的APP产品3：</span></td>
+                        <td>
+                            <?php echo $this->formRow($form->get('myapp3')); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>请输入您要监测的竞争APP产品1：</span></td>
                         <td>
                             <?php echo $this->formRow($form->get('competitorapp')); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>请输入您要监测的竞争APP产品2：</span></td>
+                        <td>
+                            <?php echo $this->formRow($form->get('competitorapp2')); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>请输入您要监测的竞争APP产品3：</span></td>
+                        <td>
+                            <?php echo $this->formRow($form->get('competitorapp3')); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>请输入您要监测的竞争APP产品4：</span></td>
+                        <td>
+                            <?php echo $this->formRow($form->get('competitorapp4')); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>请输入您要监测的竞争APP产品5：</span></td>
+                        <td>
+                            <?php echo $this->formRow($form->get('competitorapp5')); ?>
                         </td>
                     </tr>
                     <tr>

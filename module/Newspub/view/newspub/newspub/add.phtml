@@ -196,13 +196,13 @@
                 <tr id="charge_method_single" style="display:none;">
                     <td class="tdlabel">费用</td>
                     <td>
-                        按媒体单篇发布，350 元/篇：发布&nbsp;<span id="total_selected">0</span>&nbsp;篇，共&nbsp;<span id="total_amount">0</span>&nbsp;元。
+                        按媒体单篇发布，<?php echo $price_newspub_single;?> 元/篇：发布&nbsp;<span id="total_selected">0</span>&nbsp;篇，共&nbsp;<span id="total_amount">0</span>&nbsp;元。
                     </td>
                 </tr>
                 <tr id="charge_method_multiple" style="display:none;">
                     <td class="tdlabel">费用：</td>
                     <td>
-                        打包发布，实发篇数不少于 6 篇，1500 元/发布包
+                        打包发布，实发篇数不少于 6 篇，<?php echo $price_newspub_multiple;?> 元/发布包
                     </td>
                 </tr>
                 <tr>
@@ -310,8 +310,8 @@ $(function(){
         }
         var var_total_selected = document.getElementById("sel_right").options.length;
         total_selected.innerHTML = var_total_selected;
-        total_amount.innerHTML = var_total_selected * 350;
-        var option_text = "按媒体单篇发布，350 元/篇： 发布 "+ var_total_selected +" 篇，共 "+ var_total_selected * 350 +" 元。"
+        total_amount.innerHTML = var_total_selected * <?php echo $price_newspub_single;?>;
+        var option_text = "按媒体单篇发布，<?php echo $price_newspub_single;?> 元/篇： 发布 "+ var_total_selected +" 篇，共 "+ var_total_selected * <?php echo $price_newspub_single;?> +" 元。"
         $('#select_pub_mode').find('option:selected').text(option_text);
         checkBtn();
     }

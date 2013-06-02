@@ -171,7 +171,7 @@
                                                 <?php echo $arr_npmedia_status[$nm->fk_npmedia_status] ;?>
                                             </td>
                                             <td>
-                                                <?php echo $nm->news_link ;?>
+                                                <a href="//<?php echo $nm->news_link ;?>"><?php echo $nm->news_link ;?></a>
                                             </td>
                                             <td>
                                                 <?php echo $nm->score; ?>
@@ -194,7 +194,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td style="display:<?php echo ($user_type==3)?'':'none';?>">
+                                            <td style="display:<?php echo ($user_type==3||$user_type==4)?'':'none';?>">
                                                 <div style="display:<?php echo ($nm->fk_npmedia_status==1&&$newspub->fk_newspub_status==2)?'':'none';?>">
                                                     <div class="linkbtns">
                                                         <form action="<?php echo $this->url('newspub',
@@ -235,6 +235,19 @@
                                     </table>
                                 </div>
                             </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">价格</td>
+                        <td>
+                            <?php
+                            if($np->fk_pub_mode == 1){
+                                $price = count($npmedia) * $price_newspub_single;
+                            }else{
+                                $price = $price_newspub_multiple;
+                            }
+                            echo '人民币 ', $price, ' 元'
+                            ?>
                         </td>
                     </tr>                    
                     <tr>
