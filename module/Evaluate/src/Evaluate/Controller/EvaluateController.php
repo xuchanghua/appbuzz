@@ -965,7 +965,7 @@ class EvaluateController extends AbstractActionController
         //create creditlog record;
         $creditlog = new Creditlog();
         $creditlog->fk_credit = $credit->id_credit;
-        $creditlog->fk_service_type = 5;//媒体->媒体评测
+        $creditlog->fk_service_type = 16;//媒体->媒体评测
         $creditlog->fk_from = null;
         $creditlog->fk_to = $fk_user;
         $creditlog->date_time = $this->_getDateTime();

@@ -292,7 +292,7 @@ class UserController extends AbstractActionController
     public function addAction()
     {
         //用户管理->创建用户 （可以创建企业、媒体、管理用户）        
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $form = new UserForm();
@@ -400,7 +400,7 @@ class UserController extends AbstractActionController
 
     public function editAction()
     {        
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id = (int)$this->params()->fromRoute('id', 0);
@@ -569,7 +569,7 @@ class UserController extends AbstractActionController
 
     public function deleteAction()
     {        
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id = (int)$this->params()->fromRoute('id', 0);

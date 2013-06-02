@@ -128,7 +128,7 @@ class CreditController extends AbstractActionController
         $logs = $this->getCreditlogTable()->fetchExportLogByFkCredit($id_credit);
         $headings = array(
             'id', '', '', '', '', '交易时间', 
-            '交易金额', '是否为支付', '是否为充值', '订单号', '创建时间', '创建人', '服务类型', '付款人', '收款人'
+            '交易金额', '是否为支付', '是否为充值', '订单号', '创建时间', '创建人', '', '冻结金额', '', '是否为支付', '是否为充值', '服务类型', '付款人', '收款人'
         );
 
         require './vendor/Classes/PHPExcel.php';
@@ -156,8 +156,10 @@ class CreditController extends AbstractActionController
             // Freeze pane so that the heading line will not scroll
             $objPHPExcel->getActiveSheet()->freezePane('A2');
 
-            //删除空的4列
+            //删除空的6列
             $objPHPExcel->getActiveSheet()->removeColumn('B', 4);
+            $objPHPExcel->getActiveSheet()->removeColumn('I', 1);
+            $objPHPExcel->getActiveSheet()->removeColumn('J', 1);
 
             // Save as an Excel BIFF (xls) file
             $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
@@ -232,7 +234,7 @@ class CreditController extends AbstractActionController
                     //create creditlog record;
                     $creditlog = new Creditlog();
                     $creditlog->fk_credit = $credit->id_credit;
-                    $creditlog->fk_service_type = 20;//媒体->收款
+                    $creditlog->fk_service_type = 15;//媒体->收款
                     $creditlog->fk_from = null;
                     $creditlog->fk_to = $fk_user;
                     $creditlog->date_time = $this->_getDateTime();

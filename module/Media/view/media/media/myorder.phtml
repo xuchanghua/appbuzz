@@ -45,7 +45,7 @@
                 <div>                    
                     <div id="evamedia" class="widget-box">
                         <div class="widget-title">
-                            <h4>最新产品评测订单——</h4>
+                            <h4>最新订单——</h4>
                         </div>
                         <div class="widget-content nopadding">
                             <?php
@@ -65,13 +65,51 @@
                                 $arr_id_product[$pd->id_product] = $pd;
                             }
                             ?>
+                            <?php 
+                            $arr_evamedia_status = array(
+                                '1' => '新订单',
+                                '2' => '媒体拒绝',
+                                '3' => '媒体接受',
+                                '4' => '企业拒绝',
+                                '5' => '企业接受',
+                                '6' => '订单完成',
+                            );
+                            $arr_wrtmedia_status = array(
+                                '1' => '新订单',
+                                '2' => '媒体拒绝',
+                                '3' => '媒体接受',
+                                '4' => '企业拒绝',
+                                '5' => '企业接受',
+                                '6' => '初稿提交',
+                                '7' => '初稿修改',
+                                '8' => '终稿提交',
+                                '9' => '稿件通过',
+                                '10' => '订单终止',
+                            );
+                            $arr_topic_status = array(
+                                '1' => '待发布',
+                                '2' => '征集中',
+                                '3' => '已结束',
+                            );
+                            $arr_interview_status = array(
+                                '1' => '发出邀请',
+                                '2' => '企业接受',
+                                '3' => '企业拒绝',
+                                '4' => '媒体取消',
+                                '5' => '采访结束',
+                            );
+                            ?>
                             <table class="table table-bordered table-striped">
                                 <tr>
                                     <th>订单号</th>
-                                    <th>APP产品</th>
+                                    <th>订单类型</th>
+                                    <!--<th>APP产品</th>
                                     <th>企业名称</th>
-                                    <th>有效日期</th>
-                                </tr>
+                                    <th>有效日期</th>-->
+                                    <th>订单状态</th>
+                                    <th>创建日期</th>
+                                    <th>操作</th>
+                                </tr>                                
                                 <?php foreach($evamedia5 as $em): ?>
                                 <tr>
                                     <td>
@@ -79,38 +117,33 @@
                                             <?php echo $em->order_no; ?>
                                         </a>
                                     </td>
-                                    <td><?php echo $arr_id_product[$arr_id_evaluate[$em->fk_evaluate]->fk_product]->name; ?></td>
+                                    <td>产品评测</td>
+                                    <!--<td><?php echo $arr_id_product[$arr_id_evaluate[$em->fk_evaluate]->fk_product]->name; ?></td>
                                     <td><?php echo $arr_id_user[$em->fk_enterprise_user]; ?></td>
-                                    <td><?php echo $arr_id_evaluate[$em->fk_evaluate]->due_date; ?></td>
+                                    <td><?php echo $arr_id_evaluate[$em->fk_evaluate]->due_date; ?></td>-->
+                                    <td>
+                                        <?php
+                                        if(array_key_exists($em->fk_evamedia_status, $arr_evamedia_status)){
+                                            echo $arr_evamedia_status[$em->fk_evamedia_status];
+                                        }
+                                        
+                                        ?>
+                                    </td>
+                                    <td><?php echo $em->created_by;?></td>
+                                    <td>
+                                        <a href="/evaluate/evainfo/<?php echo $em->fk_evaluate; ?>" class="btn btn-primary btn-mini">
+                                            查看详情
+                                        </a>
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
-                            </table>
-                        </div>
-                        <div>
-                            <form action="/evaluate/mgmt">
-                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有产品评测订单">
-                            </form>
-                        </div>
-                    </div>                    
-                    <div id="wrtmedia" class="widget-box">
-                        <div class="widget-title">
-                            <h4>最新撰稿订单——</h4>
-                        </div>
-                        <div class="widget-content nopadding">       
                             <?php
                             $arr_id_writer = array();
                             foreach($writers as $wt)
                             {
                                 $arr_id_writer[$wt->id_writer] = $wt;
                             }
-                            ?>                     
-                            <table class="table table-bordered table-striped">
-                                <tr>
-                                    <th>订单号</th>
-                                    <th>APP产品</th>
-                                    <th>企业名称</th>
-                                    <th>订单状态</th>
-                                </tr>
+                            ?>    
                                 <?php foreach($wrtmedia5 as $wm): ?>
                                 <tr>
                                     <td>
@@ -118,31 +151,24 @@
                                             <?php echo $wm->order_no; ?>
                                         </a>
                                     </td>
-                                    <td><?php echo $arr_id_product[$arr_id_writer[$wm->fk_writer]->fk_product]->name; ?></td>
-                                    <td><?php echo $arr_id_user[$wm->fk_enterprise_user]; ?></td>
-                                    <td><?php echo $wm->fk_wrtmedia_status; ?></td>
+                                    <td>自由撰稿人</td>
+                                    <!--<td><?php echo $arr_id_product[$arr_id_writer[$wm->fk_writer]->fk_product]->name; ?></td>
+                                    <td><?php echo $arr_id_user[$wm->fk_enterprise_user]; ?></td>-->
+                                    <td>
+                                        <?php 
+                                        if(array_key_exists($wm->fk_wrtmedia_status, $arr_wrtmedia_status)){
+                                            echo $arr_wrtmedia_status[$wm->fk_wrtmedia_status]; 
+                                        }                                        
+                                        ?>
+                                    </td>
+                                    <td><?php echo $wm->created_at; ?></td>
+                                    <td>
+                                        <a href="/writer/wrtinfo/<?php echo $wm->fk_writer; ?>" class="btn btn-primary btn-mini">
+                                            查看详情
+                                        </a>
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
-                            </table>
-                        </div>
-                        <div>
-                            <form action="/writer/mgmt">
-                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有撰稿订单">
-                            </form>
-                        </div>
-                    </div>
-                    <div id="topic" class="widget-box">
-                        <div class="widget-title">
-                            <h4>最新发布选题——</h4>
-                        </div>
-                        <div class="widget-content nopadding">
-                            <table class="table table-bordered table-striped">
-                                <tr>
-                                    <th>订单号</th>
-                                    <th>选题类型</th>
-                                    <th>APP类型</th>
-                                    <th>有效日期</th>
-                                </tr>
                                 <?php foreach($topic5 as $tp): ?>
                                 <tr>
                                     <td>
@@ -150,31 +176,25 @@
                                             <?php echo $tp->order_no; ?>
                                         </a>
                                     </td>
-                                    <td><?php echo $tp->topic_type; ?></td>
+                                    <td>选题发布</td>
+                                    <td>
+                                        <?php
+                                        if(array_key_exists($tp->fk_topic_status, $arr_topic_status)){
+                                            echo $arr_topic_status[$tp->fk_topic_status];
+                                        }
+                                        ?>
+                                    </td>
+                                    <!--<td><?php echo $tp->topic_type; ?></td>
                                     <td><?php echo $tp->app_type; ?></td>
-                                    <td><?php echo $tp->due_date; ?></td>
+                                    <td><?php echo $tp->due_date; ?></td>-->
+                                    <td><?php echo $tp->created_at;?></td>
+                                    <td>
+                                        <a href="/topic/detail/<?php echo $tp->id_topic; ?>" class="btn btn-primary btn-mini">
+                                            查看详情
+                                        </a>
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
-                            </table>
-                        </div>
-                        <div>
-                            <form action="/topic/index">
-                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有发布选题">
-                            </form>
-                        </div>
-                    </div>
-                    <div id="interview" class="widget-box">
-                        <div class="widget-title">
-                            <h4>最新采访邀约——</h4>
-                        </div>
-                        <div class="widget-content nopadding">
-                            <table class="table table-bordered table-striped">
-                                <tr>
-                                    <th>订单号</th>
-                                    <th>APP产品</th>
-                                    <th>企业名称</th>
-                                    <th>采访日期</th>
-                                </tr>
                                 <?php foreach($interview5 as $itv): ?>
                                 <tr>
                                     <td>
@@ -182,17 +202,26 @@
                                             <?php echo $itv->order_no; ?>
                                         </a>
                                     </td>
-                                    <td><?php echo $arr_id_product[$itv->fk_product]->name; ?></td>
+                                    <td>采访邀约</td>
+                                    <td>
+                                        <?php
+                                        if(array_key_exists($itv->fk_interview_status, $arr_interview_status)){
+                                            echo $arr_interview_status[$itv->fk_interview_status];
+                                        }
+                                        ?>
+                                    </td>
+                                    <!--<td><?php echo $arr_id_product[$itv->fk_product]->name; ?></td>
                                     <td><?php echo $arr_id_user[$itv->fk_enterprise_user]; ?></td>
-                                    <td><?php echo $itv->date_time; ?></td>
+                                    <td><?php echo $itv->date_time; ?></td>-->
+                                    <td><?php echo $itv->created_at;?></td>
+                                    <td>
+                                        <a href="/interview/detail/<?php echo $itv->id_interview; ?>" class="btn btn-primary btn-mini">
+                                            查看详情
+                                        </a>
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
                             </table>
-                        </div>
-                        <div>
-                            <form action="/interview/index">
-                                <input type="submit" class="btn btn-primary btn-mini" value="查看所有采访邀约">
-                            </form>
                         </div>
                     </div>
                 </div>

@@ -50,7 +50,7 @@ class CreditlogTable
     {
         $resultSet = $this->tableGateway->select(function(Select $select) use ($fk_credit){
             $select->columns(array('id_creditlog', 'order_no', 'date_time',  
-                'amount', 'is_pay', 'is_charge', 'created_at', 'created_by'));
+                'amount', 'is_pay', 'is_charge', 'deposit', 'is_pay_deposit', 'is_charge_deposit', 'created_at', 'created_by'));
             $select->join(
                 array('st' => 'service_type'),
                 'st.id_service_type = creditlog.fk_service_type',

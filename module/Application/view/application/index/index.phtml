@@ -18,10 +18,10 @@
 <div id="indexbody" class="indexbody">
 	<div id="main" class="container" style="width:1170px;">
 		<div id="row" class="row">
-			<div id="left" class="span4 left">
+			<div id="left" class="span3 left">
 				<div id="user" class="user">
 					<h4 class="login">快速登录</h4>				
-					<h5>
+					<h5 class="user-tabs" style="margin-bottom:0;">
 						<span id="ent-login" class="ent-login" onclick="ent_alert();">企业用户</span>
 						<span id="med-login" class="med-login" onclick="med_alert();">媒体用户</span>
 					</h5>
@@ -56,7 +56,7 @@
 		    						<tr>
 		    							<td colspan=2>
 		    								<img src="<?php echo 'verifycode/images/'.$id_verifycode.'.png';?>"/>
-		    							</td>
+		    								<a href="application" class="btn btn-primary btn-mini">换一张</a></td>
 		    						</tr>
 		    					</table>
 		    					</div>
@@ -102,6 +102,7 @@
 		    						<tr>
 		    							<td colspan=2>
 		    								<img src="<?php echo 'verifycode/images/'.$id_verifycode_med.'.png';?>"/>
+		    								<a href="application" class="btn btn-primary btn-mini">换一张</a></td>
 		    							</td>
 		    						</tr>
 		    					</table>
@@ -120,13 +121,26 @@
 					</div>
 				</div>
 				<div id="medialogos" class="medialogos">
-					合作媒体
+					<h4 class="login">合作媒体</h4>
+					<div class="login-inputs" align="center">
+						<img class="corporate-logo" src="img/21logo.gif"/>
+						<img class="corporate-logo" src="img/csj.jpg"/>	
+						<img class="corporate-logo" src="img/sina.png"/>
+						<img class="corporate-logo" src="img/sohu.png"/>
+						<img class="corporate-logo" src="img/huxiu.png"/>
+						<img class="corporate-logo" src="img/91.png"/>
+					</div>
 				</div>
 			</div>
-			<div id="mid" class="span4 mid">
-				SPAN4 MID
-				<div id="slides" class="slides">
-					焦点推荐图
+			<div id="mid" class="span6 mid">
+				<div id="slides" class="slides">			
+					<div id="flex1" class="flexslider">
+						<ul class="slides">
+							<li>
+								<img src="img/slide1.png" alt="" />
+							</li>
+						</ul>
+					</div>					
 				</div>
 				<div id="abstract" class="abstract">
 					摘要
@@ -164,7 +178,7 @@
 					</table>
 				</div>
 			</div>
-			<div id="right" class="span4 right">
+			<div id="right" class="span3 right">
 				SPAN4 RIGHT
 				<div id="mediarank" class="mediarank">
 					APP媒体曝光排名
@@ -229,6 +243,11 @@ function med_alert()
 </script>
 
 <style>
+.corporate-logo
+{
+	width:160px;
+	margin:10px;
+}
 div.navbar
 {
 	display: none;
@@ -262,6 +281,17 @@ span.med-login
 div.login-inputs, div.login-btns
 {
 	background-color: #f4f4f4;
+}
+div.login-inputs
+{
+	border-top:4px solid #000000;
+	margin-left: auto;
+	margin-right:auto;
+	width:220px;
+}
+div.user-tabs
+{
+	margin:0;
 }
 div.mid-it
 {

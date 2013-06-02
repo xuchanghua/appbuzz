@@ -65,6 +65,12 @@ class TopicController extends AbstractActionController
             $form->setData($request->getPost());
             if($form->isValid()){
                 $topic->exchangeArray($form->getData());
+                $str_temp = "";
+                foreach($topic->app_type as $at)
+                {
+                    $str_temp = $str_temp.$at.", ";
+                }
+                $topic->app_type   = $str_temp;
                 $topic->created_by = $cur_user;
                 $topic->created_at = $this->_getDateTime();
                 $topic->updated_by = $cur_user;

@@ -55,7 +55,7 @@
                         'name' => 'myapp',
                         'type'  => 'Zend\Form\Element\Select',
                         'attributes' => array(
-                            'id' => 'appproduct',
+                            'id' => 'appproduct1',
                             //'onchange' => "alert();",
                         ),
                         'options' => array(
@@ -66,7 +66,7 @@
                         'name' => 'myapp2',
                         'type'  => 'Zend\Form\Element\Select',
                         'attributes' => array(
-                            'id' => 'appproduct',
+                            'id' => 'appproduct2',
                             //'onchange' => "alert();",
                         ),
                         'options' => array(
@@ -77,7 +77,7 @@
                         'name' => 'myapp3',
                         'type'  => 'Zend\Form\Element\Select',
                         'attributes' => array(
-                            'id' => 'appproduct',
+                            'id' => 'appproduct3',
                             //'onchange' => "alert();",
                         ),
                         'options' => array(
@@ -190,6 +190,19 @@ input[type="text"], textarea
 }
 </style>
 
+<script>
+$(document).ready(function(){
+    $("#appproduct1").get(0).value = "<?php echo $self1;?>";
+    $("#appproduct2").get(0).value = "<?php echo $self2;?>";
+    $("#appproduct3").get(0).value = "<?php echo $self3;?>";
+    $("#compapp1").get(0).value = "<?php echo $competitor1;?>";
+    $("#compapp2").get(0).value = "<?php echo $competitor2;?>";
+    $("#compapp3").get(0).value = "<?php echo $competitor3;?>";
+    $("#compapp4").get(0).value = "<?php echo $competitor4;?>";
+    $("#compapp5").get(0).value = "<?php echo $competitor5;?>";
+});
+</script>
+""
 
             <script src="js/excanvas.min.js"></script>
             <script src="js/jquery.min.js"></script>

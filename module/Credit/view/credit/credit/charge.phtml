@@ -56,6 +56,18 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="tdlabel">锁定金额：</td>
+                        <td class="tdinput">
+                            <?php echo $credit->deposit; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdlabel">可用余额：</td>
+                        <td class="tdinput">
+                            <?php echo $credit->amount - $credit->deposit;?>
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="tdlabel">充值金额：</td>
                         <td class="tdinput">
                             <?php echo $this->formRow($form->get('chargeamount')); ?>

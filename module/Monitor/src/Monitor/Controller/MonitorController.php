@@ -131,7 +131,7 @@ class MonitorController extends AbstractActionController
 
         $id_monitor = $this->getMonitorTable()->getId($monitor->created_at, $monitor->created_by);
         $monitor2 = $this->getMonitorTable()->getMonitor($id_monitor);
-        $monitor2->order_no = 01000000 + $id_monitor;
+        $monitor2->order_no = 51000000 + $id_monitor;
         $this->getMonitorTable()->saveMonitor($monitor2);
 
         //update the user's credit
@@ -145,7 +145,7 @@ class MonitorController extends AbstractActionController
         //create creditlog record;
         $creditlog = new Creditlog();
         $creditlog->fk_credit = $credit->id_credit;
-        $creditlog->fk_service_type = 8;//企业->网络监测->6个月
+        $creditlog->fk_service_type = 13;//企业->网络监测->6个月
         $creditlog->fk_from = $fk_user;
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();
@@ -228,7 +228,7 @@ class MonitorController extends AbstractActionController
 
         $id_monitor = $this->getMonitorTable()->getId($monitor->created_at, $monitor->created_by);
         $monitor2 = $this->getMonitorTable()->getMonitor($id_monitor);
-        $monitor2->order_no = 01000000 + $id_monitor;
+        $monitor2->order_no = 51000000 + $id_monitor;
         $this->getMonitorTable()->saveMonitor($monitor2);
 
         //update the user's credit
@@ -242,7 +242,7 @@ class MonitorController extends AbstractActionController
         //create creditlog record;
         $creditlog = new Creditlog();
         $creditlog->fk_credit = $credit->id_credit;
-        $creditlog->fk_service_type = 9;//企业->网络监测->12个月
+        $creditlog->fk_service_type = 14;//企业->网络监测->12个月
         $creditlog->fk_from = $fk_user;
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();
@@ -305,6 +305,20 @@ class MonitorController extends AbstractActionController
         $id_user = $this->getUserTable()->getUserByName($cur_user)->id;
         $this->is_bought($id_user);
 
+        //get Monitor
+        $monitorSet = $this->getMonitorTable()->fetchValidMonitorByFkEntUser($id_user);
+        $monitor = $monitorSet->current();
+        $id_monitor = $monitor->id_monitor;
+        //get two Keywords
+        $self1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 1);
+        $self2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 3);
+        $self3 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 5);
+        $competitor1 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 2);
+        $competitor2 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 4);
+        $competitor3 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 6);
+        $competitor4 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 8);
+        $competitor5 = $this->getKeywordTable()->getKeywordByMonitor($id_monitor, 10);
+
         $form = new ConfigureForm();
         $form->get('submit')->setValue('保存');
         $request = $this->getRequest();
@@ -346,6 +360,7 @@ class MonitorController extends AbstractActionController
                 
                 //send email to admin@appbuzz.cn about the configuration changes
                 $to = "admin@appbuzz.cn";
+                $date = $this->_getDateTime();
                 $message = new Message();
                 $message->addTo($to)
                         ->addFrom("monitor@furnihome.asia")
@@ -383,6 +398,14 @@ class MonitorController extends AbstractActionController
             'user' => $cur_user,
             'form' => $form,
             'products' => $this->getProductTable()->fetchProductByUser($cur_user),
+            'self1' => $self1->keyword,
+            'self2' => $self2->keyword,
+            'self3' => $self3->keyword,
+            'competitor1' => $competitor1->keyword,
+            'competitor2' => $competitor2->keyword,
+            'competitor3' => $competitor3->keyword,
+            'competitor4' => $competitor4->keyword,
+            'competitor5' => $competitor5->keyword,
         ));
     }
 
@@ -429,12 +452,12 @@ class MonitorController extends AbstractActionController
 
 
         //query
-        $query_keyword1_weibo = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_1."%' AND website_type = 'Mblog' ORDER BY id DESC LIMIT 2;";
-        $query_keyword1_news  = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_1."%' AND website_type = 'News'  ORDER BY id DESC LIMIT 2;";
-        $query_keyword1_forum = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_1."%' AND website_type = 'BBS'  ORDER BY id DESC LIMIT 2;";
-        $query_keyword2_weibo = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_2."%' AND website_type = 'Mblog' ORDER BY id DESC LIMIT 2;";
-        $query_keyword2_news  = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_2."%' AND website_type = 'News'  ORDER BY id DESC LIMIT 2;";
-        $query_keyword2_forum = "SELECT * FROM ".$table_name." WHERE content LIKE '%".$str_keyword_2."%' AND website_type = 'BBS'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword1_weibo = "SELECT * FROM ".$table_name." WHERE keywords LIKE '%".$str_keyword_1."%' AND website_type = 'Mblog' ORDER BY id DESC LIMIT 2;";
+        $query_keyword1_news  = "SELECT * FROM ".$table_name." WHERE keywords LIKE '%".$str_keyword_1."%' AND website_type = 'News'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword1_forum = "SELECT * FROM ".$table_name." WHERE keywords LIKE '%".$str_keyword_1."%' AND website_type = 'BBS'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword2_weibo = "SELECT * FROM ".$table_name." WHERE keywords LIKE '%".$str_keyword_2."%' AND website_type = 'Mblog' ORDER BY id DESC LIMIT 2;";
+        $query_keyword2_news  = "SELECT * FROM ".$table_name." WHERE keywords LIKE '%".$str_keyword_2."%' AND website_type = 'News'  ORDER BY id DESC LIMIT 2;";
+        $query_keyword2_forum = "SELECT * FROM ".$table_name." WHERE keywords LIKE '%".$str_keyword_2."%' AND website_type = 'BBS'  ORDER BY id DESC LIMIT 2;";
         //$sql = "SELECT * FROM t_blog;";
         $result_keyword1_weibo = mysql_query($query_keyword1_weibo, $con);
         $result_keyword1_news  = mysql_query($query_keyword1_news,  $con);
@@ -541,12 +564,12 @@ class MonitorController extends AbstractActionController
         mysql_select_db("article", $con);
 
         //query
-        $query_keyword1_weibo = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_1."%' AND website_type = 'weibo' AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
-        $query_keyword1_news  = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_1."%' AND website_type = '新闻'  AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
-        $query_keyword1_forum = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_1."%' AND website_type = '论坛'  AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
-        $query_keyword2_weibo = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_2."%' AND website_type = 'weibo' AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
-        $query_keyword2_news  = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_2."%' AND website_type = '新闻'  AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
-        $query_keyword2_forum = "SELECT * FROM t_blog WHERE content LIKE '%".$str_keyword_2."%' AND website_type = '论坛'  AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
+        $query_keyword1_weibo = "SELECT * FROM t_blog WHERE keywords LIKE '%".$str_keyword_1."%' AND website_type = 'weibo' AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
+        $query_keyword1_news  = "SELECT * FROM t_blog WHERE keywords LIKE '%".$str_keyword_1."%' AND website_type = '新闻'  AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
+        $query_keyword1_forum = "SELECT * FROM t_blog WHERE keywords LIKE '%".$str_keyword_1."%' AND website_type = '论坛'  AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
+        $query_keyword2_weibo = "SELECT * FROM t_blog WHERE keywords LIKE '%".$str_keyword_2."%' AND website_type = 'weibo' AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
+        $query_keyword2_news  = "SELECT * FROM t_blog WHERE keywords LIKE '%".$str_keyword_2."%' AND website_type = '新闻'  AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
+        $query_keyword2_forum = "SELECT * FROM t_blog WHERE Keywords LIKE '%".$str_keyword_2."%' AND website_type = '论坛'  AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' ORDER BY id DESC;";
         //$sql = "SELECT * FROM t_blog;";
         $result_keyword1_weibo = mysql_query($query_keyword1_weibo, $con);
         $result_keyword1_news  = mysql_query($query_keyword1_news,  $con);
@@ -644,7 +667,7 @@ class MonitorController extends AbstractActionController
                         tone, uid, tm_spider, guanzhu_cnt, fans_cnt, article_cnt, from_device, 
                         forword_cnt, reserved_cnt, article_type, renzhen 
                 FROM t_blog 
-                WHERE (content LIKE '%".$str_keyword_1."%' OR content LIKE '%".$str_keyword_2."%')
+                WHERE (keywords LIKE '%".$str_keyword_1."%' OR keywords LIKE '%".$str_keyword_2."%')
                     AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
                 ORDER BY id DESC;"; 
         //$query = "SELECT id, username, real_name FROM user;"; 
@@ -727,89 +750,89 @@ class MonitorController extends AbstractActionController
         //query
         $query_chart1_keyword1_weibo = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
                                         FROM t_blog 
-                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_1."%' 
                                         AND website_type = 'weibo' 
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
                                         GROUP BY date_post
                                         ORDER BY date_post ASC;";
         $query_chart1_keyword1_news  = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
                                         FROM t_blog 
-                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_1."%' 
                                         AND website_type = '新闻'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
                                         GROUP BY date_post
                                         ORDER BY date_post ASC;";
         $query_chart1_keyword1_forum = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
                                         FROM t_blog 
-                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_1."%' 
                                         AND website_type = '论坛'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
                                         GROUP BY date_post
                                         ORDER BY date_post ASC;";
         $query_chart2_keyword2_weibo = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
                                         FROM t_blog 
-                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_2."%' 
                                         AND website_type = 'weibo' 
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
                                         GROUP BY date_post
                                         ORDER BY date_post ASC;";
         $query_chart2_keyword2_news  = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
                                         FROM t_blog 
-                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_2."%' 
                                         AND website_type = '新闻'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
                                         GROUP BY date_post
                                         ORDER BY date_post ASC;";
         $query_chart2_keyword2_forum = "SELECT COUNT(id) AS quantity, SUBSTRING(tm_post,1,10) AS date_post 
                                         FROM t_blog 
-                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_2."%' 
                                         AND website_type = '论坛'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."' 
                                         GROUP BY date_post
                                         ORDER BY date_post ASC;";
         $query_chart3_keyword1       = "SELECT COUNT(id) AS quantity, website_type
                                         FROM t_blog
-                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_1."%' 
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
                                         GROUP BY website_type";
         $query_chart3_keyword2       = "SELECT COUNT(id) AS quantity, website_type
                                         FROM t_blog
-                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_2."%' 
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
                                         GROUP BY website_type";
         $query_chart4_keyword1_weibo = "SELECT COUNT(id) AS quantity, tone
                                         FROM t_blog
-                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_1."%' 
                                         AND website_type = 'weibo'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
                                         GROUP BY tone";
         $query_chart4_keyword1_news = "SELECT COUNT(id) AS quantity, tone
                                         FROM t_blog
-                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_1."%' 
                                         AND website_type = '新闻'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
                                         GROUP BY tone";
         $query_chart4_keyword1_forum = "SELECT COUNT(id) AS quantity, tone
                                         FROM t_blog
-                                        WHERE content LIKE '%".$str_keyword_1."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_1."%' 
                                         AND website_type = '论坛'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
                                         GROUP BY tone";
         $query_chart5_keyword2_weibo = "SELECT COUNT(id) AS quantity, tone
                                         FROM t_blog
-                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_2."%' 
                                         AND website_type = 'weibo'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
                                         GROUP BY tone";
         $query_chart5_keyword2_news  = "SELECT COUNT(id) AS quantity, tone
                                         FROM t_blog
-                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_2."%' 
                                         AND website_type = '新闻'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
                                         GROUP BY tone";
         $query_chart5_keyword2_forum = "SELECT COUNT(id) AS quantity, tone
                                         FROM t_blog
-                                        WHERE content LIKE '%".$str_keyword_2."%' 
+                                        WHERE keywords LIKE '%".$str_keyword_2."%' 
                                         AND website_type = '论坛'  
                                         AND tm_post > '".$start_date."' AND tm_post < '".$end_date."'
                                         GROUP BY tone";

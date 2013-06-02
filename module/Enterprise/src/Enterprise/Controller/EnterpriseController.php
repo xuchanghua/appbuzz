@@ -208,6 +208,7 @@ class EnterpriseController extends AbstractActionController
             'writer5'    => $writer5,
             'tpcontact5' => $tpcontact5,
             'interview5' => $interview5,
+            'now' => $this->_getDateTime(),
         ));
     }
 

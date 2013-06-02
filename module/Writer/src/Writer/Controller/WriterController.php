@@ -557,7 +557,7 @@ class WriterController extends AbstractActionController
                 //create creditlog record;
                 /*$creditlog = new Creditlog();
                 $creditlog->fk_credit = $credit->id_credit;
-                $creditlog->fk_service_type = 6;//企业->我要撰稿
+                $creditlog->fk_service_type = 11;//企业->我要撰稿
                 $creditlog->fk_from = $fk_user;
                 $creditlog->fk_to = null;
                 $creditlog->date_time = $this->_getDateTime();
@@ -630,7 +630,7 @@ class WriterController extends AbstractActionController
             //log the changes
             $creditlog = new Creditlog();
             $creditlog->fk_credit = $credit->id_credit;
-            $creditlog->fk_service_type = 6;//企业->我要撰稿
+            $creditlog->fk_service_type = 11;//企业->我要撰稿
             $creditlog->fk_from = $fk_user;
             $creditlog->fk_to = null;
             $creditlog->date_time = $this->_getDateTime();
@@ -687,7 +687,7 @@ class WriterController extends AbstractActionController
         //log the credit change;
         $creditlog = new Creditlog();
         $creditlog->fk_credit = $credit->id_credit;
-        $creditlog->fk_service_type = 6;//企业->我要撰稿
+        $creditlog->fk_service_type = 11;//企业->我要撰稿
         $creditlog->fk_from = $fk_user;
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();
@@ -744,7 +744,7 @@ class WriterController extends AbstractActionController
             //log the credit change;
             $creditlog = new Creditlog();
             $creditlog->fk_credit = $credit->id_credit;
-            $creditlog->fk_service_type = 6;//企业->我要撰稿
+            $creditlog->fk_service_type = 11;//企业->我要撰稿
             $creditlog->fk_from = $fk_user;
             $creditlog->fk_to = null;
             $creditlog->date_time = $this->_getDateTime();
@@ -1334,7 +1334,7 @@ class WriterController extends AbstractActionController
         //log the credit change;
         $creditlog = new Creditlog();
         $creditlog->fk_credit = $credit->id_credit;
-        $creditlog->fk_service_type = 6;//企业->我要撰稿
+        $creditlog->fk_service_type = 11;//企业->我要撰稿
         $creditlog->fk_from = $fk_user;
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();
@@ -1363,7 +1363,7 @@ class WriterController extends AbstractActionController
         //log the change
         $creditlog_media = new Creditlog();
         $creditlog_media->fk_credit = $credit_media->id_credit;
-        $creditlog_media->fk_service_type = 61;
+        $creditlog_media->fk_service_type = 12;//媒体->自由撰稿人
         $creditlog_media->fk_from = null;
         $creditlog_media->fk_to = $fk_user_media;
         $creditlog_media->date_time = $this->_getDateTime();
@@ -1427,7 +1427,7 @@ class WriterController extends AbstractActionController
         //log the credit change;
         $creditlog = new Creditlog();
         $creditlog->fk_credit = $credit->id_credit;
-        $creditlog->fk_service_type = 6;//企业->我要撰稿
+        $creditlog->fk_service_type = 11;//企业->我要撰稿
         $creditlog->fk_from = $fk_user;
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();

@@ -26,7 +26,7 @@ class ArticleController extends AbstractActionController
     public function indexAction()
     {     
         //管理员->首页管理->文章列表
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $articles = $this->getArticleTable()->fetchAllDesc();
@@ -40,7 +40,7 @@ class ArticleController extends AbstractActionController
     public function rankAction()
     {
         //管理员->首页管理->排序管理
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $article_rank = $this->getRankTable()->getRankByObj('article');
@@ -56,7 +56,7 @@ class ArticleController extends AbstractActionController
     public function editrankAction()
     {
         //管理员->首页管理->调整排序
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_rank = 1;//1=>article
@@ -88,7 +88,7 @@ class ArticleController extends AbstractActionController
     public function apprankAction()
     {
         //管理员->首页管理->推荐APP排序
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $recapp_rank = $this->getRankTable()->getRankByObj('product');
@@ -104,7 +104,7 @@ class ArticleController extends AbstractActionController
     public function editapprankAction()
     {
         //管理员->首页管理->调整推荐APP排序
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_rank = 2;//1=>推荐app
@@ -136,7 +136,7 @@ class ArticleController extends AbstractActionController
     public function latestapprankAction()
     {
         //管理员->首页管理->最新注册APP排序
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $recapp_rank = $this->getRankTable()->getRank(3);
@@ -152,7 +152,7 @@ class ArticleController extends AbstractActionController
     public function editlatestapprankAction()
     {
         //管理员->首页管理->调整最新注册APP排序
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_rank = 3;//3=>最新注册app
@@ -184,7 +184,7 @@ class ArticleController extends AbstractActionController
     public function addAction()
     {
         //管理员->首页管理->添加文章
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $form = new ArticleForm();
@@ -221,7 +221,7 @@ class ArticleController extends AbstractActionController
     public function detailAction()
     {
         //管理员->首页管理->文章详情
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_article = (int) $this->params()->fromRoute('id',0);
@@ -258,7 +258,7 @@ class ArticleController extends AbstractActionController
     public function editAction()
     {                
         //管理员->首页管理->编辑首页文章
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_article = (int) $this->params()->fromRoute('id', 0);
@@ -304,7 +304,7 @@ class ArticleController extends AbstractActionController
     public function addbannerAction()
     {
         //管理员->横幅管理->添加横幅
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $form = new BannerForm();
@@ -378,7 +378,7 @@ class ArticleController extends AbstractActionController
     public function bannerdetailAction()
     {
         //管理员->横幅管理->横幅详细信息
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_banner = (int) $this->params()->fromRoute('id',0);
@@ -399,7 +399,7 @@ class ArticleController extends AbstractActionController
     public function bannerlistAction()
     {
         //管理员->横幅管理->横幅列表
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $banners = $this->getBannerTable()->fetchAllDesc();
@@ -413,7 +413,7 @@ class ArticleController extends AbstractActionController
     public function bannerrankAction()
     {
         //管理员->横幅管理->横幅排序
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $banner_rank = $this->getRankTable()->getRankByObj('banner');
@@ -429,7 +429,7 @@ class ArticleController extends AbstractActionController
     public function editbannerrankAction()
     {
         //管理员->横幅管理->调整横幅排序
-        $arr_type_allowed = array(3);
+        $arr_type_allowed = array(3, 4);
         $cur_user = $this->_auth($arr_type_allowed);
 
         $id_rank = 4;//4=>横幅

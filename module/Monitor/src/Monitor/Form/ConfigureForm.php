@@ -31,6 +31,7 @@ class ConfigureForm extends Form
         $this->add(array(
             'name' => 'competitorapp',
             'attributes' => array(
+                'id' => 'compapp1',
                 'type'  => 'text',
                 'placeholder' => '',
             ),
@@ -41,6 +42,7 @@ class ConfigureForm extends Form
         $this->add(array(
             'name' => 'competitorapp2',
             'attributes' => array(
+                'id' => 'compapp2',
                 'type'  => 'text',
                 'placeholder' => '',
             ),
@@ -51,6 +53,7 @@ class ConfigureForm extends Form
         $this->add(array(
             'name' => 'competitorapp3',
             'attributes' => array(
+                'id' => 'compapp3',
                 'type'  => 'text',
                 'placeholder' => '',
             ),
@@ -61,6 +64,7 @@ class ConfigureForm extends Form
         $this->add(array(
             'name' => 'competitorapp4',
             'attributes' => array(
+                'id' => 'compapp4',
                 'type'  => 'text',
                 'placeholder' => '',
             ),
@@ -71,6 +75,7 @@ class ConfigureForm extends Form
         $this->add(array(
             'name' => 'competitorapp5',
             'attributes' => array(
+                'id' => 'compapp5',
                 'type'  => 'text',
                 'placeholder' => '',
             ),

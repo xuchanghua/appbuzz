@@ -276,7 +276,13 @@
                         <td>id：</td>
                         <td><?php echo $credit->id_credit; ?></td>
                         <td>账户余额：</td>
-                        <td><?php echo '人民币 '.$credit->amount.' 元'; ?></td>
+                        <td><?php echo '人民币 ', $credit->amount, ' 元'; ?></td>
+                    </tr>
+                    <tr>
+                        <td>锁定金额：</td>
+                        <td><?php echo '人民币 ', $credit->deposit, ' 元'; ?></td>
+                        <td>可用余额：</td>
+                        <td><?php echo '人民币 ', ($credit->amount - $credit->deposit), ' 元';?></td>
                     </tr>
                     <tr>
                         <td>创建人：</td>

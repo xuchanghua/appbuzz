@@ -729,14 +729,18 @@ class NewspubController extends AbstractActionController
             ));
         }
 
+        //get the price
+        $price_newspub_single = $this->getConstantTable()->getConstant(3)->value;
+        $price_newspub_multiple = $this->getConstantTable()->getConstant(4)->value;
+
         $newspub = $this->getNewspubTable()->getNewspub($id_newspub);
         $fk_user = $this->getUserTable()->getUserByName($newspub->created_by)->id;
         $credit = $this->getCreditTable()->getCreditByFkUser($fk_user);
         if($newspub->fk_pub_mode == 1){
             $count = $this->getNpmediaTable()->getCountNmByFkNewspub($id_newspub);
-            $price = 350 * $count;
+            $price = $price_newspub_single * $count;
         }elseif($newspub->fk_pub_mode == 2){
-            $price = 1500;
+            $price = $price_newspub_multiple;
         }
         //update the $newspub, change the fk_newspub_status to 4
         $newspub->fk_newspub_status = 4;//账款结清
@@ -754,7 +758,7 @@ class NewspubController extends AbstractActionController
         //log the change of the amount
         $creditlog = New Creditlog();
         $creditlog->fk_credit = $credit->id_credit;
-        $creditlog->fk_service_type = 10;//新闻发布->单篇发布->结账
+        $creditlog->fk_service_type = 6;//新闻发布->单篇发布->结账
         $creditlog->fk_from = $fk_user;
         $creditlog->fk_to = null;
         $creditlog->date_time = $this->_getDateTime();
@@ -877,7 +881,7 @@ class NewspubController extends AbstractActionController
             //log the change
             $creditlog = new Creditlog();
             $creditlog->fk_credit = $credit->id_credit;
-            $creditlog->fk_service_type = 10;//新闻发布->单篇发布->订单结束
+            $creditlog->fk_service_type = 4;//新闻发布->单篇发布->订单结束
             $creditlog->fk_from = null;
             $creditlog->fk_to = $fk_user;
             $creditlog->date_time = $this->_getDateTime();
@@ -1052,7 +1056,7 @@ class NewspubController extends AbstractActionController
                     //log the change
                     $creditlog = new Creditlog();
                     $creditlog->fk_credit = $credit->id_credit;
-                    $creditlog->fk_service_type = 10;//新闻发布->单篇发布->订单结束
+                    $creditlog->fk_service_type = 4;//新闻发布->单篇发布->订单结束
                     $creditlog->fk_from = null;
                     $creditlog->fk_to = $fk_user;
                     $creditlog->date_time = $this->_getDateTime();
@@ -1134,7 +1138,7 @@ class NewspubController extends AbstractActionController
             //log the change
             $creditlog = new Creditlog();
             $creditlog->fk_credit = $credit->id_credit;
-            $creditlog->fk_service_type = 10;//新闻发布->单篇发布->订单结束
+            $creditlog->fk_service_type = 4;//新闻发布->单篇发布->订单结束
             $creditlog->fk_from = null;
             $creditlog->fk_to = $fk_user;
             $creditlog->date_time = $this->_getDateTime();

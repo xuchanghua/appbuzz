@@ -78,6 +78,9 @@ class TopicForm extends Form
                     '天气'       => '天气',
                 ),
             ),
+            'attributes' => array(                
+                'multiple' => 'multiple',
+            ),
         ));
         $this->add(array(
             'name' => 'due_date',
