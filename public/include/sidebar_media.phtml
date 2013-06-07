@@ -1,46 +1,60 @@
-            <div id="user" class="user">
-                <ul>
-                    <li>
-                        <span>用户: <?php echo $user;?></span>
-                        <a href="/user/logout">退出</a>
-                    </li>
-                    <li><a href="/">媒体资料</a></li>
-                    <li><a href="/media/myaccount">我的账户</a></li>
-                    <li><a href="/media/myorder">我的订单</a></li>
-                    <li><a href="">APP新闻助手</a></li>
-            </div>
-            <div id="sidebar">
-                <ul>
-                    <li class="submenu">
-                        <a href="#"><span>发布选题</span></a>
-                        <ul>
-                            <li><a href="/topic/add">我要发布</a></li>
-                            <li><a href="/topic/index">选题管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>产品评测</span></a>
-                        <ul>
-                            <li><a href="/evaluate/invitation">评测邀约</a></li>
-                            <li><a href="/evaluate/mgmt">评测管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>采访APP</span></a>
-                        <ul>
-                            <li><a href="/interview/add">采访邀约</a></li>
-                            <li><a href="/interview/index">采访管理</a></li>
-                        </ul>
-                    </li>
-                    <div style="display:<?php echo ($is_writer)?'':'none' ;?>;">
-                    <li class="submenu">
-                        <a href="#"><span>自由撰稿人</span></a>
-                        <ul>
-                            <li><a href="/writer/reqlist">最新订单</a></li>
-                            <li><a href="/writer/mgmt">撰稿管理</a></li>
-                        </ul>
-                    </li>
-                    </div>
-                </ul>
-            </div>   
+<div id="left" class="span3 left">
+    <div class="section">
+        <h4 class="title">用户管理</h4>
+
+        <div class="content">
+            <div>用户名: <?php echo $user;?> <a style="margin-left:10px" href="/user/logout">退出</a></div>
+            
+            <div class="sep"></div>
+
+            <ul class="nav nav-list bs-docs-sidenav">
+              <li><a href="/"><i class="icon-chevron-right"></i> 媒体资料</a></li>
+              <li><a href="/media/myaccount"><i class="icon-chevron-right"></i> 我的账户</a></li>
+              <li><a href="/media/myorder"><i class="icon-chevron-right"></i> 我的订单</a></li>
+              <li><a href="/media"><i class="icon-chevron-right"></i> APP新闻助手</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    
+    <div class="section">
+
+        <ul style="display: block; position: static; margin-bottom: 5px; width: 210px;" class="collepse-menu">
+        <li>
+          <a href="#" tabindex="-1" class="menu-btn">发布选题</a>
+          <ul class="submenu">
+            <li><a href="/topic/add">我要发布</a></li>
+            <li><a href="/topic/index">选题管理</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="#" tabindex="-1" class="menu-btn">产品评测</a>
+          <ul class="submenu">
+            <li><a href="/evaluate/invitation">评测邀约</a></li>
+            <li><a href="/evaluate/mgmt">评测管理</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="#" tabindex="-1" class="menu-btn">采访APP</a>
+          <ul class="submenu">
+            <li><a href="/interview/add">采访邀约</a></li>
+            <li><a href="/interview/index">采访管理</a></li>
+          </ul>
+        </li>
+
+        <li style="display:<?php echo ($is_writer)?'':'none' ;?>;">
+          <a href="#" tabindex="-1" class="menu-btn">自由撰稿人</a>
+          <ul class="submenu">
+            <li><a href="/writer/reqlist">需求列表</a></li>
+            <li><a href="/writer/mgmt">撰稿管理</a></li>
+          </ul>
+        </li>
+
+       
+      </ul>
+    </div>
+</div>
+
  

@@ -1,59 +1,72 @@
-            <div id="user" class="user">
-                <ul>
-                    <li>
-                        <span>用户: <?php echo $user;?></span>
-                        <a href="/user/logout">退出</a>
-                    </li>
-                    <li><a href="/">企业资料</a></li>
-                    <li><a href="/enterprise/myaccount">我的账户</a></li>
-                    <li><a href="/enterprise/myorder">我的订单</a></li>
-                    <li><a href="/newshelper/index">APP新闻助手</a></li>
-                </ul>
-            </div>
-            <div id="sidebar">
-                <ul>
-                    <li class="submenu">
-                        <a href="#"><span>网络监测</span></a>
-                        <ul>
-                            <li><a href="/monitor/index">监测项目订制</a></li>
-                            <li><a href="/monitor/data">监测内容库</a></li>
-                            <li><a href="/monitor/mgmt">监测分析报告</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>新闻发布</span></a>
-                        <ul>
-                            <li><a href="/newspub/add">我要发布</a></li>
-                            <li><a href="/newspub/index">发布管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>产品测评</span></a>
-                        <ul>
-                            <li><a href="/evaluate/add">我要评测</a></li>
-                            <li><a href="/evaluate/index">评测管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>撰稿外包</span></a>
-                        <ul>
-                            <li><a href="/writer/add">订单发布</a></li>
-                            <li><a href="/writer/index">撰稿管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>媒体选题</span></a>
-                        <ul>
-                            <li><a href="/topic/current">最新选题</a></li>
-                            <li><a href="/topic/mgmt">选题管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="submenu">
-                        <a href="#"><span>媒体采访</span></a>
-                        <ul>
-                            <li><a href="/interview/entcurrent">最新邀约</a></li>
-                            <li><a href="/interview/entpast">过往邀约</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+<div id="left" class="span3 left">
+    <div class="section">
+        <h4 class="title">用户管理</h4>
+
+        <div class="content">
+            <div>用户名: <?php echo $user;?> <a style="margin-left:10px" href="/user/logout">退出</a></div>
+            <div class="sep"></div>
+
+            <ul class="nav nav-list bs-docs-sidenav">
+              <li><a href="/"><i class="icon-chevron-right"></i> 企业资料</a></li>
+              <li><a href="/enterprise/myaccount"><i class="icon-chevron-right"></i> 我的账户</a></li>
+              <li><a href="/enterprise/myorder"><i class="icon-chevron-right"></i> 我的订单</a></li>
+              <li><a href="/newshelper"><i class="icon-chevron-right"></i> APP新闻助手</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    
+    <div class="section">
+
+        <ul style="display: block; position: static; margin-bottom: 5px; width: 210px;" class="collepse-menu">
+        <li>
+          <a href="javascript:void(0)" tabindex="-1" class="menu-btn">网络监测</a>
+          <ul class="submenu">
+            <li><a href="/monitor/index">监测订制</a></li>
+            <li><a href="/monitor/data">监测数据</a></li>
+            <li><a href="/monitor/mgmt">监测管理</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="javascript:void(0)" tabindex="-1" class="menu-btn">新闻发布</a>
+          <ul class="submenu">
+            <li><a href="/newspub/add">我要发布</a></li>
+            <li><a href="/newspub/index">发布管理</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="javascript:void(0)" tabindex="-1" class="menu-btn">产品测评</a>
+          <ul class="submenu">
+            <li><a href="/evaluate/add">我要评测</a></li>
+            <li><a href="/evaluate/index">评测管理</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="javascript:void(0)" tabindex="-1" class="menu-btn">撰稿外包</a>
+          <ul class="submenu">
+            <li><a href="/writer/add">订单发布</a></li>
+            <li><a href="/writer/index">撰稿管理</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="javascript:void(0)" tabindex="-1" class="menu-btn">媒体选题</a>
+          <ul class="submenu">
+            <li><a href="/topic/current">最新选题</a></li>
+            <li><a href="/topic/mgmt">选题管理</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="javascript:void(0)" tabindex="-1" class="menu-btn">媒体采访</a>
+          <ul class="submenu">
+            <li><a href="/interview/entcurrent">最新邀约</a></li>
+                    <li><a href="/interview/entpast">过往邀约</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+</div>

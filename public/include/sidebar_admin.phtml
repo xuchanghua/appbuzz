@@ -1,61 +1,65 @@
-<div id="user" class="user">
-    <h4>用户：<?php echo $user;?></h4>
-</div>
-<div id="sidebar">
-    <ul>
+<div id="left" class="span3 left">
+    <div class="section">
+        <h4 class="title">用户管理</h4>
+
+        <div class="content">
+            <div>用户名: <?php echo $user;?> <a style="margin-left:10px" href="/user/logout">退出</a></div>
+            <div class="sep"></div>
+        </div>
+    </div>
+    
+    
+    <div class="section">
+
+        <ul style="display: block; position: static; margin-bottom: 5px; width: 210px;" class="collepse-menu show-all">
         <li>
-            <a href='#'><span>首页管理</span></a>
-            <ul>
-                <li><a href="/article/add">添加文章</a></li>
-                <li><a href="/article/index">文章列表</a></li>
-                <li><a href="/article/rank">文章排序</a></li>
-                <li><a href="/article/apprank">推荐APP排序</a></li>
-                <li><a href="/article/appnewsrank">APP新闻排序</a></li>
-                <li><a href="/article/latestapprank">最新注册APP排序</a></li>
-            </ul>
+          <a href="#" tabindex="-1" class="menu-btn">首页管理</a>
+          <ul class="submenu">
+            <li><a href="/article/add">添加文章</a></li>
+            <li><a href="/article/index">文章列表</a></li>
+            <li><a href="/article/rank">文章排序</a></li>
+            <li><a href="/article/apprank">推荐APP排序</a></li>
+            <li><a href="/article/appnewsrank">APP新闻排序</a></li>
+            <li><a href="/article/latestapprank">最新注册APP排序</a></li>
+          </ul>
         </li>
+
         <li>
-            <a href='#'><span>横幅管理</span></a>
-            <ul>
-                <li><a href="/article/addbanner">添加横幅</a></li>
-                <li><a href="/article/bannerlist">横幅列表</a></li>
-                <li><a href="/article/bannerrank">横幅排序</a></li>
-            </ul>
+          <a href="#" tabindex="-1" class="menu-btn">横幅管理</a>
+          <ul class="submenu">
+            <li><a href="/article/addbanner">添加横幅</a></li>
+            <li><a href="/article/bannerlist">横幅列表</a></li>
+            <li><a href="/article/bannerrank">横幅排序</a></li>
+          </ul>
         </li>
+
         <li>
-            <a href='#'><span>用户管理</span></a>
-            <ul>
-                <li><a href="/user/admin">所有用户</a></li>
-                <li><a href="/user/add">创建用户</a></li>
-                <li><a href="/credit/admin">媒体收款申请</a></li>
-                <li><a href="/media/publist">所有发稿媒体</a></li>
-                <li><a href="/media/addpubmedia">创建发稿媒体</a></li>
-            </ul>
+          <a href="#" tabindex="-1" class="menu-btn">用户管理</a>
+          <ul class="submenu">
+            <li><a href="/user/admin">所有用户</a></li>
+            <li><a href="/user/add">创建用户</a></li>
+          </ul>
         </li>
+
         <li>
-            <a href='#'><span>产品管理</span></a>
-            <ul>
-                <li><a href="/product/admin">所有产品</a></li>
+          <a href="#" tabindex="-1" class="menu-btn">产品管理</a>
+          <ul class="submenu">
+            <li><a href="/product/admin">所有产品</a></li>
                 <li><a href="#">创建产品</a></li>
-            </ul>
+          </ul>
         </li>
+
         <li>
-            <a href="#"><span>价格与折扣管理</span></a>
-            <ul>
-                <li><a href="/credit/price">产品价格</a></li>
-                <li><a href="/credit/discount">折扣管理</a></li>
-            </ul>
+          <a href="#" tabindex="-1" class="menu-btn">订单管理</a>
+          <ul class="submenu">
+            <li><a href="/monitor/admin">网络监测</a></li>
+            <li><a href="/newspub/admin">新闻发布</a></li>
+            <li><a href="/evaluate/admin">产品评测</a></li>
+            <li><a href="/writer/admin">撰稿外包</a></li>
+            <li><a href="/topic/admin">媒体选题</a></li>
+            <li><a href="/interview/admin">媒体采访</a></li>
+          </ul>
         </li>
-        <li>
-            <a href='#'><span>订单管理</span></a>
-            <ul>
-                <li><a href="/monitor/admin">网络监测</a></li>
-                <li><a href="/newspub/admin">新闻发布</a></li>
-                <li><a href="/evaluate/admin">产品评测</a></li>
-                <li><a href="/writer/admin">撰稿外包</a></li>
-                <li><a href="/topic/admin">媒体选题</a></li>
-                <li><a href="/interview/admin">媒体采访</a></li>
-            </ul>
-        </li>
-    </ul>
+      </ul>
+    </div>
 </div>

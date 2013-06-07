@@ -1,32 +1,73 @@
-<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="css/style.css">
-
-
 <div id="indexpage" class="indexpage">
-    <h1>企业用户首页</h1>
-    <div id="header" class="container" style="width:1170px;">
-    CONTAINER
-    <div class="row">
-        ROW
-        <div id="logo" class="span2 logo">
-            APPBUZZ LOGO
-        </div>
-        <div id="banner" class="span8 banner">
-            BANNER
-        </div>
-    </div>
-    </div>
-</BR>
-    <div id="main" class="container" style="width:1170px;">
+
+    <div id="header" class="container">
     <div id="row" class="row">
-        <div id="left" class="span2 left">
         <?php 
         set_include_path("public/include");        
         include 'sidebar_enterprise.phtml'; 
         ?>
-        </div>
-        <div id="mid" class="span8 mid">
-            <div>
+        <div id="mid" class="span9 mid">
+            <!--
+            <ul class="nav nav-pills" style="margin-top:20px;">
+                <li class="active">
+                <a href="#">我的APPBUZ</a>
+                </li>
+                <li><a href="#">APP新闻首页</a></li>
+            </ul>
+
+            <dl class="dashboard">
+                <dt>网络监测</dt>
+                <dd>
+                    <ul class="clearfix">
+                        <li><a style="padding-left:0;" href="#">监测项订制</a>|</li>
+                        <li><a href="#">新闻收件箱<span class="num">new</span></a>|</li>
+                        <li><a href="#">分析报表</a>|</li>
+                        <li><a href="#">监测管理</a></li>
+                    </ul>
+                </dd>
+
+                <dt>新闻发布</dt>
+                <dd>
+                    <ul class="clearfix">
+                        <li><a style="padding-left:0;" href="#">我要发布</a>|</li>
+                        <li><a href="#">发布管理</a>|</li>
+                        <li><a href="#">新发布稿件<span class="num">5</span>篇</a>&nbsp;&nbsp;<a href="#">查看详情</a></li>
+                    </ul>
+                </dd>
+
+                <dt>产品评测</dt>
+                <dd>
+                    <ul class="clearfix">
+                        <li><a style="padding-left:0;" href="#">我要评测</a>|</li>
+                        <li><a href="#">评测管理</a>|</li>
+                        <li><a href="#">评测媒体反馈<span class="num">5</span>家</a>&nbsp;&nbsp;<a href="#">查看详情</a></li>
+                    </ul>
+                </dd>
+
+                <dt>新闻撰写</dt>
+                <dd>
+                    <ul class="clearfix">
+                        <li><a style="padding-left:0;" href="#">我要撰稿</a>|</li>
+                        <li><a href="#">撰稿管理</a>|</li>
+                        <li><a href="#">自由撰稿人反馈<span class="num">5</span>人</a>&nbsp;&nbsp;<a href="#">查看详情</a></li>
+                    </ul>
+                </dd>
+
+                <dt>媒体选题</dt>
+                <dd>
+                    <ul class="clearfix">
+                        <li><a style="padding-left:0;" href="#">当期选题</a>|</li>
+                        <li><a href="#">媒体新发布选题<span class="num">5</span>篇</a>&nbsp;&nbsp;<a href="#">查看详情</a></li>
+                    </ul>
+
+                    <ul class="clearfix">
+                        <li><a style="padding-left:0;" href="#">选题管理</a>|</li>
+                        <li><a href="#">自由撰稿人反馈<span class="num">5</span>人</a>&nbsp;&nbsp;<a href="#">查看详情</a></li>
+                    </ul>
+                </dd>
+            </dl>-->
+
+            <div style="padding-top:20px;">
                 <div class="linkbtns">
                     <form action="/">
                         <input type="submit" class="btn btn-primary linkbtn" value="企业资料">
@@ -105,12 +146,6 @@
                                     <?php echo $enterprise->location;?>
                                 </td>
                             </tr>
-                            <!--<tr>
-                                <td>办公地址：</td>
-                                <td colspan=2>
-                                    <?php //echo $enterprise->address;?>
-                                </td>
-                            </tr>-->
                             <tr>
                                 <td>发票信息：</td>
                                 <td>发票抬头：</td>
@@ -139,27 +174,6 @@
                                     <?php echo $enterprise->ent_full_name; ?>
                                 </td>
                             </tr>
-                            <!--<tr>
-                                <td></td>
-                                <td>税务登记证号：</td>
-                                <td>
-                                    <?php //echo $enterprise->tex_registry_number; ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>公司银行开户行名称：</td>
-                                <td>
-                                    <?php //echo $enterprise->bank_name; ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>公司银行账号：</td>
-                                <td>
-                                    <?php //echo $enterprise->bank_account; ?>
-                                </td>
-                            </tr>-->
                             <tr>
                                 <td></td>
                                 <td>通信地址：</td>
@@ -239,12 +253,6 @@
                                     <?php echo $this->formRow($form->get('location')); ?>
                                 </td>
                             </tr>
-                            <!--<tr>
-                                <td class="tdlabel">办公地址：</td>
-                                <td colspan=2 class="tdinput">
-                                    <?php //echo $this->formRow($form->get('address')); ?>
-                                </td>
-                            </tr>-->
                             <tr>
                                 <td class="tdlabel">发票信息：</td>
                                 <td class="tdlabel">发票抬头：</td>
@@ -266,27 +274,7 @@
                                     <?php echo $this->formRow($form->get('ent_full_name')); ?>
                                 </td>
                             </tr>
-                            <!--<tr>
-                                <td></td>
-                                <td class="tdlabel">税务登记证号：</td>
-                                <td class="tdinput">
-                                    <?php //echo $this->formRow($form->get('tex_registry_number')); ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td class="tdlabel">公司银行开户行名称：</td>
-                                <td class="tdinput">
-                                    <?php //echo $this->formRow($form->get('bank_name')); ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td class="tdlabel">公司银行账号：</td>
-                                <td class="tdinput">
-                                    <?php //echo $this->formRow($form->get('bank_account')); ?>
-                                </td>
-                            </tr>-->
+                            
                             <tr>
                                 <td></td>
                                 <td class="tdlabel">通信地址：</td>
@@ -346,55 +334,7 @@
                             <tr><td>&nbsp;</td></tr>
                         </table>
                     </div>
-                    <!--
-                    <div id="appinfo" class="widget-box">
-                        <div class="widget-title">
-                            <h4>产品信息——</h4>
-                        </div>
-                        <div class="widget-content nopadding">
-                        <table id="tbappinfo" class="table table-bordered table-striped">
-                            <th>
-                                <td>名称</td>
-                                <td>类型</td>
-                                <td>Appstore链接</td>
-                                <td>安卓市场链接</td>
-                                <td>web链接</td>
-                            </th>
-                            <?php //foreach($products as $product) :  ;?>
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <a href="/product/detail/<?php //echo $product->id_product;?>"><?php //echo $product->name; ?></a>
-                                </td>
-                                <td>
-                                    <?php //echo $product->type; ?>
-                                </td>
-                                <td>
-                                    <?php //echo $product->appstore_link; ?>
-                                </td>
-                                <td>
-                                    <?php //echo $product->androidmkt_link; ?>
-                                </td>
-                                <td>
-                                    <?php //echo $product->web_link; ?>
-                                </td>
-                            </tr>
-                            <?php //endforeach; ?>
-                        </table>
-                        <a href="/product/add">添加其他产品</a>
-                        </div>
-                    </div>
-                    -->
                 </div>
-            </div>
-        </div>
-        <div id="right" class="span4 right">
-            SPAN4 RIGHT
-            <div id="mediarank" class="mediarank">
-                APP媒体曝光排名
-            </div>
-            <div id="latestapp" class="latestapp">
-                最新注册APP
             </div>
         </div>
     </div>
@@ -402,6 +342,7 @@
 </div>
 
 <style>
+/*
 div.user, .mid
 {
     border:1px black solid;
@@ -430,7 +371,7 @@ input[type="text"], textarea
     border: 1px #ffffff;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
     width: 100%;
-}
+}*/
 </style>
 
             <script src="js/excanvas.min.js"></script>

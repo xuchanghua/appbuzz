@@ -1,31 +1,11 @@
-<h1>首页管理</h1>
-<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="css/style.css">
-
-
 <div id="indexpage" class="indexpage">
-    <div id="header" class="container" style="width:1170px;"> 
-    CONTAINER
-    <div class="row">
-        ROW
-        <div id="logo" class="span2 logo">
-            APPBUZZ LOGO
-        </div>
-        <div id="banner" class="span8 banner">
-            BANNER
-        </div>
-    </div>
-    </div>
-</BR>
-    <div id="main" class="container" style="width:1170px;">
+    <div id="main" class="container" >
     <div id="row" class="row">
-        <div id="left" class="span2 left">
         <?php 
         set_include_path("public/include");        
         include 'sidebar_admin.phtml'; 
         ?>
-        </div>
-        <div id="mid" class="span8 mid">
+        <div id="mid" class="span9 mid" style="padding-top:20px;">
             <div id="addarticle" class="widget-box">
                 <div class="widget-name">
                     <h4>首页推荐APP排序——</h4>
@@ -143,19 +123,12 @@
                 </div>
             </div>
         </div>
-        <div id="right" class="span3 right">
-            <div id="mediarank" class="mediarank">
-                APP媒体曝光排名
-            </div>
-            <div id="latestapp" class="latestapp">
-                最新注册APP
-            </div>
-        </div>
     </div>
     </div>
 </div>
 
 <style>
+/*
 div.user,.mid,#userinfo
 {
     border:1px black solid;
@@ -183,5 +156,5 @@ input[type="text"], textarea, select, .password
     border: 1px #ffffff;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0) inset;
     width: 100%;
-}
+}*/
 </style>
