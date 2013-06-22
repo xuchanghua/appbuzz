@@ -411,6 +411,39 @@ class ProductController extends AbstractActionController
         ));
     }
 
+    public function findAction()
+    {                
+        $this->session = new SessionContainer('userinfo');
+        $username = $this->session->username;
+        if(isset($_GET["q"]))
+        {
+            $q = $_GET["q"];
+            if(strlen($q) > 0)
+            {
+                $result = $this->getProductTable()->findProduct($q, $username);
+                if(!$result){
+                    echo "抱歉，暂无相关搜索结果<br>";die();
+                }else{
+                    $is_first = true;
+                    foreach($result as $r)
+                    {
+                        if($is_first){
+                            echo $r->name;
+                        }else{
+                            echo ', ', $r->name;
+                        }
+                        $is_first = false;
+                    }
+                    die();
+                }
+            }else{
+                die();
+            }
+        }else{
+            die();
+        }        
+    }
+
     public function getProductTable()
     {
         if (!$this->productTable) {

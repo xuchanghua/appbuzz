@@ -28,10 +28,24 @@ class InterviewController extends AbstractActionController
 
         return new ViewModel(array(
             'user' => $cur_user,    
-            'current_interview' => $this->getInterviewTable()->fetchCurrentInterview($cur_user),
-            'past_interview' => $this->getInterviewTable()->fetchPastInterview($cur_user),
+            'interviews' => $this->getInterviewTable()->fetchInterviewByUser($cur_user),
+            //'current_interview' => $this->getInterviewTable()->fetchCurrentInterview($cur_user),
+            //'past_interview' => $this->getInterviewTable()->fetchPastInterview($cur_user),
             'products' => $this->getProductTable()->fetchAll(),    
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
+        ));
+    }
+
+    public function entindexAction()
+    {
+        //企业->邀请采访
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+            'interviews' => $this->getInterviewTable()->fetchInterviewByUser($cur_user),
+            'products' => $this->getProductTable()->fetchAll(),
         ));
     }
 
@@ -97,6 +111,20 @@ class InterviewController extends AbstractActionController
             'form' => $form,
             'all_products' => $this->getProductTable()->fetchAll(),
             'is_writer' => $this->getUserTable()->getUserByName($cur_user)->is_writer,
+        ));
+    }
+
+    public function entaddAction()
+    {
+        //企业->向媒体发出采访邀请
+        $arr_type_allowed = array(1);
+        $cur_user = $this->_auth($arr_type_allowed);
+
+        
+
+        return new ViewModel(array(
+            'user' => $cur_user,
+
         ));
     }
 

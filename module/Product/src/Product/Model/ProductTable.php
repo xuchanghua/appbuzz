@@ -43,6 +43,16 @@ class ProductTable
         return $rowset;
     }
 
+    public function findProduct($str, $created_by)
+    {
+        $rowset = $this->tableGateway->select(function(Select $select) use ($str, $created_by){
+            $select->where->equalTo('created_by', $created_by);
+            $select->where->like('name', $str.'%');
+            $select->order('id_product DESC');
+        });
+        return $rowset;
+    }
+
     public function getProduct($id)
     {
         $id  = (int) $id;

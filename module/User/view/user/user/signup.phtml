@@ -1,4 +1,4 @@
-<div style="padding:20px;">
+<div class="group-signup">
 <?php
 
 $form = $this->form;
@@ -19,29 +19,23 @@ $form->setAttribute('action', $this->url('user', array('action' => 'signup')));
 ));*/
 $form->prepare();
 ?>
-<h1>企业用户注册：</h1>
+    <h1>企业用户注册</h1>
 <?php
 
 echo $this->form()->openTag($form);
 echo $this->formHidden($form->get('id'));
 echo $this->formHidden($form->get('fk_user_type'));
-echo "</br>";
 echo $this->formRow($form->get('username'));
-echo "</br>";
 ?>
 <span id="dupe_hint"></span>
 <?php
 //echo $this->formRow($form->get('real_name'));
 //echo "</br>";
 echo $this->formRow($form->get('email'));
-echo "</br>";
 echo $this->formRow($form->get('password'));
-echo "</br>";
 echo $this->formRow($form->get('confirmpassword'));
-echo "</br>";
 ?>
-<input id="terms" type="checkbox">我同意<a href="/user/terms" target="view_frame">用户协议</a></input>
-</br>
+<p><input id="terms" type="checkbox">我同意<a href="/user/terms" target="view_frame">用户协议</a></input></p>
 <input type="button" class="btn" value="立即注册" onClick="signup_ent();"/>
 <?php
 //echo $this->formSubmit($form->get('submit'));
@@ -86,3 +80,4 @@ function signup_ent()
     }
 }
 </script>
+</div>

@@ -56,6 +56,15 @@
                         'id' => 'barcode',
                     ),
                 ));
+                $form->add(array(
+                    'name' => 'fk_product',
+                    'type' => 'text',
+                    'attributes' => array(
+                        'id' => 'my_product',
+                        'placeholder' => '请输入app名称：',
+                        'onkeyup' => 'findProduct(this.value)',
+                    ),
+                ));
               /*$form->add(array(
                     'name' => 'fk_pub_mode',
                     'type'  => 'Zend\Form\Element\Radio',
@@ -87,6 +96,7 @@
                     <td class="tdlabel">App产品</td>
                     <td class="tdinput">
                         <?php echo $this->formRow($form->get('fk_product')); ?>
+                        <p id="product_hint"></p>
                     </td>
                 </tr>
                 <tr>
@@ -200,6 +210,32 @@
 </div>
 
 <script>
+function findProduct(str)
+{
+    if(str.length == 0)
+    {
+        document.getElementById("product_hint").innerHTML = "";
+        return;
+    }
+    if (window.XMLHttpRequest)
+    {// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp = new XMLHttpRequest();
+    }
+    else
+    {// code for IE6, IE5
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function()
+    {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
+        {
+            document.getElementById("product_hint").innerHTML = xmlhttp.responseText;
+        }
+    }
+    xmlhttp.open("GET","/product/find?q=" + str, true);
+    xmlhttp.send();
+}
+
 function show_current_option()
 {
     //var current_value = $('#select_pub_mode').val();
