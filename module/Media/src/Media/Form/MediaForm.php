@@ -115,7 +115,7 @@ class MediaForm extends Form
                 ),
                 'options' => array(
                     'value_options' => array(
-                        '1' => '印刷媒体',
+                        '1' => '平面媒体',
                         '2' => '网络媒体',
                         '3' => '自媒体人',
                     ),
